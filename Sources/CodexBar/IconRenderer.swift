@@ -337,7 +337,7 @@ enum IconRenderer {
                         }
                     }
 
-                    // Gemini twist: sparkle-inspired design with prominent 4-pointed stars as eyes
+                    // Gemini twist: star-inspired design with prominent 4-pointed stars as eyes
                     // and decorative points extending from the bar.
                     if addGeminiTwist {
                         let ctx = NSGraphicsContext.current?.cgContext
@@ -347,7 +347,7 @@ enum IconRenderer {
                         ctx?.saveGState()
                         ctx?.setShouldAntialias(true)
 
-                        // 4-pointed star cutouts (Gemini sparkle eyes) - BIGGER
+                        // 4-pointed star cutouts (Gemini star eyes) - BIGGER
                         let starSizePx = 8
                         let eyeOffsetPx = 8
                         let sr = Self.grid.pt(starSizePx / 2)
@@ -380,12 +380,12 @@ enum IconRenderer {
                         drawStarCutout(cx: rdCx, cy: yCy)
                         ctx?.setBlendMode(.normal)
 
-                        // Decorative sparkle points extending from bar (sized to stay within 36px canvas)
+                        // Decorative star points extending from bar (sized to stay within 36px canvas)
                         fillColor.withAlphaComponent(alpha).setFill()
                         let pointHeightPx = 4
                         let pointWidthPx = 4
 
-                        // Top center point (like a crown/sparkle)
+                        // Top center point (like a crown/star)
                         let topPointPath = NSBezierPath()
                         let topCx = Self.grid.pt(centerXPx)
                         let topBaseY = Self.grid.pt(rectPx.y + rectPx.h)

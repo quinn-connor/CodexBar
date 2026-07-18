@@ -65,7 +65,6 @@
 - Tests: isolate cookie importer overrides across concurrent tasks (#2212). Thanks @kiranmagic7!
 - CI: defer macOS test shards for draft pull requests (#2161). Thanks @Yuxin-Qiao!
 - Localization: complete app locale coverage across all existing catalogs (#2229). Thanks @Yuxin-Qiao!
-- Dev: verify packaged Sparkle and app signatures and reject quarantine attributes before reporting a successful development package (#2232). Thanks @Yuxin-Qiao!
 
 ## 0.43.0 — 2026-07-14
 
@@ -898,7 +897,6 @@
 - Copilot: preserve over-quota usage so paid overage can show above 100% instead of clamping to exhausted (#818).
 - Codex: pause background CLI launches after macOS blocks or quarantines `codex`, avoiding repeated "Malware Blocked" prompts (#942).
 - Claude: clarify that local cost/token estimates include cache read/write tokens and may differ from Claude Code `/status` (#781, #787).
-- Updates: make the restart/apply-update menu action use Sparkle's prepared install callback on the first click (#947). Thanks @velvet-shark!
 - Multi-account menus: keep stacked token-account cards capped to current accounts and ignore stale snapshots from removed accounts (#949).
 - Droid: accept pasted Factory `Authorization: Bearer` headers and bearer tokens for manual sessions when cookies alone are insufficient (#914).
 - Menu bar: detect when macOS Tahoe hides CodexBar behind the new Allow in Menu Bar setting and show recovery guidance (#945, fixes #890). Thanks @pdurlej!
@@ -1510,7 +1508,6 @@
 - Claude: PTY probes now stop after idle, auto‑clean on restart, and run under a watchdog to avoid runaway CLI processes.
 - Menu polish: group history under card sections, simplify history labels, and refresh menus live while open.
 - Performance: faster usage log scanning + cost parsing; cache menu icons and speed up OpenAI dashboard parsing.
-- Sparkle: auto-download updates when auto-check is enabled, and only show the restart menu entry once an update is ready.
 - Widgets: experimental WidgetKit extension (may require restarting the widget gallery/Dock to appear).
 - Credits: show credits as a progress bar and add a credits history chart when OpenAI web data is available.
 - Credits: move “Buy Credits…” into its own menu item and improve auto-start checkout flow.
@@ -1637,13 +1634,11 @@
 - Menu bar icon with unknown usage now draws empty tracks (instead of a full bar when decorations are shown) by treating nil values as 0%.
 
 ## 0.4.2 — 2025-11-21
-- Sparkle updates re-enabled in release builds (disabled only for the debug bundle ID).
 
 ## 0.4.1 — 2025-11-21
 - Both Codex and Claude probes now run off the main thread (background PTY), avoiding menu/UI stalls during `/status` or `/usage` fetches.
 - Codex credits stay available even when `/status` times out: cached values are kept and errors are surfaced separately.
 - Claude/Codex provider autodetect runs on first launch (defaults to Codex if neither is installed) with a debug reset button.
-- Sparkle updates re-enabled in release builds (disabled only for debug bundle ID).
 - Claude probe now issues the `/usage` slash command directly to land on the Usage tab reliably and avoid palette misfires.
 
 ## 0.4.0 — 2025-11-21
@@ -1661,7 +1656,7 @@
 ## 0.2.2 — 2025-11-17
 - Menu bar icon stays static when no account/usage is present; loading animation only runs while fetching (12 fps) to keep idle CPU low.
 - Usage refresh first tails the newest session log (512 KB window) before scanning everything, reducing IO on large Codex logs.
-- Packaging/signing hardened: strip extended attributes, delete AppleDouble (`._*`) files, and re-sign Sparkle + app bundle to satisfy Gatekeeper.
+- Packaging/signing hardened: strip extended attributes, delete AppleDouble (`._*`) files, and re-sign the app bundle to satisfy Gatekeeper.
 
 ## 0.2.1 — 2025-11-17
 - Patch bump for refactor/relative-time changes; packaging scripts set to 0.2.1 (5).
@@ -1676,13 +1671,11 @@
 
 ## 0.1.2 — 2025-11-16
 - Animated loading icon (dual bars sweep until usage arrives); always uses rendered template icon.
-- Sparkle embedding/signing fixed with deep+timestamp; notarization pipeline solid.
 - Icon conversion scripted via ictool with docs.
 - Menu: settings submenu, no GitHub item; About link clickable.
 
 ## 0.1.1 — 2025-11-16
 - Launch-at-login toggle (SMAppService) and saved preference applied at startup.
-- Sparkle auto-update wiring (SUFeedURL to GitHub, SUPublicEDKey set); Settings submenu with auto-update toggle + Check for Updates.
 - Menu cleanup: settings grouped, GitHub menu removed, About link clickable.
 - Usage parser scans newest session logs until it finds `token_count` events.
 - Icon pipeline fixed: regenerated `.icns` via ictool with proper transparency (docs in docs/icon.md).
