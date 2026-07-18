@@ -323,7 +323,19 @@ struct SettingsStoreCoverageTests {
 
         let snapshot = settings.claudeSettingsSnapshot(tokenOverride: nil)
 
-        #expect(snapshot.usageDataSource == .auto)
+        #expect(snapshot.usageDataSource == .oauth)
+        #expect(snapshot.cookieSource == .off)
+        #expect(snapshot.manualCookieHeader?.isEmpty == true)
+    }
+
+    @Test
+    func `claude snapshot uses admin API routing for admin token accounts`() {
+        let settings = Self.makeSettingsStore()
+        settings.addTokenAccount(provider: .claude, label: "Admin", token: "sk-ant-admin-account-token")
+
+        let snapshot = settings.claudeSettingsSnapshot(tokenOverride: nil)
+
+        #expect(snapshot.usageDataSource == .api)
         #expect(snapshot.cookieSource == .off)
         #expect(snapshot.manualCookieHeader?.isEmpty == true)
     }
@@ -335,7 +347,7 @@ struct SettingsStoreCoverageTests {
 
         let snapshot = settings.claudeSettingsSnapshot(tokenOverride: nil)
 
-        #expect(snapshot.usageDataSource == .auto)
+        #expect(snapshot.usageDataSource == .web)
         #expect(snapshot.cookieSource == .manual)
         #expect(snapshot.manualCookieHeader == "sessionKey=sk-ant-session-token")
     }
@@ -348,7 +360,7 @@ struct SettingsStoreCoverageTests {
 
         let snapshot = settings.claudeSettingsSnapshot(tokenOverride: nil)
 
-        #expect(snapshot.usageDataSource == .auto)
+        #expect(snapshot.usageDataSource == .cli)
         #expect(snapshot.cookieSource == .manual)
         #expect(snapshot.manualCookieHeader == "sessionKey=sk-ant-session-token; foo=bar")
     }

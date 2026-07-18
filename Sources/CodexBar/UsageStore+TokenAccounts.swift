@@ -918,11 +918,21 @@ extension UsageStore {
             provider: provider,
             settings: self.settings,
             override: override)
-        let sourceMode = self.sourceMode(for: provider)
         let snapshot = ProviderRegistry.makeSettingsSnapshot(
             settings: self.settings,
             tokenOverride: override,
             codexActiveSourceOverride: codexActiveSourceOverride)
+        let sourceMode: ProviderSourceMode = if provider == .claude, let claude = snapshot.claude {
+            switch claude.usageDataSource {
+            case .auto: .auto
+            case .api: .api
+            case .oauth: .oauth
+            case .web: .web
+            case .cli: .cli
+            }
+        } else {
+            self.sourceMode(for: provider)
+        }
         let env = ProviderRegistry.makeEnvironment(
             base: self.environmentBase,
             provider: provider,
