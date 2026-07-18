@@ -31,8 +31,8 @@ public enum KimiAPIError: LocalizedError, Sendable, Equatable {
         case let .parseFailed(message):
             "Failed to parse Kimi usage data: \(message)"
         case .expiredCodeCredential:
-            "Kimi Code CLI credential is expired. Sign in again with Kimi Code CLI; CodexBar does not refresh " +
-                "CLI-owned credentials."
+            "Kimi Code CLI credential is expired. Launch a Kimi Code session in order to refresh your login so " +
+                "that AgentBar can securely capture the token."
         case .invalidCodeCredential:
             "Kimi Code CLI credential is invalid or expired. Sign in again with Kimi Code CLI; CodexBar does not " +
                 "refresh CLI-owned credentials."
