@@ -15,6 +15,9 @@ CodexBar.app/
 CodexBar *.app/
 CodexBar_*.app/
 Codexbar.app/
+AgentBar.app/
+AgentBar *.app/
+AgentBar_*.app/
 # Release artifacts
 *.ipa
 *.dSYM*
