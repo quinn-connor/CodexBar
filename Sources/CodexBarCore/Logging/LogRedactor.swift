@@ -21,9 +21,13 @@ public enum LogRedactor {
     private static let authorizationRegex = Self.makeRegex(
         pattern: #"(?i)(authorization\s*:\s*)([^\r\n]+)"#)
     private static let sensitiveHeaderRegex = Self.makeRegex(
-        pattern: #"(?im)^(\s*(?:x-api-key|api-key|access-token|refresh-token|client-secret|session-token|proxy-authorization)\s*:\s*)[^\r\n]+"#)
+        pattern: #"(?im)^(\s*(?:x-api-key|api-key|access-token|refresh-token|"# +
+            #"client-secret|session-token|proxy-authorization)\s*:\s*)[^\r\n]+"#)
     private static let sensitiveKeyValueRegex = Self.makeRegex(
-        pattern: #"(?i)([\"']?(?:x-api-key|api[-_]?key|access[-_]?token|refresh[-_]?token|client[-_]?secret|session[-_]?token|password|passwd|secret|token|aws[-_]?access[-_]?key[-_]?id|aws[-_]?secret[-_]?access[-_]?key)[\"']?\s*(?::|=)\s*)(?!<redacted)(?:\"[^\"\r\n]*\"|'[^'\r\n]*'|[^\s,;&}\r\n]+)"#)
+        pattern: #"(?i)([\"']?(?:x-api-key|api[-_]?key|access[-_]?token|refresh[-_]?token|"# +
+            #"client[-_]?secret|session[-_]?token|password|passwd|secret|token|"# +
+            #"aws[-_]?access[-_]?key[-_]?id|aws[-_]?secret[-_]?access[-_]?key)"# +
+            #"[\"']?\s*(?::|=)\s*)(?!<redacted)(?:\"[^\"\r\n]*\"|'[^'\r\n]*'|[^\s,;&}\r\n]+)"#)
     private static let bearerRegex = Self.makeRegex(
         pattern: #"(?i)\bbearer\s+[a-z0-9._\-]+=*\b"#)
     private static let minimaxCodingPlanTokenRegex = Self.makeRegex(
@@ -32,7 +36,8 @@ public enum LogRedactor {
         pattern: #"sk-api-[^\s"'`;,)>\]]+"#)
 
     private static let opaqueSecretRegex = Self.makeRegex(
-        pattern: #"(?i)\b(?:sk-[a-z0-9][a-z0-9._-]{7,}|github_pat_[a-z0-9_]{10,}|gh[pousr]_[a-z0-9]{10,}|xox[baprs]-[a-z0-9-]{10,})\b"#)
+        pattern: #"(?i)\b(?:sk-[a-z0-9][a-z0-9._-]{7,}|github_pat_[a-z0-9_]{10,}|"# +
+            #"gh[pousr]_[a-z0-9]{10,}|xox[baprs]-[a-z0-9-]{10,})\b"#)
     private static let awsAccessKeyRegex = Self.makeRegex(
         pattern: #"\b(?:AKIA|ASIA|AIDA|AROA|AIPA|ANPA|ANVA|ASCA)[A-Z0-9]{16}\b"#)
 
