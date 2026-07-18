@@ -152,5 +152,4 @@ struct StatusItemControllerMenuTests {
         submenuMenu.addItem(parentItem)
         #expect(ceil(submenuMenu.size.width) < 310)
     }
-
 }
