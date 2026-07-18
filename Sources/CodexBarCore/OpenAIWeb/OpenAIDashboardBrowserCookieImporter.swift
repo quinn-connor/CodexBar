@@ -255,7 +255,7 @@ public struct OpenAIDashboardBrowserCookieImporter {
             return "\(processName) (\(executablePath))"
         }
         let appPath = executablePath[..<appSuffix.upperBound].dropLast()
-        return "AgentBar.app (\(appPath))"
+        return "\(AppIdentity.displayName).app (\(appPath))"
     }
 
     nonisolated static func browserCookieLoadTimeoutError(

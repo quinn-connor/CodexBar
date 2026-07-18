@@ -82,10 +82,10 @@ struct OpenAIDashboardBrowserCookieImporterTests {
         let hint = OpenAIDashboardBrowserCookieImporter.browserProfileAccessHint(
             for: .chrome,
             issue: .accessDenied,
-            processName: "CodexBar",
-            executablePath: "/Applications/CodexBar.app/Contents/MacOS/CodexBar")
+            processName: AppIdentity.displayName,
+            executablePath: "/Applications/AgentBar.app/Contents/MacOS/CodexBar")
 
-        #expect(hint.contains("CodexBar.app (/Applications/CodexBar.app)"))
+        #expect(hint.contains("AgentBar.app (/Applications/AgentBar.app)"))
     }
 
     @Test
