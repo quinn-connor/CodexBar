@@ -178,6 +178,13 @@ extension CodexBarCLI {
     }
 
     static func configHelp(version: String) -> String {
+        let dumpDescription = {
+            #if os(macOS)
+            "Validate or print the CodexBar config file (default: validate). dump always redacts secrets."
+            #else
+            "Validate or print the CodexBar config file (default: validate)."
+            #endif
+        }()
         let setAPIKeyDescription = {
             #if os(macOS)
             "On macOS, set provider credentials in the app Settings so they are protected by Keychain."
@@ -211,7 +218,7 @@ extension CodexBarCLI {
                                     [--format text|json] [--json] [--json-only] [--pretty]
 
         Description:
-          Validate or print the CodexBar config file (default: validate). dump always redacts secrets.
+          \(dumpDescription)
           providers lists persistent provider enablement.
           enable/disable updates the same provider toggle used by Settings.
           \(setAPIKeyDescription)

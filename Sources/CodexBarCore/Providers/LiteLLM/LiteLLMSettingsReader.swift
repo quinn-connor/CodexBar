@@ -14,7 +14,11 @@ public enum LiteLLMSettingsReader {
         environment: [String: String] = ProcessInfo.processInfo.environment) -> URL?
     {
         guard let raw = self.cleaned(environment[self.baseURLEnvironmentKey]) else { return nil }
+        #if os(macOS)
         return ProviderEndpointOverrideValidator().validatedURLAllowingLoopbackHTTP(raw)
+        #else
+        return URL(string: raw)
+        #endif
     }
 
     static func cleaned(_ raw: String?) -> String? {
