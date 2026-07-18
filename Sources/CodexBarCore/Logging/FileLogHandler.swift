@@ -55,30 +55,14 @@ final class FileLogSink: @unchecked Sendable {
     private func openHandleIfNeeded() -> FileHandle? {
         if let handle = self.fileHandle { return handle }
         do {
-            try self.prepareFile(at: self.fileURL)
-            let handle = try FileHandle(forWritingTo: self.fileURL)
-            handle.seekToEndOfFile()
+            let handle = try SecureLocalFile.openForAppending(
+                to: self.fileURL,
+                maximumBytes: self.maxBytes,
+                fileManager: self.fileManager)
             self.fileHandle = handle
             return handle
         } catch {
             return nil
-        }
-    }
-
-    private func prepareFile(at url: URL) throws {
-        let directory = url.deletingLastPathComponent()
-        if !self.fileManager.fileExists(atPath: directory.path) {
-            try self.fileManager.createDirectory(at: directory, withIntermediateDirectories: true)
-        }
-        if self.fileManager.fileExists(atPath: url.path) {
-            let attributes = try self.fileManager.attributesOfItem(atPath: url.path)
-            let size = (attributes[.size] as? NSNumber)?.int64Value ?? 0
-            if size > self.maxBytes {
-                try self.fileManager.removeItem(at: url)
-            }
-        }
-        if !self.fileManager.fileExists(atPath: url.path) {
-            _ = self.fileManager.createFile(atPath: url.path, contents: nil)
         }
     }
 

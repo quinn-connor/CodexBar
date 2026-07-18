@@ -48,10 +48,9 @@ public struct CodexBarConfigStore: @unchecked Sendable {
     }
 
     public func load() throws -> CodexBarConfig? {
-        guard self.fileManager.fileExists(atPath: self.fileURL.path) else { return nil }
-        let data = try Data(contentsOf: self.fileURL)
-        let decoder = JSONDecoder()
         do {
+            guard let data = try SecureLocalFile.readIfPresent(from: self.fileURL) else { return nil }
+            let decoder = JSONDecoder()
             let decoded = try decoder.decode(CodexBarConfig.self, from: data).normalized()
             guard let secretStore else {
                 guard self.referencedSecretKeys(in: decoded).isEmpty else {
@@ -96,9 +95,8 @@ public struct CodexBarConfigStore: @unchecked Sendable {
 
     /// Decodes config metadata without resolving Keychain references and strips all secret values.
     public func loadRedacted() throws -> CodexBarConfig? {
-        guard self.fileManager.fileExists(atPath: self.fileURL.path) else { return nil }
         do {
-            let data = try Data(contentsOf: self.fileURL)
+            guard let data = try SecureLocalFile.readIfPresent(from: self.fileURL) else { return nil }
             return try JSONDecoder().decode(CodexBarConfig.self, from: data)
                 .normalized()
                 .redactedForDisplay()
@@ -155,18 +153,12 @@ public struct CodexBarConfigStore: @unchecked Sendable {
         } catch {
             throw CodexBarConfigStoreError.encodeFailed(error.localizedDescription)
         }
-        let directory = self.fileURL.deletingLastPathComponent()
-        if !self.fileManager.fileExists(atPath: directory.path) {
-            try self.fileManager.createDirectory(at: directory, withIntermediateDirectories: true)
-        }
-        try data.write(to: self.fileURL, options: [.atomic])
-        try self.applySecurePermissionsIfNeeded()
+        try SecureLocalFile.write(data, to: self.fileURL, fileManager: self.fileManager)
     }
 
     public func deleteIfPresent() throws {
-        guard self.fileManager.fileExists(atPath: self.fileURL.path) else { return }
         let references = self.loadReferencedSecretKeys()
-        try self.fileManager.removeItem(at: self.fileURL)
+        guard try SecureLocalFile.removeIfPresent(at: self.fileURL) else { return }
         guard let secretStore else { return }
         for key in references {
             try? secretStore.removeSecret(for: key)
@@ -213,14 +205,6 @@ public struct CodexBarConfigStore: @unchecked Sendable {
         }
 
         return xdgDefault
-    }
-
-    private func applySecurePermissionsIfNeeded() throws {
-        #if os(macOS) || os(Linux)
-        try self.fileManager.setAttributes([
-            .posixPermissions: NSNumber(value: Int16(0o600)),
-        ], ofItemAtPath: self.fileURL.path)
-        #endif
     }
 
     private func hydrateSecrets(
@@ -376,8 +360,7 @@ public struct CodexBarConfigStore: @unchecked Sendable {
     }
 
     private func loadReferencedSecretKeys() -> Set<CodexBarConfigSecretKey> {
-        guard self.fileManager.fileExists(atPath: self.fileURL.path),
-              let data = try? Data(contentsOf: self.fileURL),
+        guard let data = try? SecureLocalFile.readIfPresent(from: self.fileURL),
               let config = try? JSONDecoder().decode(CodexBarConfig.self, from: data)
         else {
             return []
