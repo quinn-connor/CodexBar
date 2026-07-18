@@ -20,7 +20,7 @@ public enum LiteLLMUsageError: LocalizedError, Sendable {
         case .missingUserID:
             "LiteLLM key info did not include a user_id or team_id."
         case .invalidURL:
-            "LiteLLM URL is invalid."
+            "LiteLLM URL must use HTTPS, or loopback HTTP for local development, without embedded credentials."
         case let .apiError(message):
             "LiteLLM API error: \(message)"
         case let .parseFailed(message):
@@ -276,15 +276,20 @@ public struct LiteLLMUsageFetcher: Sendable {
         guard !cleanedAPIKey.isEmpty else {
             throw LiteLLMUsageError.missingCredentials
         }
+        guard let validatedBaseURL = ProviderEndpointOverrideValidator()
+            .validatedURLAllowingLoopbackHTTP(baseURL.absoluteString)
+        else {
+            throw LiteLLMUsageError.invalidURL
+        }
 
         let keyInfo = try await self.fetchKeyInfo(
             apiKey: cleanedAPIKey,
-            baseURL: baseURL,
+            baseURL: validatedBaseURL,
             transport: transport)
         if keyInfo.userID != nil {
             return try await self.fetchUserInfo(
                 apiKey: cleanedAPIKey,
-                baseURL: baseURL,
+                baseURL: validatedBaseURL,
                 keyInfo: keyInfo,
                 transport: transport,
                 updatedAt: updatedAt)
@@ -292,7 +297,7 @@ public struct LiteLLMUsageFetcher: Sendable {
         if keyInfo.teamID != nil {
             return try await self.fetchTeamInfo(
                 apiKey: cleanedAPIKey,
-                baseURL: baseURL,
+                baseURL: validatedBaseURL,
                 keyInfo: keyInfo,
                 transport: transport,
                 updatedAt: updatedAt)

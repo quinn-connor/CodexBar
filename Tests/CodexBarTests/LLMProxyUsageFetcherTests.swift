@@ -4,6 +4,46 @@ import Testing
 
 struct LLMProxyUsageFetcherTests {
     @Test
+    func `settings reader requires https except for loopback development`() {
+        #expect(LLMProxySettingsReader.baseURL(environment: [
+            LLMProxySettingsReader.baseURLEnvironmentKey: "https://proxy.example.com",
+        ])?.absoluteString == "https://proxy.example.com")
+        #expect(LLMProxySettingsReader.baseURL(environment: [
+            LLMProxySettingsReader.baseURLEnvironmentKey: "http://127.0.0.1:8080",
+        ])?.absoluteString == "http://127.0.0.1:8080")
+        #expect(LLMProxySettingsReader.baseURL(environment: [
+            LLMProxySettingsReader.baseURLEnvironmentKey: "http://proxy.example.com",
+        ]) == nil)
+        #expect(LLMProxySettingsReader.baseURL(environment: [
+            LLMProxySettingsReader.baseURLEnvironmentKey: "https://user:password@proxy.example.com",
+        ]) == nil)
+    }
+
+    @Test
+    func `fetch rejects insecure remote endpoint before sending bearer credential`() async throws {
+        let transport = ProviderHTTPTransportStub { request in
+            Issue.record("unexpected request to \(request.url?.absoluteString ?? "nil")")
+            throw LLMProxyUsageError.apiError("unexpected request")
+        }
+        let baseURL = try #require(URL(string: "http://proxy.example.com"))
+
+        do {
+            _ = try await LLMProxyUsageFetcher.fetchUsage(
+                apiKey: "proxy-token-placeholder",
+                baseURL: baseURL,
+                transport: transport)
+            Issue.record("expected LLMProxyUsageError.invalidURL")
+        } catch LLMProxyUsageError.invalidURL {
+            // Expected.
+        } catch {
+            Issue.record("expected LLMProxyUsageError.invalidURL, got \(error)")
+        }
+
+        let requests = await transport.requests()
+        #expect(requests.isEmpty)
+    }
+
+    @Test
     func `parses quota stats summary`() throws {
         let json = """
         {

@@ -4,6 +4,46 @@ import Testing
 
 struct LiteLLMUsageFetcherTests {
     @Test
+    func `settings reader requires https except for loopback development`() {
+        #expect(LiteLLMSettingsReader.baseURL(environment: [
+            LiteLLMSettingsReader.baseURLEnvironmentKey: "https://litellm.example.com",
+        ])?.absoluteString == "https://litellm.example.com")
+        #expect(LiteLLMSettingsReader.baseURL(environment: [
+            LiteLLMSettingsReader.baseURLEnvironmentKey: "http://localhost:4000",
+        ])?.absoluteString == "http://localhost:4000")
+        #expect(LiteLLMSettingsReader.baseURL(environment: [
+            LiteLLMSettingsReader.baseURLEnvironmentKey: "http://litellm.example.com",
+        ]) == nil)
+        #expect(LiteLLMSettingsReader.baseURL(environment: [
+            LiteLLMSettingsReader.baseURLEnvironmentKey: "https://user:password@litellm.example.com",
+        ]) == nil)
+    }
+
+    @Test
+    func `fetch rejects insecure remote endpoint before sending bearer credential`() async throws {
+        let transport = ProviderHTTPTransportStub { request in
+            Issue.record("unexpected request to \(request.url?.absoluteString ?? "nil")")
+            throw LiteLLMUsageError.apiError("unexpected request")
+        }
+        let baseURL = try #require(URL(string: "http://litellm.example.com"))
+
+        do {
+            _ = try await LiteLLMUsageFetcher.fetchUsage(
+                apiKey: "litellm-token-placeholder",
+                baseURL: baseURL,
+                transport: transport)
+            Issue.record("expected LiteLLMUsageError.invalidURL")
+        } catch LiteLLMUsageError.invalidURL {
+            // Expected.
+        } catch {
+            Issue.record("expected LiteLLMUsageError.invalidURL, got \(error)")
+        }
+
+        let requests = await transport.requests()
+        #expect(requests.isEmpty)
+    }
+
+    @Test
     func `parses user usage with personal and team budgets`() throws {
         let json = """
         {

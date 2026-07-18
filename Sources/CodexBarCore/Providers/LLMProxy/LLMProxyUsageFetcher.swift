@@ -17,7 +17,7 @@ public enum LLMProxyUsageError: LocalizedError, Sendable {
         case .missingBaseURL:
             "Missing LLM Proxy base URL. Set enterpriseHost in ~/.codexbar/config.json or LLM_PROXY_BASE_URL."
         case .invalidURL:
-            "LLM Proxy URL is invalid."
+            "LLM Proxy URL must use HTTPS, or loopback HTTP for local development, without embedded credentials."
         case let .apiError(message):
             "LLM Proxy API error: \(message)"
         case let .parseFailed(message):
@@ -212,7 +212,12 @@ public struct LLMProxyUsageFetcher: Sendable {
         guard !apiKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
             throw LLMProxyUsageError.missingCredentials
         }
-        let url = self.quotaStatsURL(baseURL: baseURL)
+        guard let validatedBaseURL = ProviderEndpointOverrideValidator()
+            .validatedURLAllowingLoopbackHTTP(baseURL.absoluteString)
+        else {
+            throw LLMProxyUsageError.invalidURL
+        }
+        let url = self.quotaStatsURL(baseURL: validatedBaseURL)
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
