@@ -218,6 +218,8 @@ struct AzureOpenAIProviderAvailabilityTests {
             syntheticTokenStore: NoopSyntheticTokenStore())
         settings.azureOpenAIAPIKey = "AZURE_CANARY_KEY"
         settings.azureOpenAIEndpoint = "http://127.0.0.1:31337"
+        #expect(settings.azureOpenAIAPIKey.isEmpty)
+        settings.azureOpenAIAPIKey = "AZURE_CANARY_KEY"
         settings.azureOpenAIDeploymentName = "canary-deployment"
 
         let environment = ProviderRegistry.makeEnvironment(
