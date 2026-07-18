@@ -204,9 +204,9 @@ struct StatusItemControllerSplitLifecycleTests {
         #expect(controller.statusItem.button?.accessibilityIdentifier() == "AgentBar.StatusItem")
         #expect(codexButton.accessibilityIdentifier() == "AgentBar.StatusItem.codex")
         #expect(claudeButton.accessibilityIdentifier() == "AgentBar.StatusItem.claude")
-        #expect(controller.statusItem.button?.accessibilityTitle() == "CodexBar")
-        #expect(codexButton.accessibilityTitle() == "CodexBar")
-        #expect(claudeButton.accessibilityTitle() == "CodexBar")
+        #expect(controller.statusItem.button?.accessibilityTitle() == AppIdentity.displayName)
+        #expect(codexButton.accessibilityTitle() == AppIdentity.displayName)
+        #expect(claudeButton.accessibilityTitle() == AppIdentity.displayName)
     }
 
     @Test
