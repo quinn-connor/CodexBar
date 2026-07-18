@@ -730,11 +730,11 @@ struct StatusItemBalanceDisplayTests {
 
     @Test
     func `debug bundle identity updates status item accessibility`() {
-        #expect(StatusItemController.isDebugApp(bundleIdentifier: "com.steipete.codexbar.debug"))
-        #expect(!StatusItemController.isDebugApp(bundleIdentifier: "com.steipete.codexbar"))
+        #expect(StatusItemController.isDebugApp(bundleIdentifier: AppIdentity.debugBundleIdentifier))
+        #expect(!StatusItemController.isDebugApp(bundleIdentifier: AppIdentity.bundleIdentifier))
         #expect(!StatusItemController.isDebugApp(bundleIdentifier: nil))
         #expect(StatusItemController.statusItemAccessibilityTitle(isDebugApp: true) == "AgentBar Debug")
-        #expect(StatusItemController.statusItemAccessibilityTitle(isDebugApp: false) == "CodexBar")
+        #expect(StatusItemController.statusItemAccessibilityTitle(isDebugApp: false) == "AgentBar")
     }
 
     private func makeSettings(suiteName: String, provider: UsageProvider) -> SettingsStore {
