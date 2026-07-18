@@ -36,7 +36,6 @@ struct StatusItemIconObservationSignatureTests {
             store: store,
             settings: settings,
             account: fetcher.loadAccountInfo(),
-            updater: DisabledUpdaterController(),
             preferencesSelection: PreferencesSelection(),
             statusBar: .system)
         return (settings, store, controller)

@@ -26,7 +26,6 @@ struct StatusMenuScopedCodexRefreshTests {
             store: store,
             settings: settings,
             account: account,
-            updater: DisabledUpdaterController(),
             preferencesSelection: PreferencesSelection(),
             statusBar: .system)
 

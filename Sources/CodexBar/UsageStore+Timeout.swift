@@ -2,7 +2,7 @@ import Foundation
 
 extension UsageStore {
     private nonisolated static let probeTimeoutQueue = DispatchQueue(
-        label: "com.steipete.codexbar.probe-timeouts",
+        label: "com.yoyodyne.AgentBar.probe-timeouts",
         qos: .userInitiated)
 
     private final class ProbeTimeoutRace: @unchecked Sendable {

@@ -7,7 +7,6 @@ struct MenuContent: View {
     @Bindable var store: UsageStore
     @Bindable var settings: SettingsStore
     let account: AccountInfo
-    let updater: UpdaterProviding
     let provider: UsageProvider?
     let actions: MenuActions
 
@@ -17,7 +16,7 @@ struct MenuContent: View {
             store: self.store,
             settings: self.settings,
             account: self.account,
-            updateReady: self.updater.updateStatus.isUpdateReady)
+            updateReady: false)
 
         VStack(alignment: .leading, spacing: 8) {
             ForEach(Array(descriptor.sections.enumerated()), id: \.offset) { index, section in
@@ -116,8 +115,6 @@ struct MenuContent: View {
             self.actions.refresh()
         case .refreshAugmentSession:
             self.actions.refreshAugmentSession()
-        case .installUpdate:
-            self.actions.installUpdate()
         case .dashboard:
             self.actions.openDashboard()
         case .statusPage:
@@ -153,7 +150,6 @@ struct MenuContent: View {
 }
 
 struct MenuActions {
-    let installUpdate: () -> Void
     let refresh: () -> Void
     let refreshAugmentSession: () -> Void
     let openDashboard: () -> Void

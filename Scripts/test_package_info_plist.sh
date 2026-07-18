@@ -17,13 +17,11 @@ end = script.index('\nPLIST\n', start) + len('\nPLIST\n')
 Path(sys.argv[2]).write_text(script[start:end])
 PY
 
-APP="$TEMP_DIR/CodexBar.app"
+APP="$TEMP_DIR/AgentBar.app"
 mkdir -p "$APP/Contents"
-BUNDLE_ID=com.steipete.codexbar.test
+BUNDLE_ID=com.yoyodyne.AgentBar.test
 MARKETING_VERSION=0.0.0
 BUILD_NUMBER=0
-FEED_URL=https://example.invalid/appcast.xml
-AUTO_CHECKS=false
 BUILD_TIMESTAMP=2026-01-01T00:00:00Z
 GIT_COMMIT=test
 APP_TEAM_ID=TESTTEAM
@@ -40,8 +38,8 @@ from pathlib import Path
 plist = plistlib.loads(Path(sys.argv[1]).read_bytes())
 declarations = plist.get("UTExportedTypeDeclarations")
 assert declarations == [{
-    "UTTypeIdentifier": "com.steipete.codexbar.menu-layout-item",
-    "UTTypeDescription": "CodexBar menu bar layout token",
+    "UTTypeIdentifier": "com.yoyodyne.AgentBar.menu-layout-item",
+    "UTTypeDescription": "AgentBar menu bar layout token",
     "UTTypeConformsTo": ["public.data"],
     "UTTypeTagSpecification": {},
 }]

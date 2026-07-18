@@ -101,7 +101,6 @@ struct StatusMenuSwitcherRefreshTests {
             store: store,
             settings: settings,
             account: fetcher.loadAccountInfo(),
-            updater: DisabledUpdaterController(),
             preferencesSelection: PreferencesSelection(),
             statusBar: .system)
         defer { controller.releaseStatusItemsForTesting() }
@@ -158,7 +157,6 @@ struct StatusMenuSwitcherRefreshTests {
             store: store,
             settings: settings,
             account: fetcher.loadAccountInfo(),
-            updater: DisabledUpdaterController(),
             preferencesSelection: PreferencesSelection(),
             statusBar: .system)
         defer { controller.releaseStatusItemsForTesting() }
@@ -205,7 +203,6 @@ struct StatusMenuSwitcherRefreshTests {
             store: store,
             settings: settings,
             account: fetcher.loadAccountInfo(),
-            updater: DisabledUpdaterController(),
             preferencesSelection: PreferencesSelection(),
             statusBar: .system)
         defer { controller.releaseStatusItemsForTesting() }
@@ -273,7 +270,6 @@ struct StatusMenuSwitcherRefreshTests {
             store: store,
             settings: settings,
             account: fetcher.loadAccountInfo(),
-            updater: DisabledUpdaterController(),
             preferencesSelection: PreferencesSelection(),
             statusBar: .system)
         defer { controller.releaseStatusItemsForTesting() }
@@ -345,7 +341,6 @@ struct StatusMenuSwitcherRefreshTests {
             store: store,
             settings: settings,
             account: AccountInfo(email: "test@example.com", plan: "pro"),
-            updater: DisabledUpdaterController(),
             preferencesSelection: PreferencesSelection(),
             statusBar: .system)
         defer {
@@ -433,7 +428,6 @@ struct StatusMenuSwitcherRefreshTests {
             store: store,
             settings: settings,
             account: fetcher.loadAccountInfo(),
-            updater: DisabledUpdaterController(),
             preferencesSelection: PreferencesSelection(),
             statusBar: .system)
         defer {
@@ -495,7 +489,6 @@ struct StatusMenuSwitcherRefreshTests {
             store: store,
             settings: settings,
             account: fetcher.loadAccountInfo(),
-            updater: DisabledUpdaterController(),
             preferencesSelection: PreferencesSelection(),
             statusBar: .system)
         defer {
@@ -545,7 +538,6 @@ struct StatusMenuSwitcherRefreshTests {
             store: store,
             settings: settings,
             account: fetcher.loadAccountInfo(),
-            updater: DisabledUpdaterController(),
             preferencesSelection: PreferencesSelection(),
             statusBar: .system)
         defer {
@@ -583,7 +575,6 @@ struct StatusMenuSwitcherRefreshTests {
             store: store,
             settings: settings,
             account: fetcher.loadAccountInfo(),
-            updater: DisabledUpdaterController(),
             preferencesSelection: PreferencesSelection(),
             statusBar: .system)
         defer { controller.releaseStatusItemsForTesting() }
@@ -613,7 +604,6 @@ struct StatusMenuSwitcherRefreshTests {
             store: store,
             settings: settings,
             account: fetcher.loadAccountInfo(),
-            updater: DisabledUpdaterController(),
             preferencesSelection: PreferencesSelection(),
             statusBar: .system)
         defer { controller.releaseStatusItemsForTesting() }
@@ -660,7 +650,6 @@ struct StatusMenuSwitcherRefreshTests {
             store: store,
             settings: settings,
             account: fetcher.loadAccountInfo(),
-            updater: DisabledUpdaterController(),
             preferencesSelection: PreferencesSelection(),
             statusBar: .system)
         defer { controller.releaseStatusItemsForTesting() }

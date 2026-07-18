@@ -37,7 +37,6 @@ struct MenuDescriptor {
     }
 
     enum MenuActionSystemImage: String {
-        case installUpdate = "arrow.down.circle"
         case refresh = "arrow.clockwise"
         case dashboard = "chart.xyaxis.line"
         case statusPage = "waveform.path.ecg"
@@ -60,7 +59,6 @@ struct MenuDescriptor {
     }
 
     enum MenuAction: Equatable {
-        case installUpdate
         case refresh
         case refreshAugmentSession
         case dashboard
@@ -88,7 +86,7 @@ struct MenuDescriptor {
         account: AccountInfo,
         managedCodexAccountCoordinator: ManagedCodexAccountCoordinator? = nil,
         codexAccountPromotionCoordinator: CodexAccountPromotionCoordinator? = nil,
-        updateReady: Bool,
+        updateReady _: Bool,
         includeContextualActions: Bool = true,
         agentSessionsEnabled: Bool = false,
         localAgentSessions: [AgentSession] = [],
@@ -148,7 +146,7 @@ struct MenuDescriptor {
                 remoteHosts: remoteAgentHosts,
                 now: now))
         }
-        sections.append(Self.metaSection(updateReady: updateReady))
+        sections.append(Self.metaSection())
 
         return MenuDescriptor(sections: sections)
     }
@@ -598,17 +596,13 @@ struct MenuDescriptor {
         return Section(entries: entries)
     }
 
-    private static func metaSection(updateReady: Bool) -> Section {
-        var entries: [Entry] = []
-        if updateReady {
-            entries.append(.action(L("Update ready, restart now?"), .installUpdate))
-        }
-        entries.append(contentsOf: [
+    private static func metaSection() -> Section {
+        let entries: [Entry] = [
             .action(L("Refresh"), .refresh),
             .action(L("Settings..."), .settings),
-            .action(L("About CodexBar"), .about),
+            .action("\(L("About")) \(AppIdentity.displayName)", .about),
             .action(L("Quit"), .quit),
-        ])
+        ]
         return Section(entries: entries)
     }
 
@@ -725,7 +719,6 @@ private enum AccountFormatter {
 extension MenuDescriptor.MenuAction {
     var systemImageName: String? {
         switch self {
-        case .installUpdate: MenuDescriptor.MenuActionSystemImage.installUpdate.rawValue
         case .settings: MenuDescriptor.MenuActionSystemImage.settings.rawValue
         case .about: MenuDescriptor.MenuActionSystemImage.about.rawValue
         case .quit: MenuDescriptor.MenuActionSystemImage.quit.rawValue

@@ -1,5 +1,5 @@
 ---
-summary: "Homebrew Cask release steps for CodexBar (Sparkle-disabled builds)."
+summary: "Homebrew Cask release steps for CodexBar."
 read_when:
   - Publishing a CodexBar release via Homebrew
   - Updating the Homebrew tap cask definition
@@ -7,7 +7,7 @@ read_when:
 
 # CodexBar Homebrew Release Playbook
 
-Homebrew is for the UI app via Cask. When installed via Homebrew, CodexBar disables Sparkle and shows a "update via brew" hint in About.
+Homebrew is for the UI app via Cask. AgentBar does not include an in-app updater.
 
 ## Prereqs
 - Homebrew installed.

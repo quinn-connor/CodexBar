@@ -14,8 +14,8 @@ HOME_FIXTURE="$ARTIFACT/home"
 KEYCHAIN="$ARTIFACT/claude-fixture.keychain-db"
 KEYCHAIN_PASSWORD="codexbar-1844-synthetic-fixture"
 CONFIG="$ARTIFACT/config.json"
-CLI="${CODEXBAR_CLI:-$ROOT/CodexBar.app/Contents/Helpers/CodexBarCLI}"
-APP="${CODEXBAR_APP_BINARY:-$ROOT/CodexBar.app/Contents/MacOS/CodexBar}"
+CLI="${CODEXBAR_CLI:-$ROOT/AgentBar.app/Contents/Helpers/CodexBarCLI}"
+APP="${CODEXBAR_APP_BINARY:-$ROOT/AgentBar.app/Contents/MacOS/CodexBar}"
 MCP_PAYLOAD='{"mcpOAuth":{"plugin:synthetic":{"accessToken":"synthetic-mcp-token"}}}'
 EXPIRED_PAYLOAD='{"claudeAiOauth":{"accessToken":"synthetic-expired-token","expiresAt":1000,"scopes":["user:profile"],"refreshToken":"synthetic-refresh-token"}}'
 

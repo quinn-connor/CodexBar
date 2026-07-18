@@ -98,7 +98,7 @@ final class ProviderSwitcherShortcutEventMonitor {
 
     /// A run-loop mode nothing else registers sources or timers in, so running the loop in
     /// this mode while polling the event queue cannot dispatch menu-session work re-entrantly.
-    private static let peekMode = RunLoop.Mode("com.steipete.codexbar.switcher-peek")
+    private static let peekMode = RunLoop.Mode("com.yoyodyne.AgentBar.switcher-peek")
 
     init(
         events: NSEvent.EventTypeMask,

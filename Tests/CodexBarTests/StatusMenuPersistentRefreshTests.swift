@@ -35,18 +35,6 @@ private final class RefreshShortcutRecorder: StatusItemMenuPersistentActionDeleg
 }
 
 @MainActor
-private final class UpdateReadyUpdater: UpdaterProviding {
-    var automaticallyChecksForUpdates = false
-    var automaticallyDownloadsUpdates = false
-    let isAvailable = true
-    let unavailableReason: String? = nil
-    let updateStatus = UpdateStatus(isUpdateReady: true)
-
-    func checkForUpdates(_: Any?) {}
-    func installUpdate() {}
-}
-
-@MainActor
 private final class ManualRefreshGate {
     private var continuation: CheckedContinuation<Void, Never>?
     private var isOpen = false
@@ -97,7 +85,6 @@ struct StatusMenuPersistentRefreshTests {
 
     private func makeController(
         settings: SettingsStore,
-        updater: UpdaterProviding = DisabledUpdaterController(),
         account: AccountInfo? = nil) -> StatusItemController
     {
         let environment = Self.isolatedEnvironment()
@@ -118,7 +105,6 @@ struct StatusMenuPersistentRefreshTests {
             store: store,
             settings: settings,
             account: account ?? AccountInfo(email: nil, plan: nil),
-            updater: updater,
             preferencesSelection: PreferencesSelection(),
             statusBar: .system)
     }
@@ -227,26 +213,19 @@ struct StatusMenuPersistentRefreshTests {
         settings.refreshFrequency = .manual
         settings.mergeIcons = false
 
-        let controller = self.makeController(settings: settings, updater: UpdateReadyUpdater())
+        let controller = self.makeController(settings: settings)
         let menu = controller.makeMenu(for: .codex)
         controller.menuWillOpen(menu)
 
-        let updateItem = try #require(menu.items.first { $0.title == "Update ready, restart now?" })
         let refreshItem = try #require(menu.items.first { $0.title == "Refresh" })
-        #expect(MenuDescriptor.MenuAction.installUpdate.systemImageName == "arrow.down.circle")
         #expect(MenuDescriptor.MenuAction.dashboard.systemImageName == "chart.xyaxis.line")
-        #expect(updateItem.image != nil)
         #expect(refreshItem.view is any MenuCardHighlighting)
         #expect(refreshItem.action == nil)
         #expect(controller.isPersistentRefreshItem(refreshItem))
         #expect(refreshItem.keyEquivalent.isEmpty)
         #expect(refreshItem.keyEquivalentModifierMask.isEmpty)
 
-        #expect(updateItem.view == nil)
-        #expect(updateItem.action != nil)
-        #expect(updateItem.target === controller)
-
-        for (title, key) in [("Settings...", ","), ("About CodexBar", ""), ("Quit", "q")] {
+        for (title, key) in [("Settings...", ","), ("About AgentBar", ""), ("Quit", "q")] {
             let item = try #require(menu.items.first { $0.title == title })
             #expect(item.view == nil)
             #expect(item.action != nil)

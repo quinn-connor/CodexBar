@@ -8,11 +8,11 @@ final class FileLogSink: @unchecked Sendable {
             ?? FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Library", isDirectory: true)
         return base
             .appendingPathComponent("Logs", isDirectory: true)
-            .appendingPathComponent("CodexBar", isDirectory: true)
-            .appendingPathComponent("CodexBar.log")
+            .appendingPathComponent(AppIdentity.displayName, isDirectory: true)
+            .appendingPathComponent("AgentBar.log")
     }()
 
-    private let queue = DispatchQueue(label: "com.steipete.codexbar.filelog", qos: .utility)
+    private let queue = DispatchQueue(label: "\(AppIdentity.logSubsystem).filelog", qos: .utility)
     private let fileManager: FileManager
     private var isEnabled = false
     private var fileHandle: FileHandle?

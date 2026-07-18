@@ -317,10 +317,6 @@ extension StatusItemController: StatusItemMenuPersistentActionDelegate {
         }
     }
 
-    @objc func installUpdate() {
-        self.updater.installUpdate()
-    }
-
     @objc func openDashboard() {
         let preferred = self.lastMenuProvider
             ?? (self.store.isEnabled(.codex) ? .codex : self.store.enabledProviders().first)

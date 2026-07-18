@@ -178,7 +178,6 @@ func withStatusItemControllerForTesting<T>(
         store: store,
         settings: settings,
         account: fetcher.loadAccountInfo(),
-        updater: DisabledUpdaterController(),
         preferencesSelection: PreferencesSelection(),
         statusBar: statusBar)
     defer { controller.releaseStatusItemsForTesting() }
@@ -198,7 +197,6 @@ func withStatusItemControllerForTesting<T>(
         store: store,
         settings: settings,
         account: fetcher.loadAccountInfo(),
-        updater: DisabledUpdaterController(),
         preferencesSelection: PreferencesSelection(),
         statusBar: statusBar)
     defer { controller.releaseStatusItemsForTesting() }

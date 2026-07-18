@@ -235,7 +235,7 @@ public struct CodexRateLimitResetCredit: Equatable, Codable, Sendable, Identifia
     }
 
     static func stableID(forProviderID providerID: String) -> String {
-        let domainSeparatedValue = "com.steipete.CodexBar.reset-credit-id.v1\0\(providerID)"
+        let domainSeparatedValue = "com.yoyodyne.AgentBar.reset-credit-id.v1\0\(providerID)"
         let digest = SHA256.hash(data: Data(domainSeparatedValue.utf8))
             .map { String(format: "%02x", $0) }
             .joined()

@@ -25,10 +25,8 @@ verify_no_quarantine_attribute() {
 
 verify_packaged_app_integrity() {
   local bundle="$1"
-  local sparkle="$bundle/Contents/Frameworks/Sparkle.framework"
 
   verify_no_quarantine_attribute "$bundle" || return 1
-  codesign --verify --deep --strict --verbose=2 "$sparkle" || return 1
   codesign --verify --deep --strict --verbose=2 "$bundle" || return 1
 }
 
@@ -50,7 +48,6 @@ esac
 # Load version info
 source "$ROOT/version.env"
 source "$ROOT/Scripts/package_product_paths.sh"
-source "$ROOT/Scripts/sparkle_signing_paths.sh"
 
 # Clean build only when explicitly requested (slower).
 if [[ "${CODEXBAR_FORCE_CLEAN:-0}" == "1" ]]; then
@@ -202,8 +199,8 @@ for ARCH in "${ARCH_LIST[@]}"; do
   stage_build_products "$ARCH"
 done
 
-APP_FINAL="$ROOT/CodexBar.app"
-APP_STAGE="$ROOT/.build/package/CodexBar.app"
+APP_FINAL="$ROOT/AgentBar.app"
+APP_STAGE="$ROOT/.build/package/AgentBar.app"
 rm -rf "$APP_STAGE"
 APP="$APP_STAGE"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources" "$APP/Contents/Frameworks"
@@ -216,23 +213,15 @@ if [[ -f "$ICON_SOURCE" ]]; then
   iconutil --convert icns --output "$ICON_TARGET" "$ICON_SOURCE"
 fi
 
-BUNDLE_ID="com.steipete.codexbar"
-FEED_URL="https://raw.githubusercontent.com/steipete/CodexBar/main/appcast.xml"
-AUTO_CHECKS=true
+BUNDLE_ID="com.yoyodyne.AgentBar"
 if [[ "$LOWER_CONF" == "debug" ]]; then
-  BUNDLE_ID="com.steipete.codexbar.debug"
-  FEED_URL=""
-  AUTO_CHECKS=false
-fi
-if [[ "$SIGNING_MODE" == "adhoc" ]]; then
-  FEED_URL=""
-  AUTO_CHECKS=false
+  BUNDLE_ID="com.yoyodyne.AgentBar.debug"
 fi
 WIDGET_BUNDLE_ID="${BUNDLE_ID}.widget"
-APP_TEAM_ID="${APP_TEAM_ID:-Y5PE65HELJ}"
-APP_GROUP_ID="${APP_TEAM_ID}.com.steipete.codexbar"
+APP_TEAM_ID="${APP_TEAM_ID:-FSJ87X623Z}"
+APP_GROUP_ID="${APP_TEAM_ID}.com.yoyodyne.AgentBar"
 if [[ "$BUNDLE_ID" == *".debug"* ]]; then
-  APP_GROUP_ID="${APP_TEAM_ID}.com.steipete.codexbar.debug"
+  APP_GROUP_ID="${APP_TEAM_ID}.com.yoyodyne.AgentBar.debug"
 fi
 ENTITLEMENTS_DIR="$ROOT/.build/entitlements"
 APP_ENTITLEMENTS="${ENTITLEMENTS_DIR}/CodexBar.entitlements"
@@ -277,8 +266,8 @@ cat > "$APP/Contents/Info.plist" <<PLIST
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>CFBundleName</key><string>CodexBar</string>
-    <key>CFBundleDisplayName</key><string>CodexBar</string>
+    <key>CFBundleName</key><string>AgentBar</string>
+    <key>CFBundleDisplayName</key><string>AgentBar</string>
     <key>CFBundleIdentifier</key><string>${BUNDLE_ID}</string>
     <key>CFBundleExecutable</key><string>CodexBar</string>
     <key>CFBundlePackageType</key><string>APPL</string>
@@ -287,18 +276,15 @@ cat > "$APP/Contents/Info.plist" <<PLIST
     <key>LSMinimumSystemVersion</key><string>14.0</string>
     <key>LSUIElement</key><true/>
     <key>CFBundleIconFile</key><string>Icon</string>
-    <key>NSHumanReadableCopyright</key><string>© 2026 Peter Steinberger. MIT License.</string>
-    <key>SUFeedURL</key><string>${FEED_URL}</string>
-    <key>SUPublicEDKey</key><string>AGCY8w5vHirVfGGDGc8Szc5iuOqupZSh9pMj/Qs67XI=</string>
-    <key>SUEnableAutomaticChecks</key><${AUTO_CHECKS}/>
+    <key>NSHumanReadableCopyright</key><string>CodexBar contributors. MIT License.</string>
     <key>CodexBuildTimestamp</key><string>${BUILD_TIMESTAMP}</string>
     <key>CodexGitCommit</key><string>${GIT_COMMIT}</string>
     <key>CodexBarTeamID</key><string>${APP_TEAM_ID}</string>
     <key>UTExportedTypeDeclarations</key>
     <array>
         <dict>
-            <key>UTTypeIdentifier</key><string>com.steipete.codexbar.menu-layout-item</string>
-            <key>UTTypeDescription</key><string>CodexBar menu bar layout token</string>
+            <key>UTTypeIdentifier</key><string>com.yoyodyne.AgentBar.menu-layout-item</string>
+            <key>UTTypeDescription</key><string>AgentBar menu bar layout token</string>
             <key>UTTypeConformsTo</key>
             <array>
                 <string>public.data</string>
@@ -408,6 +394,10 @@ build_widget_extension() {
   local build_log="$derived_dir/xcodebuild.log"
   local timeout_seconds="${CODEXBAR_WIDGET_EXTENSION_TIMEOUT_SECONDS:-900}"
   local archs="${ARCH_LIST[*]}"
+  local signing_allowed="NO"
+  if [[ "$SIGNING_MODE" == "identity" ]]; then
+    signing_allowed="YES"
+  fi
 
   mkdir -p "$derived_dir"
   echo "Building CodexBarWidget Xcode extension (${xcode_conf}, ${archs})." >&2
@@ -423,9 +413,11 @@ build_widget_extension() {
     -skipPackagePluginValidation \
     CODEXBAR_WIDGET_BUNDLE_ID="$WIDGET_BUNDLE_ID" \
     CODEXBAR_TEAM_ID="$APP_TEAM_ID" \
+    DEVELOPMENT_TEAM="$APP_TEAM_ID" \
+    CODE_SIGN_STYLE=Automatic \
     MARKETING_VERSION="$MARKETING_VERSION" \
     CURRENT_PROJECT_VERSION="$BUILD_NUMBER" \
-    CODE_SIGNING_ALLOWED=NO \
+    CODE_SIGNING_ALLOWED="$signing_allowed" \
     ARCHS="$archs" \
     ONLY_ACTIVE_ARCH=NO \
     build >"$build_log" 2>&1 &
@@ -483,13 +475,6 @@ strip_release_binary "$APP/Contents/PlugIns/CodexBarWidget.appex/Contents/MacOS/
 
 swiftpm_bin_path "${ARCH_LIST[0]}" PREFERRED_BUILD_DIR
 
-# Embed Sparkle.framework
-SPARKLE_SOURCE=$(codexbar_require_product_directory "$PREFERRED_BUILD_DIR" Sparkle.framework packaging)
-cp -R "$SPARKLE_SOURCE" "$APP/Contents/Frameworks/"
-chmod -R a+rX "$APP/Contents/Frameworks/Sparkle.framework"
-install_name_tool -add_rpath "@executable_path/../Frameworks" "$APP/Contents/MacOS/CodexBar"
-# Re-sign Sparkle and all nested components with the selected package identity.
-SPARKLE="$APP/Contents/Frameworks/Sparkle.framework"
 if [[ "$SIGNING_MODE" == "adhoc" ]]; then
   CODESIGN_ID="-"
   CODESIGN_ARGS=(--force --sign "$CODESIGN_ID")
@@ -497,15 +482,13 @@ elif [[ "$ALLOW_LLDB" == "1" ]]; then
   CODESIGN_ID="-"
   CODESIGN_ARGS=(--force --sign "$CODESIGN_ID")
 else
-  CODESIGN_ID="${APP_IDENTITY:-Developer ID Application: Peter Steinberger (Y5PE65HELJ)}"
+  if [[ -z "${APP_IDENTITY:-}" ]]; then
+    echo "ERROR: CODEXBAR_SIGNING=identity requires APP_IDENTITY for team ${APP_TEAM_ID}." >&2
+    exit 1
+  fi
+  CODESIGN_ID="$APP_IDENTITY"
   CODESIGN_ARGS=(--force --timestamp --options runtime --sign "$CODESIGN_ID")
 fi
-function resign() { codesign "${CODESIGN_ARGS[@]}" "$1"; }
-# Validate Sparkle's nested layout before signing so framework layout drift fails clearly.
-SPARKLE_SIGNING_TARGETS=$(codexbar_sparkle_signing_targets "$SPARKLE")
-while IFS= read -r SPARKLE_TARGET; do
-  resign "$SPARKLE_TARGET"
-done <<<"$SPARKLE_SIGNING_TARGETS"
 
 if [[ -f "$ICON_TARGET" ]]; then
   cp "$ICON_TARGET" "$APP/Contents/Resources/Icon.icns"

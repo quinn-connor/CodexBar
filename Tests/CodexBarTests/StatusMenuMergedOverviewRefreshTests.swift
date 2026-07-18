@@ -63,7 +63,6 @@ struct StatusMenuMergedOverviewRefreshTests {
             store: store,
             settings: settings,
             account: fetcher.loadAccountInfo(),
-            updater: DisabledUpdaterController(),
             preferencesSelection: PreferencesSelection(),
             statusBar: .system)
     }

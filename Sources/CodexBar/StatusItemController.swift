@@ -44,9 +44,9 @@ final class StatusItemController: NSObject, NSMenuDelegate, StatusItemControllin
     private static let defaultMenuRefreshEnabled = !SettingsStore.isRunningTests
     private(set) static var menuRefreshEnabled = !SettingsStore.isRunningTests
     static let quotaWarningFlashDuration: TimeInterval = 60
-    private nonisolated static let statusItemAccessibilityTitle = "CodexBar"
-    private nonisolated static let debugStatusItemAccessibilityTitle = "CodexBar Debug"
-    private nonisolated static let statusItemAccessibilityIdentifierPrefix = "CodexBar.StatusItem"
+    private nonisolated static let statusItemAccessibilityTitle = AppIdentity.displayName
+    private nonisolated static let debugStatusItemAccessibilityTitle = "\(AppIdentity.displayName) Debug"
+    private nonisolated static let statusItemAccessibilityIdentifierPrefix = "AgentBar.StatusItem"
     private nonisolated static let mergedLegacyDefaultItemIndex = 0
 
     enum StatusItemIdentity {
@@ -89,7 +89,6 @@ final class StatusItemController: NSObject, NSMenuDelegate, StatusItemControllin
             UsageStore,
             SettingsStore,
             AccountInfo,
-            UpdaterProviding,
             PreferencesSelection,
             ManagedCodexAccountCoordinator,
             CodexAccountPromotionCoordinator)
@@ -99,7 +98,6 @@ final class StatusItemController: NSObject, NSMenuDelegate, StatusItemControllin
         store: UsageStore,
         settings: SettingsStore,
         account: AccountInfo,
-        updater: UpdaterProviding,
         selection: PreferencesSelection,
         managedCodexAccountCoordinator: ManagedCodexAccountCoordinator,
         codexAccountPromotionCoordinator: CodexAccountPromotionCoordinator)
@@ -109,7 +107,6 @@ final class StatusItemController: NSObject, NSMenuDelegate, StatusItemControllin
             store: store,
             settings: settings,
             account: account,
-            updater: updater,
             preferencesSelection: selection,
             managedCodexAccountCoordinator: managedCodexAccountCoordinator,
             codexAccountPromotionCoordinator: codexAccountPromotionCoordinator)
@@ -125,7 +122,6 @@ final class StatusItemController: NSObject, NSMenuDelegate, StatusItemControllin
     lazy var menuCardRefreshMonitor = self.makeMenuCardRefreshMonitor()
 
     let account: AccountInfo
-    let updater: UpdaterProviding
     let managedCodexAccountCoordinator: ManagedCodexAccountCoordinator
     let codexAccountPromotionCoordinator: CodexAccountPromotionCoordinator
     let statusBar: NSStatusBar
@@ -374,7 +370,6 @@ final class StatusItemController: NSObject, NSMenuDelegate, StatusItemControllin
         store: UsageStore,
         settings: SettingsStore,
         account: AccountInfo,
-        updater: UpdaterProviding,
         preferencesSelection: PreferencesSelection,
         managedCodexAccountCoordinator: ManagedCodexAccountCoordinator =
             ManagedCodexAccountCoordinator(),
@@ -391,7 +386,6 @@ final class StatusItemController: NSObject, NSMenuDelegate, StatusItemControllin
         self.settings = settings
         self.agentSessions = AgentSessionsStore(settings: settings)
         self.account = account
-        self.updater = updater
         self.preferencesSelection = preferencesSelection
         self.managedCodexAccountCoordinator = managedCodexAccountCoordinator
         self.codexAccountPromotionCoordinator =
@@ -475,7 +469,6 @@ final class StatusItemController: NSObject, NSMenuDelegate, StatusItemControllin
         store: UsageStore,
         settings: SettingsStore,
         account: AccountInfo,
-        updater: UpdaterProviding,
         preferencesSelection: PreferencesSelection,
         statusBar: NSStatusBar = .system,
         menuCardRenderingEnabled: Bool = StatusItemController.menuCardRenderingEnabled,
@@ -486,7 +479,6 @@ final class StatusItemController: NSObject, NSMenuDelegate, StatusItemControllin
             store: store,
             settings: settings,
             account: account,
-            updater: updater,
             preferencesSelection: preferencesSelection,
             managedCodexAccountCoordinator: ManagedCodexAccountCoordinator(),
             codexAccountPromotionCoordinator: nil,
@@ -502,7 +494,6 @@ final class StatusItemController: NSObject, NSMenuDelegate, StatusItemControllin
         self.observeIconPerfRefreshCycleChanges()
         self.observeDebugForceAnimation()
         self.observeSettingsChanges()
-        self.observeUpdaterChanges()
         self.observeManagedCodexCoordinatorChanges()
     }
 
@@ -606,18 +597,6 @@ final class StatusItemController: NSObject, NSMenuDelegate, StatusItemControllin
     @objc private func handleQuotaWarningPosted(_ notification: Notification) {
         guard let event = notification.object as? QuotaWarningPostedEvent else { return }
         self.startQuotaWarningFlash(provider: event.provider, postedAt: event.postedAt)
-    }
-
-    private func observeUpdaterChanges() {
-        withObservationTracking {
-            _ = self.updater.updateStatus.isUpdateReady
-        } onChange: { [weak self] in
-            Task { @MainActor [weak self] in
-                guard let self else { return }
-                self.observeUpdaterChanges()
-                self.invalidateMenus()
-            }
-        }
     }
 
     private func observeManagedCodexCoordinatorChanges() {

@@ -1298,7 +1298,7 @@ extension GeminiStatusProbe {
 
 extension GeminiStatusProbe {
     private static let processTimeoutQueue = DispatchQueue(
-        label: "com.steipete.codexbar.gemini-process-timeout",
+        label: "com.yoyodyne.AgentBar.gemini-process-timeout",
         qos: .utility,
         attributes: .concurrent)
 

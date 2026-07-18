@@ -199,7 +199,6 @@ struct CodexAccountMenuDisplaySnapshotTests {
             store: store,
             settings: settings,
             account: AccountInfo(email: nil, plan: nil),
-            updater: DisabledUpdaterController(),
             preferencesSelection: PreferencesSelection(),
             statusBar: .system)
         defer { controller.releaseStatusItemsForTesting() }
@@ -290,7 +289,6 @@ struct CodexAccountMenuDisplaySnapshotTests {
             store: store,
             settings: settings,
             account: AccountInfo(email: nil, plan: nil),
-            updater: DisabledUpdaterController(),
             preferencesSelection: PreferencesSelection(),
             statusBar: .system)
         defer { controller.releaseStatusItemsForTesting() }

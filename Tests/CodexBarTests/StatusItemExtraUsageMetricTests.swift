@@ -261,7 +261,6 @@ struct StatusItemExtraUsageMetricTests {
             store: store,
             settings: settings,
             account: fetcher.loadAccountInfo(),
-            updater: DisabledUpdaterController(),
             preferencesSelection: PreferencesSelection(),
             statusBar: testStatusBar())
         return (store, controller)

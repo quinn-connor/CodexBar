@@ -53,7 +53,6 @@ struct MenuCardOverrideIsolationTests {
             store: store,
             settings: settings,
             account: fetcher.loadAccountInfo(),
-            updater: DisabledUpdaterController(),
             preferencesSelection: PreferencesSelection(),
             statusBar: .system)
 
@@ -84,7 +83,6 @@ struct MenuCardOverrideIsolationTests {
             store: store,
             settings: settings,
             account: fetcher.loadAccountInfo(),
-            updater: DisabledUpdaterController(),
             preferencesSelection: PreferencesSelection(),
             statusBar: .system)
         let accountSnapshot = UsageSnapshot(
@@ -157,7 +155,6 @@ struct MenuCardOverrideIsolationTests {
             store: store,
             settings: store.settings,
             account: AccountInfo(email: nil, plan: nil),
-            updater: DisabledUpdaterController(),
             preferencesSelection: PreferencesSelection(),
             statusBar: .system)
 
@@ -192,7 +189,6 @@ struct MenuCardOverrideIsolationTests {
             store: store,
             settings: settings,
             account: fetcher.loadAccountInfo(),
-            updater: DisabledUpdaterController(),
             preferencesSelection: PreferencesSelection(),
             statusBar: .system)
         let account = ProviderTokenAccount(
@@ -232,7 +228,6 @@ struct MenuCardOverrideIsolationTests {
             store: store,
             settings: settings,
             account: fetcher.loadAccountInfo(),
-            updater: DisabledUpdaterController(),
             preferencesSelection: PreferencesSelection(),
             statusBar: .system)
         let account = ProviderTokenAccount(

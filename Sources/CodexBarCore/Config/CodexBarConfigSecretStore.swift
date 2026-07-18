@@ -57,7 +57,7 @@ import Security
 
 /// Data Protection Keychain storage for provider credentials owned by the macOS app.
 public struct MacOSKeychainConfigSecretStore: CodexBarConfigSecretStoring, Sendable {
-    public static let defaultService = "CodexBar.ConfigSecrets.v1"
+    public static let defaultService = AppIdentity.configSecretService
 
     private let service: String
 
@@ -102,7 +102,7 @@ public struct MacOSKeychainConfigSecretStore: CodexBarConfigSecretStoring, Senda
 
         var addQuery = query
         addQuery[kSecValueData as String] = data
-        addQuery[kSecAttrLabel as String] = "CodexBar provider credential"
+        addQuery[kSecAttrLabel as String] = AppIdentity.configSecretLabel
         addQuery[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
         let addStatus = KeychainSecurity.add(addQuery as CFDictionary, nil)
         guard addStatus == errSecSuccess else {

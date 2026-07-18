@@ -3,7 +3,6 @@ import CodexBarCore
 import KeyboardShortcuts
 import Observation
 import QuartzCore
-import Security
 import SwiftUI
 
 @main
@@ -21,7 +20,7 @@ struct CodexBarApp: App {
         let storedLevel = CodexBarLog.parseLevel(UserDefaults.standard.string(forKey: "debugLogLevel")) ?? .verbose
         let level = CodexBarLog.parseLevel(env["CODEXBAR_LOG_LEVEL"]) ?? storedLevel
         CodexBarLog.bootstrapIfNeeded(.init(
-            destination: .oslog(subsystem: "com.steipete.codexbar"),
+            destination: .oslog(subsystem: AppIdentity.logSubsystem),
             level: level,
             json: false))
 
@@ -91,7 +90,6 @@ struct CodexBarApp: App {
             PreferencesView(
                 settings: self.settings,
                 store: self.store,
-                updater: self.appDelegate.updaterController,
                 selection: self.preferencesSelection,
                 managedCodexAccountCoordinator: self.managedCodexAccountCoordinator,
                 codexAccountPromotionCoordinator: self.codexAccountPromotionCoordinator,
@@ -124,226 +122,6 @@ struct CodexBarApp: App {
     }
 }
 
-// MARK: - Updater abstraction
-
-@MainActor
-protocol UpdaterProviding: AnyObject {
-    var automaticallyChecksForUpdates: Bool { get set }
-    var automaticallyDownloadsUpdates: Bool { get set }
-    var isAvailable: Bool { get }
-    var unavailableReason: String? { get }
-    var updateStatus: UpdateStatus { get }
-    func checkForUpdates(_ sender: Any?)
-    func installUpdate()
-}
-
-/// No-op updater used for debug builds and non-bundled runs to suppress Sparkle dialogs.
-final class DisabledUpdaterController: UpdaterProviding {
-    var automaticallyChecksForUpdates: Bool = false
-    var automaticallyDownloadsUpdates: Bool = false
-    let isAvailable: Bool = false
-    let unavailableReason: String?
-    let updateStatus = UpdateStatus()
-
-    init(unavailableReason: String? = nil) {
-        self.unavailableReason = unavailableReason
-    }
-
-    func checkForUpdates(_ sender: Any?) {}
-    func installUpdate() {}
-}
-
-@MainActor
-@Observable
-final class UpdateStatus {
-    static let disabled = UpdateStatus()
-    var isUpdateReady: Bool
-
-    init(isUpdateReady: Bool = false) {
-        self.isUpdateReady = isUpdateReady
-    }
-}
-
-#if canImport(Sparkle) && ENABLE_SPARKLE
-import Sparkle
-
-@MainActor
-final class SparkleUpdaterController: NSObject, UpdaterProviding, SPUUpdaterDelegate {
-    private final class ImmediateInstallHandler: @unchecked Sendable {
-        private let handler: () -> Void
-
-        init(_ handler: @escaping () -> Void) {
-            self.handler = handler
-        }
-
-        func install() {
-            self.handler()
-        }
-    }
-
-    private lazy var controller = SPUStandardUpdaterController(
-        startingUpdater: false,
-        updaterDelegate: self,
-        userDriverDelegate: nil)
-    let updateStatus = UpdateStatus()
-    let unavailableReason: String? = nil
-    private var immediateInstallHandler: ImmediateInstallHandler?
-
-    init(savedAutoUpdate: Bool) {
-        super.init()
-        let updater = self.controller.updater
-        updater.automaticallyChecksForUpdates = savedAutoUpdate
-        updater.automaticallyDownloadsUpdates = savedAutoUpdate
-        self.controller.startUpdater()
-    }
-
-    var automaticallyChecksForUpdates: Bool {
-        get { self.controller.updater.automaticallyChecksForUpdates }
-        set { self.controller.updater.automaticallyChecksForUpdates = newValue }
-    }
-
-    var automaticallyDownloadsUpdates: Bool {
-        get { self.controller.updater.automaticallyDownloadsUpdates }
-        set { self.controller.updater.automaticallyDownloadsUpdates = newValue }
-    }
-
-    var isAvailable: Bool {
-        true
-    }
-
-    func checkForUpdates(_ sender: Any?) {
-        self.controller.checkForUpdates(sender)
-    }
-
-    func installUpdate() {
-        guard let immediateInstallHandler else {
-            self.controller.checkForUpdates(nil)
-            return
-        }
-
-        immediateInstallHandler.install()
-    }
-
-    nonisolated func updater(_ updater: SPUUpdater, didDownloadUpdate item: SUAppcastItem) {
-        _ = updater
-        _ = item
-    }
-
-    nonisolated func updater(_ updater: SPUUpdater, failedToDownloadUpdate item: SUAppcastItem, error: Error) {
-        _ = updater
-        _ = item
-        _ = error
-        Task { @MainActor in
-            self.immediateInstallHandler = nil
-            self.updateStatus.isUpdateReady = false
-        }
-    }
-
-    nonisolated func userDidCancelDownload(_ updater: SPUUpdater) {
-        _ = updater
-        Task { @MainActor in
-            self.immediateInstallHandler = nil
-            self.updateStatus.isUpdateReady = false
-        }
-    }
-
-    nonisolated func updater(
-        _ updater: SPUUpdater,
-        willInstallUpdateOnQuit item: SUAppcastItem,
-        immediateInstallationBlock immediateInstallHandler: @escaping () -> Void)
-        -> Bool
-    {
-        _ = updater
-        _ = item
-        let installHandler = ImmediateInstallHandler(immediateInstallHandler)
-        Task { @MainActor in
-            self.immediateInstallHandler = installHandler
-            self.updateStatus.isUpdateReady = true
-        }
-        return true
-    }
-
-    nonisolated func updater(_ updater: SPUUpdater, didAbortWithError error: Error) {
-        _ = updater
-        _ = error
-        Task { @MainActor in
-            self.immediateInstallHandler = nil
-            self.updateStatus.isUpdateReady = false
-        }
-    }
-
-    nonisolated func updater(
-        _ updater: SPUUpdater,
-        userDidMake choice: SPUUserUpdateChoice,
-        forUpdate updateItem: SUAppcastItem,
-        state: SPUUserUpdateState)
-    {
-        let downloaded = state.stage == .downloaded
-        Task { @MainActor in
-            switch choice {
-            case .install, .skip:
-                self.immediateInstallHandler = nil
-                self.updateStatus.isUpdateReady = false
-            case .dismiss:
-                self.updateStatus.isUpdateReady = downloaded
-            @unknown default:
-                self.immediateInstallHandler = nil
-                self.updateStatus.isUpdateReady = false
-            }
-        }
-    }
-
-    nonisolated func allowedChannels(for updater: SPUUpdater) -> Set<String> {
-        UpdateChannel.current.allowedSparkleChannels
-    }
-}
-
-private func isDeveloperIDSigned(bundleURL: URL) -> Bool {
-    var staticCode: SecStaticCode?
-    guard SecStaticCodeCreateWithPath(bundleURL as CFURL, SecCSFlags(), &staticCode) == errSecSuccess,
-          let code = staticCode else { return false }
-
-    var infoCF: CFDictionary?
-    guard SecCodeCopySigningInformation(code, SecCSFlags(rawValue: kSecCSSigningInformation), &infoCF) == errSecSuccess,
-          let info = infoCF as? [String: Any],
-          let certs = info[kSecCodeInfoCertificates as String] as? [SecCertificate],
-          let leaf = certs.first else { return false }
-
-    if let summary = SecCertificateCopySubjectSummary(leaf) as String? {
-        return summary.hasPrefix("Developer ID Application:")
-    }
-    return false
-}
-
-@MainActor
-private func makeUpdaterController() -> UpdaterProviding {
-    let bundleURL = Bundle.main.bundleURL
-    let isBundledApp = bundleURL.pathExtension == "app"
-    guard isBundledApp else {
-        return DisabledUpdaterController(unavailableReason: "Updates unavailable in this build.")
-    }
-
-    if InstallOrigin.isHomebrewCask(appBundleURL: bundleURL) {
-        return DisabledUpdaterController(
-            unavailableReason: "Updates managed by Homebrew. Run: brew upgrade --cask steipete/tap/codexbar")
-    }
-
-    guard isDeveloperIDSigned(bundleURL: bundleURL) else {
-        return DisabledUpdaterController(unavailableReason: "Updates unavailable in this build.")
-    }
-
-    let defaults = UserDefaults.standard
-    let autoUpdateKey = "autoUpdateEnabled"
-    // Default to true for first launch; fall back to saved preference thereafter.
-    let savedAutoUpdate = (defaults.object(forKey: autoUpdateKey) as? Bool) ?? true
-    return SparkleUpdaterController(savedAutoUpdate: savedAutoUpdate)
-}
-#else
-private func makeUpdaterController() -> UpdaterProviding {
-    DisabledUpdaterController()
-}
-#endif
-
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
     struct Dependencies {
@@ -355,7 +133,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let codexAccountPromotionCoordinator: CodexAccountPromotionCoordinator
     }
 
-    let updaterController: UpdaterProviding = makeUpdaterController()
     private let confettiOverlayController = ScreenConfettiOverlayController()
     private let confettiLogger = CodexBarLog.logger(LogCategories.confetti)
     private lazy var memoryPressureMonitor = MemoryPressureMonitor(trimAppCaches: { [weak self] in
@@ -524,7 +301,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 store,
                 settings,
                 account,
-                self.updaterController,
                 selection,
                 managedCodexAccountCoordinator,
                 codexAccountPromotionCoordinator)
@@ -549,7 +325,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             fallbackStore,
             fallbackSettings,
             fallbackAccount,
-            self.updaterController,
             PreferencesSelection(),
             fallbackManagedCodexAccountCoordinator,
             fallbackCodexAccountPromotionCoordinator)

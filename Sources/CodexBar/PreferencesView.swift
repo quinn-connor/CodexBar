@@ -43,7 +43,6 @@ enum SettingsPane: Hashable {
 struct PreferencesView: View {
     @Bindable var settings: SettingsStore
     @Bindable var store: UsageStore
-    let updater: UpdaterProviding
     @Bindable var selection: PreferencesSelection
     let managedCodexAccountCoordinator: ManagedCodexAccountCoordinator
     let codexAccountPromotionCoordinator: CodexAccountPromotionCoordinator
@@ -53,7 +52,6 @@ struct PreferencesView: View {
     init(
         settings: SettingsStore,
         store: UsageStore,
-        updater: UpdaterProviding,
         selection: PreferencesSelection,
         managedCodexAccountCoordinator: ManagedCodexAccountCoordinator = ManagedCodexAccountCoordinator(),
         codexAccountPromotionCoordinator: CodexAccountPromotionCoordinator? = nil,
@@ -61,7 +59,6 @@ struct PreferencesView: View {
     {
         self.settings = settings
         self.store = store
-        self.updater = updater
         self.selection = selection
         self.managedCodexAccountCoordinator = managedCodexAccountCoordinator
         self.codexAccountPromotionCoordinator = codexAccountPromotionCoordinator
@@ -136,7 +133,7 @@ struct PreferencesView: View {
         case .hooks:
             HooksPane(settings: self.settings)
         case .about:
-            AboutPane(updater: self.updater)
+            AboutPane()
         case .debug:
             DebugPane(settings: self.settings, store: self.store)
         case let .provider(provider):

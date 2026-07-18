@@ -179,13 +179,13 @@ Wondering if CodexBar scans your disk? It doesn’t crawl your filesystem; it re
   - CodexBar may use Keychain for browser cookie decryption, cached cookie headers, and OAuth/device-flow credentials where those sources require it.
   - **How do I prevent those keychain alerts?**
     - Open **Keychain Access.app** → login keychain → search the prompted item (for Claude OAuth, usually “Claude Code-credentials”).
-    - Open the item → **Access Control** → add `CodexBar.app` under “Always allow access by these applications”.
+    - Open the item → **Access Control** → add `AgentBar.app` under “Always allow access by these applications”.
     - Prefer adding just CodexBar (avoid “Allow all applications” unless you want it wide open).
     - Relaunch CodexBar after saving.
     - Reference screenshot: ![Keychain access control](docs/keychain-allow.png)
   - **How to do the same for the browser?**
     - Find the browser’s “Safe Storage” key (e.g., “Chrome Safe Storage”, “Brave Safe Storage”, “Microsoft Edge Safe Storage”).
-    - Open the item → **Access Control** → add `CodexBar.app` under “Always allow access by these applications”.
+    - Open the item → **Access Control** → add `AgentBar.app` under “Always allow access by these applications”.
     - This removes the prompt when CodexBar decrypts cookies for that browser.
   - **Last resort — stop all Keychain reads entirely**: if "Always Allow" doesn't stick (e.g., macOS resets the ACL after a Chromium update or a `partition_id` reset), open **CodexBar → Settings → Advanced → Keychain access** and enable **Disable Keychain access**. CodexBar will no longer touch the Keychain. Browser-cookie-based providers will be skipped, but Claude/Codex OAuth via the CLI still works (it reads `~/.codex` / `~/.claude` config files, not the Keychain).
   - **Prompt after uninstall?** Deleting the app prevents a new launch from that bundle, but an already-running CodexBar process can keep requesting Keychain access until it quits. Check for that process, a Login Item, another installed copy, or a prompt that names a different requesting binary/path. See [Keychain prompt troubleshooting](docs/keychain-prompts.md) for safe checks and what to include in a support report without sharing secrets.
@@ -205,7 +205,6 @@ Wondering if CodexBar scans your disk? It doesn’t crawl your filesystem; it re
 - Architecture: [docs/architecture.md](docs/architecture.md)
 - Refresh loop: [docs/refresh-loop.md](docs/refresh-loop.md)
 - Status polling: [docs/status.md](docs/status.md)
-- Sparkle updates: [docs/sparkle.md](docs/sparkle.md)
 - Packaging: [docs/packaging.md](docs/packaging.md)
 - Development: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)
 - Release checklist: [docs/RELEASING.md](docs/RELEASING.md)
@@ -221,8 +220,8 @@ Wondering if CodexBar scans your disk? It doesn’t crawl your filesystem; it re
 Requires macOS 14+ and Swift 6.2+.
 
 ```bash
-./Scripts/package_app.sh        # builds CodexBar.app in-place with ad-hoc signing
-open CodexBar.app
+./Scripts/package_app.sh        # builds AgentBar.app in-place with ad-hoc signing
+open AgentBar.app
 ```
 
 Dev loop:
@@ -235,7 +234,7 @@ make docs-list                       # list docs with frontmatter summaries
 
 CLI install:
 ```bash
-# after installing CodexBar.app in /Applications
+# after installing AgentBar.app in /Applications
 ./bin/install-codexbar-cli.sh
 ```
 

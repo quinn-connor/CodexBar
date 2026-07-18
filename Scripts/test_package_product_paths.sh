@@ -10,7 +10,7 @@ trap 'rm -rf "$TEMP_DIR"' EXIT
 NATIVE_DIR="$TEMP_DIR/.build/arm64-apple-macosx/release"
 SWIFTBUILD_DIR="$TEMP_DIR/.build/out/Products/Release"
 STAGE_ROOT="$TEMP_DIR/.build/package-products/release"
-mkdir -p "$NATIVE_DIR/CodexBar.dSYM" "$SWIFTBUILD_DIR/Sparkle.framework" "$SWIFTBUILD_DIR/CodexBar.dSYM"
+mkdir -p "$NATIVE_DIR/CodexBar.dSYM" "$SWIFTBUILD_DIR/CodexBar.dSYM"
 touch "$NATIVE_DIR/CodexBar" "$SWIFTBUILD_DIR/CodexBar"
 
 native=$(codexbar_require_product_file "$NATIVE_DIR" CodexBar arm64)
@@ -18,9 +18,6 @@ native=$(codexbar_require_product_file "$NATIVE_DIR" CodexBar arm64)
 
 swiftbuild=$(codexbar_require_product_file "$SWIFTBUILD_DIR" CodexBar arm64)
 [[ "$swiftbuild" == "$SWIFTBUILD_DIR/CodexBar" ]]
-
-framework=$(codexbar_require_product_directory "$SWIFTBUILD_DIR" Sparkle.framework packaging)
-[[ "$framework" == "$SWIFTBUILD_DIR/Sparkle.framework" ]]
 
 dsym=$(codexbar_require_product_directory "$SWIFTBUILD_DIR" CodexBar.dSYM release)
 [[ "$dsym" == "$SWIFTBUILD_DIR/CodexBar.dSYM" ]]
@@ -46,14 +43,6 @@ if codexbar_resolve_staged_or_reported_file "$STAGE_ROOT" "$SWIFTBUILD_DIR" Code
   exit 1
 fi
 grep -Fq "$SWIFTBUILD_DIR/CodexBar" "$TEMP_DIR/missing-file.log"
-
-rm -rf "$SWIFTBUILD_DIR/Sparkle.framework"
-if codexbar_require_product_directory "$SWIFTBUILD_DIR" Sparkle.framework packaging \
-  2>"$TEMP_DIR/missing-directory.log"; then
-  echo "ERROR: Missing reported framework was accepted." >&2
-  exit 1
-fi
-grep -Fq "$SWIFTBUILD_DIR/Sparkle.framework" "$TEMP_DIR/missing-directory.log"
 
 rm -rf "$SWIFTBUILD_DIR/CodexBar.dSYM"
 if codexbar_resolve_dsym_path "$STAGE_ROOT" "$SWIFTBUILD_DIR" CodexBar arm64 \

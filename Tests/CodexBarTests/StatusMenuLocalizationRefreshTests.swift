@@ -62,7 +62,6 @@ struct StatusMenuLocalizationRefreshTests {
             store: store,
             settings: settings,
             account: fetcher.loadAccountInfo(),
-            updater: DisabledUpdaterController(),
             preferencesSelection: PreferencesSelection(),
             statusBar: Self.makeStatusBarForTesting())
         defer { controller.releaseStatusItemsForTesting() }

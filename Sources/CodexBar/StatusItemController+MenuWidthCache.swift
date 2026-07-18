@@ -42,7 +42,7 @@ extension StatusItemController {
             account: self.account,
             managedCodexAccountCoordinator: self.managedCodexAccountCoordinator,
             codexAccountPromotionCoordinator: self.codexAccountPromotionCoordinator,
-            updateReady: self.updater.updateStatus.isUpdateReady,
+            updateReady: false,
             includeContextualActions: includeContextualActions,
             agentSessionsEnabled: self.settings.agentSessionsEnabled,
             localAgentSessions: self.agentSessions.localSessions,
@@ -109,8 +109,6 @@ extension StatusItemController {
 
     private func measuredStandardMenuWidthCacheToken(for action: MenuDescriptor.MenuAction) -> String {
         switch action {
-        case .installUpdate:
-            "installUpdate"
         case .refresh:
             "refresh"
         case .refreshAugmentSession:

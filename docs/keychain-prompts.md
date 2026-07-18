@@ -26,15 +26,15 @@ and the Claude **Never prompt** and global **Disable Keychain access** settings 
 
 ## If the prompt appears after uninstalling CodexBar
 
-Deleting `CodexBar.app` prevents a new process from launching from that bundle, but it does not terminate a process
+Deleting `AgentBar.app` prevents a new process from launching from that bundle, but it does not terminate a process
 that is already running from it. That process can continue to request Keychain access until it quits. If macOS still
 shows a prompt such as "CodexBar wants to use your confidential information stored in 'Chrome Safe Storage'", the
 usual causes are:
 
 - A CodexBar process or bundled helper is still running.
 - CodexBar is still enabled in Login Items and relaunched from an existing install.
-- Another copy of `CodexBar.app` exists elsewhere on the machine.
-- The uninstall path did not remove the same copy that launched the process. Finder, Homebrew cask, Sparkle updates,
+- Another copy of `AgentBar.app` exists elsewhere on the machine.
+- The uninstall path did not remove the same copy that launched the process. Finder, Homebrew cask, release archives,
   and manually copied apps can leave different install paths in play.
 - The prompt is naming the requesting binary, not proving that the copy you deleted is the one still running.
 
@@ -42,7 +42,7 @@ Safe checks:
 
 ```bash
 pgrep -fl 'CodexBar|CodexBarCLI'
-ls -ld /Applications/CodexBar.app
+ls -ld /Applications/AgentBar.app
 brew info --cask codexbar
 mdfind 'kMDItemCFBundleIdentifier == "com.steipete.codexbar"'
 ```
@@ -83,7 +83,7 @@ Keychain access:
 1. Open **Keychain Access.app**.
 2. Select the `login` keychain.
 3. Search for the item named in the prompt, for example `Chrome Safe Storage`.
-4. Open the item, choose **Access Control**, and add `CodexBar.app` under "Always allow access by these applications".
+4. Open the item, choose **Access Control**, and add `AgentBar.app` under "Always allow access by these applications".
 5. Relaunch CodexBar.
 
 Avoid "Allow all applications" unless you intentionally want every app to access that item. Do not paste or share the
@@ -91,10 +91,10 @@ item's secret value when asking for help.
 
 ## What to include in a support issue
 
-- CodexBar version and install source: GitHub release, Homebrew cask, Sparkle update, or another source.
+- CodexBar version and install source: GitHub release, Homebrew cask, or another source.
 - macOS version.
 - The uninstall method if this happened after uninstalling.
 - Whether Activity Monitor or `pgrep` still shows CodexBar.
 - Whether System Settings -> General -> Login Items still lists CodexBar.
-- Whether `/Applications/CodexBar.app`, Homebrew cask metadata, or Spotlight finds another copy.
+- Whether `/Applications/AgentBar.app`, Homebrew cask metadata, or Spotlight finds another copy.
 - A screenshot of the Keychain prompt showing the requested item and requesting app/path, with secrets redacted.

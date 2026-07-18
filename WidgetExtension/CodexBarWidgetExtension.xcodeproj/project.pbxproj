@@ -28,6 +28,7 @@
 		B99BBE05D3817388F9649AD0 /* BurnDownWidgetProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BurnDownWidgetProvider.swift; sourceTree = "<group>"; };
 		E430B27E4F28973A5E77EA3F /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		E7789C4095C40CF60759F2B7 /* CodexBarWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = CodexBarWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		EFBE36CB6481E7133E2A5CF3 /* CodexBar */ = {isa = PBXFileReference; lastKnownFileType = folder; name = CodexBar; path = ..; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -47,6 +48,7 @@
 		4FAD1E2FCD6C4AC65D308ABC /* Packages */ = {
 			isa = PBXGroup;
 			children = (
+				EFBE36CB6481E7133E2A5CF3 /* CodexBar */,
 			);
 			name = Packages;
 			sourceTree = "<group>";
@@ -123,6 +125,10 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
+					E9AFBF11687E131ED1AD113A = {
+						DevelopmentTeam = FSJ87X623Z;
+						ProvisioningStyle = Automatic;
+					};
 				};
 			};
 			buildConfigurationList = A17A8A4315AD7DBD4D417FCA /* Build configuration list for PBXProject "CodexBarWidgetExtension" */;
@@ -287,8 +293,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				APPLICATION_EXTENSION_API_ONLY = YES;
-				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = FSJ87X623Z;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_DEBUG_DYLIB = NO;
 				INFOPLIST_FILE = Info.plist;
@@ -306,8 +313,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				APPLICATION_EXTENSION_API_ONLY = YES;
-				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = FSJ87X623Z;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_DEBUG_DYLIB = NO;
 				INFOPLIST_FILE = Info.plist;

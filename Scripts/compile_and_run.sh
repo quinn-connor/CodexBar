@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Reset CodexBar: kill running instances, build, package, relaunch, verify.
+# Reset AgentBar: kill running instances, build, package, relaunch, verify.
 
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-APP_BUNDLE="${ROOT_DIR}/CodexBar.app"
-APP_PROCESS_PATTERN="CodexBar.app/Contents/MacOS/CodexBar"
+APP_BUNDLE="${ROOT_DIR}/AgentBar.app"
+APP_PROCESS_PATTERN="AgentBar.app/Contents/MacOS/CodexBar"
 DEBUG_PROCESS_PATTERN="${ROOT_DIR}/.build/debug/CodexBar"
 RELEASE_PROCESS_PATTERN="${ROOT_DIR}/.build/release/CodexBar"
 LOCK_KEY="$(printf '%s' "${ROOT_DIR}" | shasum -a 256 | cut -c1-8)"
@@ -16,6 +16,8 @@ RUN_TESTS=0
 DEBUG_LLDB=0
 RELEASE_ARCHES=""
 SIGNING_MODE="${CODEXBAR_SIGNING:-}"
+APP_TEAM_ID="${APP_TEAM_ID:-FSJ87X623Z}"
+export APP_TEAM_ID
 CLEAR_ADHOC_KEYCHAIN=0
 
 log()  { printf '%s\n' "$*"; }
@@ -74,8 +76,8 @@ detect_codesigning_identity() {
   local identities
   identities="$(security find-identity -p codesigning -v 2>/dev/null || true)"
   for prefix in "${preferred_prefixes[@]}"; do
-    awk -v prefix="${prefix}" '
-      index($0, "\"" prefix) {
+    awk -v prefix="${prefix}" -v team="${APP_TEAM_ID}" '
+      index($0, "\"" prefix) && index($0, "(" team ")") {
         sub(/^[^\"]*\"/, "")
         sub(/\".*$/, "")
         print
@@ -121,21 +123,7 @@ resolve_signing_mode() {
     return
   fi
 
-  local candidate=""
-  for candidate in \
-    "Developer ID Application: Peter Steinberger (Y5PE65HELJ)" \
-    "CodexBar Development"
-  do
-    if has_signing_identity "${candidate}"; then
-      APP_IDENTITY="${candidate}"
-      export APP_IDENTITY
-      export_team_id_from_identity "${APP_IDENTITY}"
-      SIGNING_MODE="identity"
-      return
-    fi
-  done
-
-  candidate="$(detect_codesigning_identity)"
+  local candidate="$(detect_codesigning_identity)"
   if [[ -n "${candidate}" ]]; then
     APP_IDENTITY="${candidate}"
     export APP_IDENTITY
@@ -265,19 +253,17 @@ fi
 
 acquire_lock
 
-# 2) Kill all running CodexBar instances (debug, release, bundled).
-log "==> Killing existing CodexBar instances"
+# 2) Kill all running AgentBar instances (debug, release, bundled).
+log "==> Killing existing AgentBar instances"
 kill_all_codexbar
 kill_claude_probes
 
 # 2.5) Optionally delete keychain entries to avoid permission prompts with adhoc signing
 # (adhoc signature changes on every build, making old keychain entries inaccessible)
 if [[ "${SIGNING_MODE:-adhoc}" == "adhoc" && "${CLEAR_ADHOC_KEYCHAIN}" == "1" ]]; then
-  log "==> Clearing CodexBar keychain entries (adhoc signing)"
-  # Clear both the legacy keychain store and the current cache service when developers explicitly want a clean reset
-  # of CodexBar-owned keychain state for ad-hoc builds.
-  delete_keychain_service_items "com.steipete.CodexBar"
-  delete_keychain_service_items "com.steipete.codexbar.cache"
+  log "==> Clearing AgentBar keychain entries (adhoc signing)"
+  delete_keychain_service_items "com.yoyodyne.AgentBar.cache"
+  delete_keychain_service_items "com.yoyodyne.AgentBar.ConfigSecrets.v1"
 elif [[ "${SIGNING_MODE:-adhoc}" == "adhoc" ]]; then
   log "==> Preserving CodexBar keychain entries (pass --clear-adhoc-keychain to reset adhoc keychain state)"
 fi
@@ -318,7 +304,7 @@ fi
 # 5) Verify the app stays up for at least a moment (launch can be >1s on some systems).
 for _ in {1..10}; do
   if pgrep -f "${APP_PROCESS_PATTERN}" >/dev/null 2>&1; then
-    log "OK: CodexBar is running."
+    log "OK: AgentBar is running."
     exit 0
   fi
   sleep 0.4

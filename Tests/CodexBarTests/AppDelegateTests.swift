@@ -29,7 +29,7 @@ struct AppDelegateTests {
         }
 
         // Install a test factory that records invocations without touching NSStatusBar.
-        StatusItemController.factory = { _, _, _, _, _, receivedManagedCoordinator, receivedPromotionCoordinator in
+        StatusItemController.factory = { _, _, _, _, receivedManagedCoordinator, receivedPromotionCoordinator in
             factoryCalls += 1
             #expect(receivedManagedCoordinator === managedCodexAccountCoordinator)
             #expect(receivedPromotionCoordinator === promotionCoordinator)

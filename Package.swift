@@ -44,7 +44,6 @@ let package = Package(
         return products
     }(),
     dependencies: [
-        .package(url: "https://github.com/sparkle-project/Sparkle", from: "2.9.3"),
         .package(url: "https://github.com/steipete/Commander", from: "0.2.1"),
         .package(url: "https://github.com/apple/swift-crypto.git", from: "3.0.0"),
         .package(url: "https://github.com/apple/swift-log", from: "1.13.2"),
@@ -153,7 +152,6 @@ let package = Package(
             .executableTarget(
                 name: "CodexBar",
                 dependencies: [
-                    .product(name: "Sparkle", package: "Sparkle"),
                     .product(name: "KeyboardShortcuts", package: "KeyboardShortcuts"),
                     .product(name: "Vortex", package: "Vortex"),
                     "AdaptiveRefreshCore",
@@ -166,7 +164,6 @@ let package = Package(
                 swiftSettings: [
                     // Opt into Swift 6 strict concurrency (approachable migration path).
                     .enableUpcomingFeature("StrictConcurrency"),
-                    .define("ENABLE_SPARKLE"),
                 ]),
             .executableTarget(
                 name: "CodexBarWidget",

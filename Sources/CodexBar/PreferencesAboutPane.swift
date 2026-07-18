@@ -1,14 +1,10 @@
 import AppKit
+import CodexBarCore
 import SwiftUI
 
 @MainActor
 struct AboutPane: View {
-    let updater: UpdaterProviding
     @State private var iconHover = false
-    @AppStorage("autoUpdateEnabled") private var autoUpdateEnabled: Bool = true
-    @AppStorage(UpdateChannel.userDefaultsKey)
-    private var updateChannelRaw: String = UpdateChannel.defaultChannel.rawValue
-    @State private var didLoadUpdaterState = false
 
     private var versionString: String {
         let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "–"
@@ -37,39 +33,11 @@ struct AboutPane: View {
                     .listRowBackground(Color.clear)
             }
 
-            if self.updater.isAvailable {
-                Section {
-                    Toggle(L("check_updates_auto"), isOn: self.$autoUpdateEnabled)
-
-                    Picker(selection: self.updateChannelBinding) {
-                        ForEach(UpdateChannel.allCases) { channel in
-                            Text(channel.displayName).tag(channel)
-                        }
-                    } label: {
-                        SettingsRowLabel(L("update_channel"), subtitle: self.updateChannel.description)
-                    }
-
-                    LabeledContent(String(format: L("version_format"), self.versionString)) {
-                        Button(L("check_for_updates")) { self.updater.checkForUpdates(nil) }
-                    }
-                } header: {
-                    Text(L("section_updates"))
-                }
-            } else {
-                Section {
-                    Text(self.updater.unavailableReason ?? L("updates_unavailable"))
-                        .foregroundStyle(.secondary)
-                }
-            }
-
             Section {
                 AboutLinkRow(
                     icon: "chevron.left.slash.chevron.right",
                     title: L("link_github"),
-                    url: "https://github.com/steipete/CodexBar")
-                AboutLinkRow(icon: "globe", title: L("link_website"), url: "https://steipete.me")
-                AboutLinkRow(icon: "bird", title: L("link_twitter"), url: "https://twitter.com/steipete")
-                AboutLinkRow(icon: "envelope", title: L("link_email"), url: "mailto:peter@steipete.me")
+                    url: "https://github.com/quinn-connor/CodexBar")
             } header: {
                 Text(L("section_links"))
             } footer: {
@@ -81,17 +49,6 @@ struct AboutPane: View {
         .formStyle(.grouped)
         .toggleStyle(.switch)
         .scrollContentBackground(.hidden)
-        .onAppear {
-            guard !self.didLoadUpdaterState else { return }
-            // Align Sparkle's flag with the persisted preference on first load.
-            self.updater.automaticallyChecksForUpdates = self.autoUpdateEnabled
-            self.updater.automaticallyDownloadsUpdates = self.autoUpdateEnabled
-            self.didLoadUpdaterState = true
-        }
-        .onChange(of: self.autoUpdateEnabled) { _, newValue in
-            self.updater.automaticallyChecksForUpdates = newValue
-            self.updater.automaticallyDownloadsUpdates = newValue
-        }
     }
 
     private var hero: some View {
@@ -115,7 +72,7 @@ struct AboutPane: View {
             }
 
             VStack(spacing: 2) {
-                Text("CodexBar")
+                Text(AppIdentity.displayName)
                     .font(.title3).bold()
                 Text(String(format: L("version_format"), self.versionString))
                     .foregroundStyle(.secondary)
@@ -132,21 +89,8 @@ struct AboutPane: View {
         .padding(.vertical, 6)
     }
 
-    private var updateChannel: UpdateChannel {
-        UpdateChannel(rawValue: self.updateChannelRaw) ?? .stable
-    }
-
-    private var updateChannelBinding: Binding<UpdateChannel> {
-        Binding(
-            get: { self.updateChannel },
-            set: { newValue in
-                self.updateChannelRaw = newValue.rawValue
-                self.updater.checkForUpdates(nil)
-            })
-    }
-
     private func openProjectHome() {
-        guard let url = URL(string: "https://github.com/steipete/CodexBar") else { return }
+        guard let url = URL(string: "https://github.com/quinn-connor/CodexBar") else { return }
         NSWorkspace.shared.open(url)
     }
 }

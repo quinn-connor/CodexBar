@@ -95,7 +95,7 @@ public enum TailscaleStatusParser {
 }
 
 public struct RemoteSessionFetcher: Sendable {
-    public static let bundledCLIFallback = "/Applications/CodexBar.app/Contents/Helpers/CodexBarCLI"
+    public static let bundledCLIFallback = "/Applications/AgentBar.app/Contents/Helpers/CodexBarCLI"
 
     public init() {}
 

@@ -56,7 +56,6 @@ struct StatusMenuSwitcherTrackingTests {
             store: store,
             settings: settings,
             account: fetcher.loadAccountInfo(),
-            updater: DisabledUpdaterController(),
             preferencesSelection: PreferencesSelection(),
             statusBar: .system,
             menuRefreshEnabled: false)
@@ -130,7 +129,6 @@ struct StatusMenuSwitcherTrackingTests {
             store: store,
             settings: settings,
             account: fetcher.loadAccountInfo(),
-            updater: DisabledUpdaterController(),
             preferencesSelection: PreferencesSelection(),
             statusBar: .system,
             menuRefreshEnabled: false)
@@ -173,7 +171,6 @@ struct StatusMenuSwitcherTrackingTests {
                 settings: settings),
             settings: settings,
             account: fetcher.loadAccountInfo(),
-            updater: DisabledUpdaterController(),
             preferencesSelection: PreferencesSelection(),
             statusBar: .system)
         defer { controller.releaseStatusItemsForTesting() }

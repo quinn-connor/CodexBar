@@ -17,8 +17,8 @@ package final class ProcessPipeCapture: @unchecked Sendable {
     private var isStopping = false
     private var continuation: CheckedContinuation<Void, Never>?
     #if os(Linux)
-    private let readerQueue = DispatchQueue(label: "com.steipete.CodexBar.process-pipe-capture.reader")
-    private let callbackQueue = DispatchQueue(label: "com.steipete.CodexBar.process-pipe-capture.callback")
+    private let readerQueue = DispatchQueue(label: "com.yoyodyne.AgentBar.process-pipe-capture.reader")
+    private let callbackQueue = DispatchQueue(label: "com.yoyodyne.AgentBar.process-pipe-capture.callback")
     private var readSource: DispatchSourceRead?
     private var sourceStarted = false
     private var sourceCancelled = false

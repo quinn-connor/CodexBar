@@ -9,9 +9,9 @@ extension OpenAIDashboardBrowserCookieImporter {
 
     @MainActor private static var pendingCookieStoreMutations: [ObjectIdentifier: PendingCookieStoreMutation] = [:]
     private nonisolated static let cookieCacheQueue = DispatchQueue(
-        label: "com.steipete.codexbar.openai-cookie-cache")
+        label: "com.yoyodyne.AgentBar.openai-cookie-cache")
     private nonisolated static let deadlineQueue = DispatchQueue(
-        label: "com.steipete.codexbar.openai-cookie-deadline",
+        label: "com.yoyodyne.AgentBar.openai-cookie-deadline",
         qos: .userInitiated)
 
     private final class CookieLoadCompletion: @unchecked Sendable {

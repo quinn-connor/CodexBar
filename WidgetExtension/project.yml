@@ -20,7 +20,7 @@ targets:
     info:
       path: Info.plist
       properties:
-        CFBundleDisplayName: CodexBar
+        CFBundleDisplayName: AgentBar
         CFBundleName: CodexBarWidget
         CFBundlePackageType: XPC!
         CFBundleShortVersionString: "$(MARKETING_VERSION)"
@@ -32,7 +32,8 @@ targets:
     settings:
       base:
         APPLICATION_EXTENSION_API_ONLY: true
-        CODE_SIGNING_ALLOWED: false
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: FSJ87X623Z
         ENABLE_DEBUG_DYLIB: false
         ENABLE_APP_SANDBOX: true
         INFOPLIST_KEY_CodexBarTeamID: "$(CODEXBAR_TEAM_ID)"

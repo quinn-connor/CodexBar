@@ -62,7 +62,6 @@ struct DeferredMenuInteractionRefreshTailTests {
             store: store,
             settings: settings,
             account: AccountInfo(email: nil, plan: nil),
-            updater: DisabledUpdaterController(),
             preferencesSelection: PreferencesSelection(),
             statusBar: testStatusBar(),
             menuCardRenderingEnabled: false,

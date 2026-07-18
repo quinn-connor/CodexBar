@@ -3,7 +3,6 @@ set -euo pipefail
 
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
 PACKAGE_SCRIPT="$ROOT/Scripts/package_app.sh"
-RELEASE_SCRIPT="$ROOT/Scripts/sign-and-notarize.sh"
 FUNCTIONS_FILE=$(mktemp "${TMPDIR:-/tmp}/codexbar-package-signing-functions.XXXXXX")
 trap 'rm -f "$FUNCTIONS_FILE"' EXIT
 
@@ -41,12 +40,10 @@ if resolve_package_signing_mode 2>/dev/null; then
   exit 1
 fi
 
-grep -Fq 'CODEXBAR_SIGNING=identity ./Scripts/package_app.sh release' "$RELEASE_SCRIPT"
-
 TEMP_DIR=$(mktemp -d "${TMPDIR:-/tmp}/codexbar-package-signing.XXXXXX")
 trap 'rm -f "$FUNCTIONS_FILE"; rm -rf "$TEMP_DIR"' EXIT
-APP="$TEMP_DIR/CodexBar.app"
-mkdir -p "$APP/Contents/Frameworks/Sparkle.framework"
+APP="$TEMP_DIR/AgentBar.app"
+mkdir -p "$APP/Contents"
 
 xattr() {
   if [[ "${MOCK_QUARANTINE:-0}" == "1" ]]; then
