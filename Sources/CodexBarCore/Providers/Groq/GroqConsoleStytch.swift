@@ -16,6 +16,8 @@ enum GroqConsoleStytch {
     static let publicTokenEnvironmentKey = "GROQ_STYTCH_PUBLIC_TOKEN"
     static let baseURLEnvironmentKey = "GROQ_STYTCH_URL"
     private static let defaultBaseURL = "https://api.stytchb2b.groq.com"
+    private static let allowedHost = "api.stytchb2b.groq.com"
+    private static let authenticatePath = "/sdk/v1/b2b/sessions/authenticate"
     private static let origin = "https://console.groq.com"
     private static let sdkVersion = "5.43.0"
 
@@ -38,12 +40,7 @@ enum GroqConsoleStytch {
 
         let publicToken = environment[self.publicTokenEnvironmentKey]?
             .trimmingCharacters(in: .whitespacesAndNewlines).nonEmpty ?? self.defaultPublicToken
-        let base = environment[self.baseURLEnvironmentKey]?
-            .trimmingCharacters(in: .whitespacesAndNewlines).nonEmpty ?? self.defaultBaseURL
-
-        guard let url = URL(string: base + "/sdk/v1/b2b/sessions/authenticate") else {
-            throw GroqConsoleError.invalidSession("invalid Stytch URL")
-        }
+        let url = try self.authenticateURL(environment: environment)
 
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -60,6 +57,11 @@ enum GroqConsoleStytch {
             "session_duration_minutes": 30,
         ])
 
+        // Revalidate immediately before crossing the transport boundary so a future
+        // request-construction change cannot redirect the Basic credential.
+        guard self.isAllowedAuthenticateURL(request.url) else {
+            throw GroqConsoleError.invalidSession("invalid Stytch URL")
+        }
         let response = try await transport.response(for: request)
         guard (200..<300).contains(response.statusCode) else {
             let summary = String(bytes: response.data.prefix(300), encoding: .utf8) ?? ""
@@ -75,6 +77,46 @@ enum GroqConsoleStytch {
             throw GroqConsoleError.parseFailed("Stytch response missing session_jwt")
         }
         return jwt
+    }
+
+    static func authenticateURL(environment: [String: String]) throws -> URL {
+        let rawBase = environment[self.baseURLEnvironmentKey]?
+            .trimmingCharacters(in: .whitespacesAndNewlines).nonEmpty ?? self.defaultBaseURL
+        let validator = ProviderEndpointOverrideValidator(allowedHosts: [self.allowedHost])
+        guard let baseURL = validator.validatedURL(rawBase, policy: .providerOwnedOnly),
+              let baseComponents = URLComponents(url: baseURL, resolvingAgainstBaseURL: false),
+              baseComponents.scheme?.lowercased() == "https",
+              baseComponents.host?.lowercased() == self.allowedHost,
+              baseComponents.port == nil || baseComponents.port == 443,
+              baseComponents.user == nil,
+              baseComponents.password == nil,
+              baseComponents.query == nil,
+              baseComponents.fragment == nil,
+              baseComponents.path.isEmpty || baseComponents.path == "/"
+        else {
+            throw GroqConsoleError.invalidSession("invalid Stytch URL")
+        }
+
+        var components = baseComponents
+        components.path = self.authenticatePath
+        guard let url = components.url, self.isAllowedAuthenticateURL(url) else {
+            throw GroqConsoleError.invalidSession("invalid Stytch URL")
+        }
+        return url
+    }
+
+    private static func isAllowedAuthenticateURL(_ url: URL?) -> Bool {
+        guard let url,
+              let components = URLComponents(url: url, resolvingAgainstBaseURL: false)
+        else { return false }
+        return components.scheme?.lowercased() == "https"
+            && components.host?.lowercased() == self.allowedHost
+            && (components.port == nil || components.port == 443)
+            && components.user == nil
+            && components.password == nil
+            && components.query == nil
+            && components.fragment == nil
+            && components.path == self.authenticatePath
     }
 
     /// Base64 telemetry blob the Stytch SDK expects; identifies the calling app

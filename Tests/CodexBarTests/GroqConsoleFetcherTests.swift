@@ -1,4 +1,4 @@
-import CodexBarCore
+@testable import CodexBarCore
 import Foundation
 import Testing
 
@@ -113,5 +113,55 @@ struct GroqConsoleFetcherTests {
         #expect(snapshot.identity?.loginMethod == "Console")
         #expect(snapshot.providerCost?.used == 0.5)
         #expect(snapshot.groqConsoleUsage?.daily.count == 1)
+    }
+
+    @Test
+    func `Stytch session refresh sends credentials only to the Groq-owned endpoint`() async throws {
+        let transport = ProviderHTTPTransportStub { request in
+            let body = Data(#"{"data":{"session_jwt":"jwt.refreshed.value"}}"#.utf8)
+            let response = try #require(HTTPURLResponse(
+                url: request.url ?? URL(string: "https://invalid.invalid")!,
+                statusCode: 200,
+                httpVersion: nil,
+                headerFields: nil))
+            return (body, response)
+        }
+
+        let jwt = try await GroqConsoleStytch.refreshSessionJWT(
+            sessionToken: "session-secret",
+            environment: [GroqConsoleStytch.baseURLEnvironmentKey: "https://api.stytchb2b.groq.com/"],
+            transport: transport)
+
+        #expect(jwt == "jwt.refreshed.value")
+        let requests = await transport.requests()
+        #expect(requests.count == 1)
+        let request = try #require(requests.first)
+        #expect(request.url?.absoluteString == "https://api.stytchb2b.groq.com/sdk/v1/b2b/sessions/authenticate")
+        #expect(request.value(forHTTPHeaderField: "Authorization")?.hasPrefix("Basic ") == true)
+    }
+
+    @Test(arguments: [
+        "http://api.stytchb2b.groq.com",
+        "https://api.stytchb2b.groq.com.evil.example",
+        "https://api.stytchb2b.groq.com@evil.example",
+        "https://user:password@api.stytchb2b.groq.com",
+        "https://api.stytchb2b.groq.com:444",
+        "https://api.stytchb2b.groq.com/redirect",
+        "https://api.stytchb2b.groq.com?next=https://evil.example",
+        "https://api.stytchb2b.groq.com#fragment",
+    ])
+    func `Stytch override rejects any noncanonical credential destination`(override: String) async {
+        let transport = ProviderHTTPTransportStub { request in
+            Issue.record("Unexpected credential-bearing request to \(request.url?.absoluteString ?? "nil")")
+            throw URLError(.badURL)
+        }
+
+        await #expect(throws: GroqConsoleError.invalidSession("invalid Stytch URL")) {
+            _ = try await GroqConsoleStytch.refreshSessionJWT(
+                sessionToken: "session-secret",
+                environment: [GroqConsoleStytch.baseURLEnvironmentKey: override],
+                transport: transport)
+        }
+        #expect(await transport.requests().isEmpty)
     }
 }
