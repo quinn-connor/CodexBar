@@ -1,5 +1,5 @@
 ---
-summary: "Ollama provider notes: API key auth, settings scrape, cookie auth, and Cloud Usage parsing."
+summary: "Ollama provider notes: settings scrape, cookie auth, and Cloud Usage parsing."
 read_when:
   - Adding or modifying the Ollama provider
   - Debugging Ollama cookie import or settings parsing
@@ -8,15 +8,13 @@ read_when:
 
 # Ollama Provider
 
-The Ollama provider can verify Ollama Cloud API-key access and scrape the **Plan & Billing** page to extract Cloud
-Usage limits for session and weekly windows.
+The Ollama provider scrapes the **Plan & Billing** page to extract Cloud Usage limits for session and weekly windows.
 
 ## Features
 
 - **Plan badge**: Reads the plan tier (Free/Pro/Max) from the Cloud Usage header.
 - **Session + weekly usage**: Parses the percent-used values shown in the usage bars.
 - **Reset timestamps**: Uses the `data-time` attribute on the “Resets in …” elements.
-- **API key auth**: Verifies direct `https://ollama.com/api` access with `OLLAMA_API_KEY` or a configured key.
 - **Browser cookie auth**: Required for Cloud Usage quota windows because Ollama does not expose those limits through
   the documented API.
 
@@ -24,10 +22,10 @@ Usage limits for session and weekly windows.
 
 1. Open **Settings → Providers**.
 2. Enable **Ollama**.
-3. For API-key mode, paste an API key from `https://ollama.com/settings/keys` or set `OLLAMA_API_KEY`.
-4. For quota bars, leave **Cookie source** on **Auto** (recommended, imports Chrome cookies by default).
+3. Leave **Cookie source** on **Auto** (recommended, imports Chrome cookies by default).
 
-Ollama API keys currently do not expire, but they can be revoked from the key settings page.
+Ollama API keys are intentionally not offered as a usage source: they can validate API access and list models, but
+the resulting response contains no Cloud quota windows.
 
 ### Manual cookie import (optional)
 
@@ -37,9 +35,6 @@ Ollama API keys currently do not expire, but they can be revoked from the key se
 
 ## How it works
 
-- API-key mode first probes the authenticated `https://ollama.com/api/web_search` endpoint without performing a
-  search, then fetches `https://ollama.com/api/tags` for the model catalog. The catalog endpoint is public and cannot
-  verify a key by itself.
 - Cookie mode fetches `https://ollama.com/settings` using browser cookies.
 - Cookie discovery recognizes the current WorkOS AuthKit `wos-session` cookie alongside legacy Ollama and NextAuth
   session names.

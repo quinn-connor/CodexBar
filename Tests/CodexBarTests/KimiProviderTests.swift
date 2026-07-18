@@ -282,7 +282,7 @@ struct KimiSettingsReaderTests {
     }
 }
 
-struct KimiAPIFetchStrategyTests {
+struct KimiCLICredentialFetchStrategyTests {
     @Test
     func `auto mode accepts CLI credential and reports expired remediation`() async throws {
         let home = try makeTemporaryKimiCodeHome()
@@ -304,21 +304,24 @@ struct KimiAPIFetchStrategyTests {
     }
 
     @Test
-    func `explicit API mode ignores fresh CLI credential`() async throws {
+    func `explicit signed in mode uses fresh CLI credential`() async throws {
         let home = try makeTemporaryKimiCodeHome()
         defer { try? FileManager.default.removeItem(at: home) }
         _ = try writeKimiCodeCredential(
             home: home,
-            accessToken: "oauth",
+            accessToken: "cli-ok",
             expiresAt: Date().addingTimeInterval(3600).timeIntervalSince1970)
-        let strategy = KimiAPIFetchStrategy()
+        let transport = KimiOrderedCredentialTransport()
+        let strategy = KimiCLICredentialFetchStrategy(transport: transport)
         let context = makeKimiFetchContext(
-            sourceMode: .api,
+            sourceMode: .cli,
             environment: ["KIMI_CODE_HOME": home.path])
 
-        await #expect(throws: KimiAPIError.missingAPIKey) {
-            try await strategy.fetch(context)
-        }
+        #expect(await strategy.isAvailable(context))
+        let result = try await strategy.fetch(context)
+
+        #expect(result.sourceLabel == "Kimi Code CLI")
+        #expect(await transport.authorizationHeaders() == ["Bearer cli-ok"])
     }
 
     @Test
@@ -328,94 +331,6 @@ struct KimiAPIFetchStrategyTests {
 
         #expect(cliError as? KimiAPIError == .invalidCodeCredential)
         #expect(keyError as? KimiAPIError == .apiError("failed"))
-    }
-
-    @Test
-    func `auto retries fresh CLI credential after rejected API key`() async throws {
-        let home = try makeTemporaryKimiCodeHome()
-        defer { try? FileManager.default.removeItem(at: home) }
-        _ = try writeKimiCodeCredential(
-            home: home,
-            accessToken: "cli-ok",
-            expiresAt: Date().addingTimeInterval(3600).timeIntervalSince1970)
-        let transport = KimiOrderedCredentialTransport()
-        let pipeline = ProviderFetchPipeline { _ in
-            [
-                KimiAPIFetchStrategy(transport: transport),
-                KimiCLICredentialFetchStrategy(transport: transport),
-            ]
-        }
-        let context = makeKimiFetchContext(
-            sourceMode: .auto,
-            environment: [
-                "KIMI_CODE_API_KEY": "api-bad",
-                "KIMI_CODE_HOME": home.path,
-            ])
-
-        let outcome = await pipeline.fetch(context: context, provider: .kimi)
-        let result = try outcome.result.get()
-
-        #expect(result.sourceLabel == "Kimi Code CLI")
-        #expect(outcome.attempts.map(\.strategyID) == ["kimi.api", "kimi.cli"])
-        #expect(await transport.authorizationHeaders() == [
-            "Bearer api-bad",
-            "Bearer cli-ok",
-        ])
-    }
-
-    @Test
-    func `auto mode falls back from invalid API key to web cookies`() {
-        let strategy = KimiAPIFetchStrategy()
-        let context = makeKimiFetchContext(sourceMode: .auto)
-
-        #expect(strategy.shouldFallback(on: KimiAPIError.invalidAPIKey, context: context))
-    }
-
-    @Test
-    func `explicit API mode does not fall back from invalid API key`() {
-        let strategy = KimiAPIFetchStrategy()
-        let context = makeKimiFetchContext(sourceMode: .api)
-
-        #expect(strategy.shouldFallback(on: KimiAPIError.invalidAPIKey, context: context) == false)
-    }
-
-    @Test
-    func `explicit API mode reports API key remediation when key is missing`() async {
-        let strategy = KimiAPIFetchStrategy()
-        let context = makeKimiFetchContext(sourceMode: .api)
-
-        await #expect(throws: KimiAPIError.missingAPIKey) {
-            try await strategy.fetch(context)
-        }
-    }
-
-    @Test
-    func `auto mode falls back from API response decoding failure`() {
-        let strategy = KimiAPIFetchStrategy()
-        let context = makeKimiFetchContext(sourceMode: .auto)
-        let error = DecodingError.dataCorrupted(
-            DecodingError.Context(codingPath: [], debugDescription: "Unexpected Kimi payload"))
-
-        #expect(strategy.shouldFallback(on: error, context: context))
-    }
-
-    @Test
-    func `explicit API mode surfaces response decoding failure`() {
-        let strategy = KimiAPIFetchStrategy()
-        let context = makeKimiFetchContext(sourceMode: .api)
-        let error = DecodingError.dataCorrupted(
-            DecodingError.Context(codingPath: [], debugDescription: "Unexpected Kimi payload"))
-
-        #expect(strategy.shouldFallback(on: error, context: context) == false)
-    }
-
-    @Test
-    func `auto mode does not start web fallback after cancellation`() {
-        let strategy = KimiAPIFetchStrategy()
-        let context = makeKimiFetchContext(sourceMode: .auto)
-
-        #expect(strategy.shouldFallback(on: CancellationError(), context: context) == false)
-        #expect(strategy.shouldFallback(on: URLError(.cancelled), context: context) == false)
     }
 }
 

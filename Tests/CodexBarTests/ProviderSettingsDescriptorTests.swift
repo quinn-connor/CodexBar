@@ -4,6 +4,20 @@ import Testing
 @testable import CodexBar
 @testable import CodexBarCore
 
+private struct ProviderSettingsDescriptorStubClaudeFetcher: ClaudeUsageFetching {
+    func loadLatestUsage(model _: String) async throws -> ClaudeUsageSnapshot {
+        throw ClaudeUsageError.parseFailed("stub")
+    }
+
+    func debugRawProbe(model _: String) async -> String {
+        "stub"
+    }
+
+    func detectVersion() -> String? {
+        nil
+    }
+}
+
 @MainActor
 @Suite(.serialized)
 struct ProviderSettingsDescriptorTests {
@@ -32,6 +46,42 @@ struct ProviderSettingsDescriptorTests {
             for picker in pickers {
                 #expect(!seenPickerIDs.contains(picker.id))
                 seenPickerIDs.insert(picker.id)
+            }
+        }
+    }
+
+    @Test
+    func `visible usage sources are advertised and resolve a strategy`() async throws {
+        let fixture = try self.makeSettingsFixture(suite: "ProviderSettingsDescriptorTests-source-contract")
+
+        for provider in UsageProvider.allCases {
+            let settingsContext = fixture.settingsContext(provider: provider)
+            let implementation = try #require(ProviderCatalog.implementation(for: provider))
+            let descriptor = ProviderDescriptorRegistry.descriptor(for: provider)
+
+            for picker in implementation.settingsPickers(context: settingsContext)
+                where picker.id.hasSuffix("-usage-source")
+            {
+                for option in picker.options {
+                    let mode = try #require(ProviderSourceMode(rawValue: option.id))
+                    #expect(descriptor.fetchPlan.sourceModes.contains(mode))
+
+                    let browserDetection = BrowserDetection(cacheTTL: 0)
+                    let fetchContext = ProviderFetchContext(
+                        runtime: .app,
+                        sourceMode: mode,
+                        includeCredits: false,
+                        webTimeout: 1,
+                        webDebugDumpHTML: false,
+                        verbose: false,
+                        env: [:],
+                        settings: nil,
+                        fetcher: UsageFetcher(environment: [:]),
+                        claudeFetcher: ProviderSettingsDescriptorStubClaudeFetcher(),
+                        browserDetection: browserDetection)
+                    let strategies = await descriptor.fetchPlan.pipeline.resolveStrategies(fetchContext)
+                    #expect(!strategies.isEmpty)
+                }
             }
         }
     }
@@ -402,7 +452,7 @@ struct ProviderSettingsDescriptorTests {
     }
 
     @Test
-    func `kimi exposes usage source picker plus api and cookie fields`() throws {
+    func `kimi exposes signed in and cookie usage sources`() throws {
         let fixture = try self.makeSettingsFixture(suite: "ProviderSettingsDescriptorTests-kimi")
         let context = fixture.settingsContext(provider: .kimi)
 
@@ -411,22 +461,22 @@ struct ProviderSettingsDescriptorTests {
         let fields = implementation.settingsFields(context: context)
 
         let usagePicker = try #require(pickers.first(where: { $0.id == "kimi-usage-source" }))
-        #expect(usagePicker.options.map(\.id) == ["auto", "api", "web"])
-        #expect(usagePicker.subtitle ==
-            "Auto tries your configured API key, then a signed-in Kimi Code CLI credential, then browser cookies.")
+        #expect(usagePicker.options.map(\.id) == ["auto", "cli", "web"])
+        #expect(usagePicker.options.map(\.title) == ["Auto", "Kimi Code sign-in", "Browser cookies"])
+        #expect(usagePicker.subtitle == "Auto tries a signed-in Kimi Code credential, then browser cookies.")
         #expect(usagePicker.placement == .connection)
         #expect(usagePicker.trailingText?() == nil)
         fixture.store.lastSourceLabels[.kimi] = "Kimi Code CLI"
         #expect(usagePicker.trailingText?() == "Kimi Code CLI")
         #expect(pickers.contains(where: { $0.id == "kimi-cookie-source" }))
-        #expect(fields.contains(where: { $0.id == "kimi-api-key" }))
+        #expect(!fields.contains(where: { $0.id == "kimi-api-key" }))
         #expect(fields.contains(where: { $0.id == "kimi-cookie" }))
     }
 
     @Test
     func `kimi presentation follows selected source label`() throws {
         let fixture = try self.makeSettingsFixture(suite: "ProviderSettingsDescriptorTests-kimi-presentation")
-        fixture.settings.kimiUsageDataSource = .api
+        fixture.settings.kimiUsageDataSource = .cli
         let metadata = try #require(ProviderDescriptorRegistry.metadata[.kimi])
         let context = fixture.presentationContext(provider: .kimi, metadata: metadata)
 
@@ -434,7 +484,18 @@ struct ProviderSettingsDescriptorTests {
             .presentation(context: context)
             .detailLine(context)
 
-        #expect(detailLine == "api")
+        #expect(detailLine == "cli")
+    }
+
+    @Test
+    func `ollama exposes only cookie based quota settings`() throws {
+        let fixture = try self.makeSettingsFixture(suite: "ProviderSettingsDescriptorTests-ollama")
+        let context = fixture.settingsContext(provider: .ollama)
+        let implementation = OllamaProviderImplementation()
+
+        #expect(!implementation.settingsPickers(context: context).contains { $0.id == "ollama-usage-source" })
+        #expect(implementation.settingsPickers(context: context).contains { $0.id == "ollama-cookie-source" })
+        #expect(!implementation.settingsFields(context: context).contains { $0.id == "ollama-api-key" })
     }
 
     @Test

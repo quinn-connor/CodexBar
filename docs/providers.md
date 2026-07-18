@@ -50,7 +50,7 @@ scan fails, while provider/account configuration changes replace obsolete result
 | z.ai | API token from config/env → quota API (`api`). |
 | Manus | Browser `session_id` cookie (auto/manual/env) → credits API (`web`). |
 | MiniMax | Manual/browser session via Coding Plan web path (`web`), or Coding Plan API token (`api`). |
-| Kimi | Kimi Code API key (`api`), then `kimi-auth` cookie/manual token/env fallback (`web`). |
+| Kimi | Signed-in Kimi Code OAuth credential (`cli`), then `kimi-auth` cookie/manual token/env fallback (`web`). |
 | Kilo | API token from config/env → usage API (`api`); auto falls back to CLI session auth (`cli`). |
 | Copilot | Device-flow/env/config token → `copilot_internal` API (`api`). |
 | Kiro | CLI command via `kiro-cli chat --no-interactive "/usage"` (`cli`). |
@@ -62,7 +62,7 @@ scan fails, while provider/account configuration changes replace obsolete result
 | Warp | API token (config/env) → GraphQL request limits (`api`). |
 | ElevenLabs | API key from config/env → subscription usage API (`api`). |
 | Windsurf | Web session bundle from browser localStorage (`web`) → local SQLite cache (`local`). |
-| Ollama | API key verifies Cloud API access (`api`); browser cookies expose Cloud quota windows (`web`). |
+| Ollama | Browser cookies expose Cloud quota windows (`web`); API keys are not usage sources. |
 | Synthetic | API key from config/env → quota API (`api`). |
 | OpenRouter | API token (config, overrides env) → credits API (`api`). |
 | Perplexity | Browser cookies/manual cookie/env session token → credits API (`web`). |

@@ -16,7 +16,6 @@ struct KimiProviderImplementation: ProviderImplementation {
     @MainActor
     func observeSettings(_ settings: SettingsStore) {
         _ = settings.kimiUsageDataSource
-        _ = settings.kimiAPIKey
         _ = settings.kimiCookieSource
         _ = settings.kimiManualCookieHeader
     }
@@ -34,9 +33,10 @@ struct KimiProviderImplementation: ProviderImplementation {
     @MainActor
     func sourceMode(context: ProviderSourceModeContext) -> ProviderSourceMode {
         switch context.settings.kimiUsageDataSource {
-        case .api: .api
+        case .api: .auto
         case .web: .web
-        case .auto, .cli, .oauth: .auto
+        case .cli: .cli
+        case .auto, .oauth: .auto
         }
     }
 
@@ -49,7 +49,7 @@ struct KimiProviderImplementation: ProviderImplementation {
             })
         let usageOptions = [
             ProviderSettingsPickerOption(id: ProviderSourceMode.auto.rawValue, title: "Auto"),
-            ProviderSettingsPickerOption(id: ProviderSourceMode.api.rawValue, title: "API key"),
+            ProviderSettingsPickerOption(id: ProviderSourceMode.cli.rawValue, title: "Kimi Code sign-in"),
             ProviderSettingsPickerOption(id: ProviderSourceMode.web.rawValue, title: "Browser cookies"),
         ]
 
@@ -75,8 +75,7 @@ struct KimiProviderImplementation: ProviderImplementation {
             ProviderSettingsPickerDescriptor(
                 id: "kimi-usage-source",
                 title: "Usage source",
-                subtitle: "Auto tries your configured API key, then a signed-in Kimi Code CLI credential, " +
-                    "then browser cookies.",
+                subtitle: "Auto tries a signed-in Kimi Code credential, then browser cookies.",
                 binding: usageBinding,
                 options: usageOptions,
                 isVisible: nil,
@@ -101,27 +100,6 @@ struct KimiProviderImplementation: ProviderImplementation {
     @MainActor
     func settingsFields(context: ProviderSettingsContext) -> [ProviderSettingsFieldDescriptor] {
         [
-            ProviderSettingsFieldDescriptor(
-                id: "kimi-api-key",
-                title: "API key",
-                subtitle: "Stored in ~/.codexbar/config.json. You can also provide KIMI_CODE_API_KEY.",
-                kind: .secure,
-                placeholder: "Paste Kimi Code API key...",
-                binding: context.stringBinding(\.kimiAPIKey),
-                actions: [
-                    ProviderSettingsActionDescriptor(
-                        id: "kimi-open-api-docs",
-                        title: "Open API docs",
-                        style: .link,
-                        isVisible: nil,
-                        perform: {
-                            if let url = URL(string: "https://www.kimi.com/code/docs/en/") {
-                                NSWorkspace.shared.open(url)
-                            }
-                        }),
-                ],
-                isVisible: nil,
-                onActivate: nil),
             ProviderSettingsFieldDescriptor(
                 id: "kimi-cookie",
                 title: "",

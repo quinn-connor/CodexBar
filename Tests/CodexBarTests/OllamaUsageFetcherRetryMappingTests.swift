@@ -47,7 +47,7 @@ struct OllamaUsageFetcherRetryMappingTests {
     }
 
     @Test
-    func `auto mode keeps web quota strategy before api key verification`() async {
+    func `legacy auto mode resolves to the web quota strategy`() async {
         let descriptor = OllamaProviderDescriptor.makeDescriptor()
         let context = self.makeContext(
             sourceMode: .auto,
@@ -57,11 +57,11 @@ struct OllamaUsageFetcherRetryMappingTests {
 
         let strategies = await descriptor.fetchPlan.pipeline.resolveStrategies(context)
 
-        #expect(strategies.map(\.id) == ["ollama.web", "ollama.api"])
+        #expect(strategies.map(\.id) == ["ollama.web"])
     }
 
     @Test
-    func `auto mode uses api only when ollama cookies are off`() async {
+    func `legacy auto mode does not substitute API catalog data when cookies are off`() async {
         let descriptor = OllamaProviderDescriptor.makeDescriptor()
         let context = self.makeContext(
             sourceMode: .auto,
@@ -71,17 +71,17 @@ struct OllamaUsageFetcherRetryMappingTests {
 
         let strategies = await descriptor.fetchPlan.pipeline.resolveStrategies(context)
 
-        #expect(strategies.map(\.id) == ["ollama.api"])
+        #expect(strategies.map(\.id) == ["ollama.web"])
     }
 
     @Test
-    func `web strategy falls back to api key in auto mode`() {
+    func `web strategy never falls back to API catalog data`() {
         let context = self.makeContext(
             sourceMode: .auto,
             env: ["OLLAMA_API_KEY": "ollama-test"])
         let strategy = OllamaStatusFetchStrategy()
 
-        #expect(strategy.shouldFallback(on: OllamaUsageError.parseFailed("missing"), context: context))
+        #expect(!strategy.shouldFallback(on: OllamaUsageError.parseFailed("missing"), context: context))
     }
 
     @Test(arguments: [401, 403])

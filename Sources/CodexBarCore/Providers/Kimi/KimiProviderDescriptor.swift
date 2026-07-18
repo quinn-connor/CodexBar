@@ -36,7 +36,7 @@ public enum KimiProviderDescriptor {
                 supportsTokenCost: false,
                 noDataMessage: { "Kimi cost summary is not supported." }),
             fetchPlan: ProviderFetchPlan(
-                sourceModes: [.auto, .api, .web],
+                sourceModes: [.auto, .cli, .web],
                 pipeline: ProviderFetchPipeline(resolveStrategies: self.resolveStrategies)),
             cli: ProviderCLIConfig(
                 name: "kimi",
@@ -46,47 +46,15 @@ public enum KimiProviderDescriptor {
 
     private static func resolveStrategies(context: ProviderFetchContext) async -> [any ProviderFetchStrategy] {
         switch context.sourceMode {
-        case .api:
-            [KimiAPIFetchStrategy()]
+        case .cli:
+            [KimiCLICredentialFetchStrategy()]
         case .web:
             [KimiWebFetchStrategy()]
         case .auto:
-            [KimiAPIFetchStrategy(), KimiCLICredentialFetchStrategy(), KimiWebFetchStrategy()]
-        case .cli, .oauth:
+            [KimiCLICredentialFetchStrategy(), KimiWebFetchStrategy()]
+        case .api, .oauth:
             []
         }
-    }
-}
-
-struct KimiAPIFetchStrategy: ProviderFetchStrategy {
-    let id: String = "kimi.api"
-    let kind: ProviderFetchKind = .apiToken
-    private let transport: any ProviderHTTPTransport
-
-    init(transport: any ProviderHTTPTransport = ProviderHTTPClient.shared) {
-        self.transport = transport
-    }
-
-    func isAvailable(_ context: ProviderFetchContext) async -> Bool {
-        context.sourceMode == .api || KimiSettingsReader.apiKey(environment: context.env) != nil
-    }
-
-    func fetch(_ context: ProviderFetchContext) async throws -> ProviderFetchResult {
-        guard let apiKey = KimiSettingsReader.apiKey(environment: context.env) else {
-            throw KimiAPIError.missingAPIKey
-        }
-        let baseURL = try KimiSettingsReader.codeAPIBaseURL(environment: context.env)
-        let snapshot = try await KimiUsageFetcher.fetchCodeAPIUsage(
-            apiKey: apiKey,
-            baseURL: baseURL,
-            transport: self.transport)
-        return self.makeResult(
-            usage: snapshot.toUsageSnapshot(),
-            sourceLabel: "Kimi Code API key")
-    }
-
-    func shouldFallback(on error: Error, context: ProviderFetchContext) -> Bool {
-        KimiCodeAPIFallbackPolicy.shouldFallback(on: error, context: context)
     }
 }
 
@@ -100,8 +68,8 @@ struct KimiCLICredentialFetchStrategy: ProviderFetchStrategy {
     }
 
     func isAvailable(_ context: ProviderFetchContext) async -> Bool {
-        context.sourceMode == .auto &&
-            KimiSettingsReader.hasKimiCodeCredential(environment: context.env)
+        context.sourceMode == .cli ||
+            (context.sourceMode == .auto && KimiSettingsReader.hasKimiCodeCredential(environment: context.env))
     }
 
     func fetch(_ context: ProviderFetchContext) async throws -> ProviderFetchResult {
