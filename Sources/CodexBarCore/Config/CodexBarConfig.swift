@@ -173,7 +173,7 @@ public struct CodexBarConfig: Codable, Sendable {
     }
 
     private static func redactedValue(ifPresent value: String?) -> String? {
-        value == nil ? nil : Self.redactedSecretPlaceholder
+        value == nil ? nil : self.redactedSecretPlaceholder
     }
 
     private static func defaultProviderConfig(
