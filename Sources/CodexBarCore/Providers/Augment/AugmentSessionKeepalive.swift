@@ -365,7 +365,6 @@ public final class AugmentSessionKeepalive {
         }
 
         self.log("🔄 Attempting session refresh...")
-        self.log("   Cookies being sent: \(cookieHeader.prefix(100))...")
 
         // Try multiple endpoints - Augment might use different auth patterns
         let endpoints = [
@@ -397,9 +396,8 @@ public final class AugmentSessionKeepalive {
 
                 self.log("   Response: HTTP \(httpResponse.statusCode)")
 
-                // Log Set-Cookie headers if present
-                if let setCookies = httpResponse.allHeaderFields["Set-Cookie"] as? String {
-                    self.log("   Set-Cookie headers received: \(setCookies.prefix(100))...")
+                if httpResponse.allHeaderFields["Set-Cookie"] != nil {
+                    self.log("   Response included refreshed cookies")
                 }
 
                 if httpResponse.statusCode == 200 {
@@ -417,9 +415,6 @@ public final class AugmentSessionKeepalive {
                         }
                     } else {
                         self.log("   ⚠️ 200 OK but response is not JSON")
-                        if let responseText = String(data: data, encoding: .utf8) {
-                            self.log("   Response text: \(responseText.prefix(200))...")
-                        }
                         continue
                     }
                 } else if httpResponse.statusCode == 401 {

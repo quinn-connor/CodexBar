@@ -40,6 +40,18 @@ struct MiniMaxLogRedactorTests {
     }
 
     @Test
+    func `augment cookie diagnostics are redacted`() {
+        let cookie = "session=cookie-session-placeholder"
+        let outgoing = LogRedactor.redact("Cookies being sent: \(cookie)")
+        let incoming = LogRedactor.redact("Set-Cookie headers received: \(cookie)")
+
+        #expect(!outgoing.contains(cookie))
+        #expect(!incoming.contains(cookie))
+        #expect(outgoing.contains("<redacted>"))
+        #expect(incoming.contains("<redacted>"))
+    }
+
+    @Test
     func `authorization header value is redacted`() {
         // Short obvious placeholder, not JWT-like
         let input = "Authorization: Bearer fake-bearer-token"

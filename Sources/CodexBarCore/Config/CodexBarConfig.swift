@@ -2,6 +2,7 @@ import Foundation
 
 public struct CodexBarConfig: Codable, Sendable {
     public static let currentVersion = 1
+    public static let redactedSecretPlaceholder = "<redacted>"
 
     private static let log = CodexBarLog.logger(LogCategories.configStore)
 
@@ -128,12 +129,51 @@ public struct CodexBarConfig: Codable, Sendable {
         self.providers.first(where: { $0.id == id })
     }
 
+    /// Returns a copy safe for diagnostic and CLI output. This never mutates the stored config.
+    public func redactedForDisplay() -> CodexBarConfig {
+        var redacted = self
+        redacted.providers = self.providers.map { provider in
+            var entry = provider
+            entry.apiKey = Self.redactedValue(ifPresent: entry.apiKey)
+            entry.secretKey = Self.redactedValue(ifPresent: entry.secretKey)
+            entry.cookieHeader = Self.redactedValue(ifPresent: entry.cookieHeader)
+            if entry.id == .stepfun {
+                // StepFun repurposes `region` for its manual Oasis token.
+                entry.region = Self.redactedValue(ifPresent: entry.region)
+            }
+            if let data = entry.tokenAccounts {
+                let accounts = data.accounts.map { account in
+                    ProviderTokenAccount(
+                        id: account.id,
+                        label: account.label,
+                        token: Self.redactedSecretPlaceholder,
+                        addedAt: account.addedAt,
+                        lastUsed: account.lastUsed,
+                        externalIdentifier: account.externalIdentifier,
+                        usageScope: account.usageScope,
+                        organizationID: account.organizationID,
+                        workspaceID: account.workspaceID)
+                }
+                entry.tokenAccounts = ProviderTokenAccountData(
+                    version: data.version,
+                    accounts: accounts,
+                    activeIndex: data.activeIndex)
+            }
+            return entry
+        }
+        return redacted
+    }
+
     public mutating func setProviderConfig(_ config: ProviderConfig) {
         if let index = self.providers.firstIndex(where: { $0.id == config.id }) {
             self.providers[index] = config
         } else {
             self.providers.append(config)
         }
+    }
+
+    private static func redactedValue(ifPresent value: String?) -> String? {
+        value == nil ? nil : Self.redactedSecretPlaceholder
     }
 
     private static func defaultProviderConfig(

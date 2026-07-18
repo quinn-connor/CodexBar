@@ -1,9 +1,46 @@
 import CodexBarCore
 import Commander
+import Foundation
 import Testing
 @testable import CodexBarCLI
 
 struct CLIConfigCommandTests {
+    @Test
+    func `config dump redacts every persisted credential shape`() throws {
+        let accountID = UUID()
+        let config = CodexBarConfig(providers: [
+            ProviderConfig(
+                id: .bedrock,
+                apiKey: "access-key-placeholder",
+                secretKey: "secret-key-placeholder",
+                cookieHeader: "session=cookie-placeholder"),
+            ProviderConfig(
+                id: .stepfun,
+                region: "oasis-token-placeholder",
+                tokenAccounts: ProviderTokenAccountData(
+                    version: 1,
+                    accounts: [
+                        ProviderTokenAccount(
+                            id: accountID,
+                            label: "Account",
+                            token: "account-token-placeholder",
+                            addedAt: 0,
+                            lastUsed: nil),
+                    ],
+                    activeIndex: 0)),
+        ])
+
+        let data = try JSONEncoder().encode(CodexBarCLI.configForDump(config))
+        let output = try #require(String(data: data, encoding: .utf8))
+
+        #expect(!output.contains("access-key-placeholder"))
+        #expect(!output.contains("secret-key-placeholder"))
+        #expect(!output.contains("cookie-placeholder"))
+        #expect(!output.contains("oasis-token-placeholder"))
+        #expect(!output.contains("account-token-placeholder"))
+        #expect(output.contains(CodexBarConfig.redactedSecretPlaceholder))
+    }
+
     @Test
     func `config set api key parses provider stdin and no enable flags`() throws {
         let parser = CommandParser(signature: CodexBarCLI._configSetAPIKeySignatureForTesting())

@@ -204,7 +204,7 @@ extension CodexBarCLI {
                                     [--format text|json] [--json] [--json-only] [--pretty]
 
         Description:
-          Validate or print the CodexBar config file (default: validate).
+          Validate or print the CodexBar config file (default: validate). dump always redacts secrets.
           providers lists persistent provider enablement.
           enable/disable updates the same provider toggle used by Settings.
           set-api-key stores a provider API key in the resolved config file and enables that provider by default.

@@ -14,6 +14,8 @@ public enum LogRedactor {
         options: [.caseInsensitive])
     private static let cookieHeaderRegex = Self.makeRegex(
         pattern: #"(?i)(cookie\s*:\s*)([^\r\n]+)"#)
+    private static let cookieDiagnosticRegex = Self.makeRegex(
+        pattern: #"(?i)((?:cookies being sent|set-cookie headers received)\s*:\s*)([^\r\n]+)"#)
     private static let authorizationRegex = Self.makeRegex(
         pattern: #"(?i)(authorization\s*:\s*)([^\r\n]+)"#)
     private static let bearerRegex = Self.makeRegex(
@@ -35,6 +37,7 @@ public enum LogRedactor {
         // Bearer catches "bearer <token>" before authorization wraps it
         output = self.replace(self.bearerRegex, in: output, with: "Bearer <redacted>")
         // Authorization catches the rest (already-redacted content)
+        output = self.replace(self.cookieDiagnosticRegex, in: output, with: "$1<redacted>")
         output = self.replace(self.cookieHeaderRegex, in: output, with: "$1<redacted>")
         output = self.replace(self.authorizationRegex, in: output, with: "$1<redacted>")
         return output

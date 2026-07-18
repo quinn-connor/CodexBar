@@ -55,8 +55,12 @@ extension CodexBarCLI {
     static func runConfigDump(_ values: ParsedValues) {
         let output = CLIOutputPreferences.from(values: values)
         let config = Self.loadConfig(output: output)
-        Self.printJSON(config, pretty: output.pretty)
+        Self.printJSON(Self.configForDump(config), pretty: output.pretty)
         Self.exit(code: .success, output: output, kind: .config)
+    }
+
+    static func configForDump(_ config: CodexBarConfig) -> CodexBarConfig {
+        config.redactedForDisplay()
     }
 
     static func runConfigProviders(_ values: ParsedValues) {
