@@ -43,10 +43,14 @@ public enum AmpProviderDescriptor {
                 versionDetector: nil))
     }
 
-    private static func resolveStrategies(context: ProviderFetchContext) async -> [any ProviderFetchStrategy] {
+    static func resolveStrategies(context: ProviderFetchContext) async -> [any ProviderFetchStrategy] {
         switch context.sourceMode {
         case .auto:
-            [AmpCLIFetchStrategy(), AmpAPIFetchStrategy(), AmpStatusFetchStrategy()]
+            if ProviderTokenResolver.ampToken(environment: context.env) != nil {
+                [AmpAPIFetchStrategy(), AmpCLIFetchStrategy(), AmpStatusFetchStrategy()]
+            } else {
+                [AmpCLIFetchStrategy(), AmpAPIFetchStrategy(), AmpStatusFetchStrategy()]
+            }
         case .cli:
             [AmpCLIFetchStrategy()]
         case .api:
@@ -89,8 +93,7 @@ struct AmpAPIFetchStrategy: ProviderFetchStrategy {
     let kind: ProviderFetchKind = .apiToken
 
     func isAvailable(_ context: ProviderFetchContext) async -> Bool {
-        _ = context
-        return true
+        ProviderTokenResolver.ampToken(environment: context.env) != nil
     }
 
     func fetch(_ context: ProviderFetchContext) async throws -> ProviderFetchResult {

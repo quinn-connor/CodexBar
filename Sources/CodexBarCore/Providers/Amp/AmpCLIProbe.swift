@@ -21,11 +21,8 @@ public struct AmpCLIProbe: Sendable {
             throw SubprocessRunnerError.binaryNotFound("amp")
         }
 
-        var commandEnvironment = environment
-        commandEnvironment["NO_COLOR"] = "1"
-        commandEnvironment["PATH"] = PathBuilder.effectivePATH(
-            purposes: [.tty, .nodeTooling],
-            env: environment,
+        let commandEnvironment = Self.commandEnvironment(
+            environment: environment,
             loginPATH: loginPATH)
 
         let result = try await SubprocessRunner.run(
@@ -42,5 +39,18 @@ public struct AmpCLIProbe: Sendable {
             throw AmpUsageError.parseFailed("The Amp CLI returned no usage data.")
         }
         return try AmpUsageParser.parse(displayText: output, now: now)
+    }
+
+    static func commandEnvironment(
+        environment: [String: String],
+        loginPATH: [String]?) -> [String: String]
+    {
+        SubprocessEnvironment.allowlisted(from: environment, adding: [
+            "NO_COLOR": "1",
+            "PATH": PathBuilder.effectivePATH(
+                purposes: [.tty, .nodeTooling],
+                env: environment,
+                loginPATH: loginPATH),
+        ])
     }
 }

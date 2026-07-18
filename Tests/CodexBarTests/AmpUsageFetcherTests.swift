@@ -106,6 +106,57 @@ struct AmpUsageFetcherTests {
     }
 
     @Test
+    func `auto mode prefers the API without exposing its token to the CLI`() async {
+        let strategies = await AmpProviderDescriptor.resolveStrategies(context: self.makeContext(
+            sourceMode: .auto,
+            env: [AmpSettingsReader.apiTokenKey: "sgamp_secret"]))
+        let apiAvailable = await AmpAPIFetchStrategy().isAvailable(self.makeContext(
+            sourceMode: .auto,
+            env: [AmpSettingsReader.apiTokenKey: "sgamp_secret"]))
+
+        #expect(strategies.map(\.id) == ["amp.api", "amp.cli", "amp.web"])
+        #expect(apiAvailable)
+    }
+
+    @Test
+    func `auto mode keeps CLI first when no API token exists`() async {
+        let strategies = await AmpProviderDescriptor.resolveStrategies(
+            context: self.makeContext(sourceMode: .auto))
+        let apiAvailable = await AmpAPIFetchStrategy().isAvailable(self.makeContext(sourceMode: .auto))
+
+        #expect(strategies.map(\.id) == ["amp.cli", "amp.api", "amp.web"])
+        #expect(!apiAvailable)
+    }
+
+    @Test
+    func `amp CLI environment omits provider and process injection secrets`() {
+        let environment = [
+            "HOME": "/tmp/agentbar-home",
+            "LANG": "en_US.UTF-8",
+            "LC_CTYPE": "UTF-8",
+            "AMP_API_KEY": "sgamp_secret",
+            "OPENAI_API_KEY": "sk-secret",
+            "HTTPS_PROXY": "https://user:password@proxy.example",
+            "DYLD_INSERT_LIBRARIES": "/tmp/evil.dylib",
+            "NODE_OPTIONS": "--require=/tmp/evil.js",
+            "PATH": "/tmp/untrusted:/usr/bin",
+        ]
+
+        let result = AmpCLIProbe.commandEnvironment(environment: environment, loginPATH: ["/usr/bin", "/bin"])
+
+        #expect(result["HOME"] == "/tmp/agentbar-home")
+        #expect(result["LANG"] == "en_US.UTF-8")
+        #expect(result["LC_CTYPE"] == "UTF-8")
+        #expect(result["NO_COLOR"] == "1")
+        #expect(result["PATH"] != nil)
+        #expect(result["AMP_API_KEY"] == nil)
+        #expect(result["OPENAI_API_KEY"] == nil)
+        #expect(result["HTTPS_PROXY"] == nil)
+        #expect(result["DYLD_INSERT_LIBRARIES"] == nil)
+        #expect(result["NODE_OPTIONS"] == nil)
+    }
+
+    @Test
     func `attaches cookie for amp hosts`() {
         #expect(AmpUsageFetcher.shouldAttachCookie(to: URL(string: "https://ampcode.com/settings")))
         #expect(AmpUsageFetcher.shouldAttachCookie(to: URL(string: "https://www.ampcode.com")))
