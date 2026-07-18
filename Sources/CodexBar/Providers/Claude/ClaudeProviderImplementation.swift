@@ -59,13 +59,7 @@ struct ClaudeProviderImplementation: ProviderImplementation {
 
     @MainActor
     func sourceMode(context: ProviderSourceModeContext) -> ProviderSourceMode {
-        switch context.settings.claudeUsageDataSource {
-        case .auto: .auto
-        case .api: .api
-        case .oauth: .oauth
-        case .web: .web
-        case .cli: .cli
-        }
+        context.settings.claudeUsageDataSource.providerSourceMode
     }
 
     @MainActor

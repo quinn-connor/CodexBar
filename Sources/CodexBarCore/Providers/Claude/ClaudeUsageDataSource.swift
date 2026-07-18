@@ -35,4 +35,14 @@ public enum ClaudeUsageDataSource: String, CaseIterable, Identifiable, Sendable 
             "cli"
         }
     }
+
+    public var providerSourceMode: ProviderSourceMode {
+        switch self {
+        case .auto: .auto
+        case .api: .api
+        case .oauth: .oauth
+        case .web: .web
+        case .cli: .cli
+        }
+    }
 }
