@@ -933,22 +933,6 @@ struct SettingsStoreTests {
     }
 
     @Test
-    func `defaults claude usage source to auto`() throws {
-        let suite = "SettingsStoreTests-claude-source"
-        let defaults = try #require(UserDefaults(suiteName: suite))
-        defaults.removePersistentDomain(forName: suite)
-        let configStore = testConfigStore(suiteName: suite)
-
-        let store = SettingsStore(
-            userDefaults: defaults,
-            configStore: configStore,
-            zaiTokenStore: NoopZaiTokenStore(),
-            syntheticTokenStore: NoopSyntheticTokenStore())
-
-        #expect(store.claudeUsageDataSource == .auto)
-    }
-
-    @Test
     func `defaults codex usage source to auto`() throws {
         let suite = "SettingsStoreTests-codex-source"
         let defaults = try #require(UserDefaults(suiteName: suite))

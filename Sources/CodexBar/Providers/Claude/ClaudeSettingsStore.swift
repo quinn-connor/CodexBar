@@ -9,7 +9,7 @@ extension SettingsStore {
         }
         set {
             let source: ProviderSourceMode? = switch newValue {
-            case .auto: .auto
+            case .auto: .cli
             case .api: .api
             case .oauth: .oauth
             case .web: .web
@@ -97,10 +97,12 @@ extension SettingsStore {
     }
 
     private static func claudeUsageDataSource(from source: ProviderSourceMode?) -> ClaudeUsageDataSource {
-        guard let source else { return .auto }
+        guard let source else { return .cli }
         switch source {
-        case .auto, .api:
-            return source == .api ? .api : .auto
+        case .auto:
+            return .cli
+        case .api:
+            return .api
         case .web:
             return .web
         case .cli:

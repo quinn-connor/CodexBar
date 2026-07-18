@@ -57,7 +57,7 @@ struct ClaudeDebugDiagnosticsTests {
                 userDefaults: defaults,
                 configStore: configStore,
                 zaiTokenStore: NoopZaiTokenStore())
-            settings.claudeUsageDataSource = .auto
+            settings.claudeUsageDataSource = .cli
             settings.claudeCookieSource = .manual
             settings.claudeCookieHeader = "sessionKey=sk-ant-session-token"
 
@@ -67,31 +67,47 @@ struct ClaudeDebugDiagnosticsTests {
                 settings: settings)
         }
 
-        let text = await KeychainCacheStore.withServiceOverrideForTesting(service) {
-            KeychainCacheStore.setTestStoreForTesting(true)
-            defer { KeychainCacheStore.setTestStoreForTesting(false) }
+        let fetchOverride: ClaudeStatusProbe.FetchOverride = { _, _, _ in
+            ClaudeStatusSnapshot(
+                sessionPercentLeft: 80,
+                weeklyPercentLeft: 60,
+                opusPercentLeft: nil,
+                accountEmail: nil,
+                accountOrganization: nil,
+                loginMethod: "cli",
+                primaryResetDescription: nil,
+                secondaryResetDescription: nil,
+                opusResetDescription: nil,
+                rawText: "probe raw")
+        }
+        let text = await ClaudeCLIResolver.withResolvedBinaryPathOverrideForTesting("/usr/bin/true") {
+            await KeychainCacheStore.withServiceOverrideForTesting(service) {
+                KeychainCacheStore.setTestStoreForTesting(true)
+                defer { KeychainCacheStore.setTestStoreForTesting(false) }
 
-            return await ClaudeOAuthCredentialsStore.withIsolatedMemoryCacheForTesting {
-                await ClaudeOAuthCredentialsStore.withIsolatedCredentialsFileTrackingForTesting {
-                    await ClaudeOAuthCredentialsStore.withCredentialsURLOverrideForTesting(credentialsURL) {
-                        await store.debugLog(for: .claude)
+                return await ClaudeOAuthCredentialsStore.withIsolatedMemoryCacheForTesting {
+                    await ClaudeOAuthCredentialsStore.withIsolatedCredentialsFileTrackingForTesting {
+                        await ClaudeOAuthCredentialsStore.withCredentialsURLOverrideForTesting(credentialsURL) {
+                            await ClaudeStatusProbe.withFetchOverrideForTesting(fetchOverride) {
+                                await store.debugLog(for: .claude)
+                            }
+                        }
                     }
                 }
             }
         }
 
-        #expect(text.contains("planner_order=oauth→cli→web"))
-        #expect(text.contains("planner_selected=oauth"))
+        #expect(text.contains("planner_order=cli"))
+        #expect(text.contains("planner_selected=cli"))
         #expect(text.contains("planner_no_source=false"))
-        #expect(text.contains("planner_step.oauth=available reason=app-auto-preferred-oauth"))
-        #expect(text.contains("planner_step.cli="))
-        #expect(text.contains("reason=app-auto-fallback-cli"))
-        #expect(text.contains("planner_step.web=available reason=app-auto-fallback-web"))
+        #expect(text.contains("planner_step.cli=available reason=explicit-source-selection"))
+        #expect(!text.contains("planner_step.oauth="))
+        #expect(!text.contains("planner_step.web="))
         #expect(!text.contains("auto_heuristic="))
     }
 
     @Test
-    func `debug log reports no planner selected source when auto has no available sources`() async throws {
+    func `debug log reports explicit CLI as unavailable when its binary is missing`() async throws {
         let suite = "ClaudeDebugDiagnosticsTests-\(UUID().uuidString)"
         let service = "com.steipete.codexbar.cache.tests.\(UUID().uuidString)"
         let tempDir = FileManager.default.temporaryDirectory
@@ -107,9 +123,8 @@ struct ClaudeDebugDiagnosticsTests {
                 userDefaults: defaults,
                 configStore: configStore,
                 zaiTokenStore: NoopZaiTokenStore())
-            settings.claudeUsageDataSource = .auto
+            settings.claudeUsageDataSource = .cli
             settings.claudeCookieSource = .off
-            settings.claudeWebExtrasEnabled = true
 
             return UsageStore(
                 fetcher: UsageFetcher(),
@@ -139,9 +154,10 @@ struct ClaudeDebugDiagnosticsTests {
             }
         }
 
-        #expect(text.contains("planner_selected=none"))
+        #expect(text.contains("planner_selected=cli"))
         #expect(text.contains("planner_no_source=true"))
-        #expect(text.contains("No planner-selected Claude source."))
+        #expect(text.contains("planner_step.cli=unavailable reason=explicit-source-selection"))
+        #expect(text.contains("Probe failed: claudeNotInstalled"))
         #expect(!text.contains("web_extras=enabled"))
     }
 
@@ -186,7 +202,7 @@ struct ClaudeDebugDiagnosticsTests {
                 userDefaults: defaults,
                 configStore: configStore,
                 zaiTokenStore: NoopZaiTokenStore())
-            settings.claudeUsageDataSource = .auto
+            settings.claudeUsageDataSource = .oauth
             settings.claudeCookieSource = .off
             settings.addTokenAccount(
                 provider: .claude,
@@ -319,7 +335,7 @@ struct ClaudeDebugDiagnosticsTests {
                 userDefaults: defaults,
                 configStore: configStore,
                 zaiTokenStore: NoopZaiTokenStore())
-            settings.claudeUsageDataSource = .auto
+            settings.claudeUsageDataSource = .oauth
             settings.claudeCookieSource = .off
 
             return UsageStore(
@@ -428,7 +444,7 @@ struct ClaudeDebugDiagnosticsTests {
         }
 
         await MainActor.run {
-            settings.claudeUsageDataSource = .auto
+            settings.claudeUsageDataSource = .oauth
         }
         await Task.yield()
         await Task.yield()
@@ -456,6 +472,6 @@ struct ClaudeDebugDiagnosticsTests {
         }
 
         #expect(first.contains("planner_selected=cli"))
-        #expect(second.contains("planner_selected=none"))
+        #expect(second.contains("planner_selected=oauth"))
     }
 }

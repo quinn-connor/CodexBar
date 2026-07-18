@@ -141,7 +141,7 @@ struct ClaudeProviderImplementation: ProviderImplementation {
         let usageBinding = Binding(
             get: { context.settings.claudeUsageDataSource.rawValue },
             set: { raw in
-                context.settings.claudeUsageDataSource = ClaudeUsageDataSource(rawValue: raw) ?? .auto
+                context.settings.claudeUsageDataSource = ClaudeUsageDataSource(rawValue: raw) ?? .cli
             })
         let cookieBinding = Binding(
             get: { context.settings.claudeCookieSource.rawValue },
@@ -155,7 +155,7 @@ struct ClaudeProviderImplementation: ProviderImplementation {
                     ?? .onlyOnUserAction
             })
 
-        let usageOptions = ClaudeUsageDataSource.allCases.map {
+        let usageOptions = ClaudeUsageDataSource.allCases.filter { $0 != .auto }.map {
             ProviderSettingsPickerOption(id: $0.rawValue, title: $0.displayName)
         }
         let cookieOptions = ProviderCookieSourceUI.options(
@@ -191,16 +191,11 @@ struct ClaudeProviderImplementation: ProviderImplementation {
             ProviderSettingsPickerDescriptor(
                 id: "claude-usage-source",
                 title: "Usage source",
-                subtitle: "Auto falls back to the next source if the preferred one fails.",
+                subtitle: "Choose an explicit source so credential access is predictable.",
                 binding: usageBinding,
                 options: usageOptions,
                 isVisible: nil,
-                onChange: nil,
-                trailingText: {
-                    guard context.settings.claudeUsageDataSource == .auto else { return nil }
-                    let label = context.store.sourceLabel(for: .claude)
-                    return label == "auto" ? nil : label
-                }),
+                onChange: nil),
             ProviderSettingsPickerDescriptor(
                 id: "claude-keychain-prompt-policy",
                 title: "Keychain prompt policy",

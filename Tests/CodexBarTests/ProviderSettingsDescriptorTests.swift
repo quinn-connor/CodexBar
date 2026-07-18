@@ -274,6 +274,8 @@ struct ProviderSettingsDescriptorTests {
         let pickers = ClaudeProviderImplementation().settingsPickers(context: context)
         let usagePicker = try #require(pickers.first(where: { $0.id == "claude-usage-source" }))
         #expect(usagePicker.placement == .connection)
+        #expect(usagePicker.options.map(\.id) == ["api", "oauth", "web", "cli"])
+        #expect(usagePicker.binding.wrappedValue == "cli")
         #expect(pickers.contains(where: { $0.id == "claude-cookie-source" }))
         let toggles = ClaudeProviderImplementation().settingsToggles(context: context)
         #expect(!toggles.contains(where: { $0.id == "claude-peak-hours" }))
