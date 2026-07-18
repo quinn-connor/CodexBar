@@ -1,6 +1,6 @@
-@testable import CodexBarCore
 import Foundation
 import Testing
+@testable import CodexBarCore
 
 struct GroqConsoleFetcherTests {
     /// A JWT whose payload carries the Groq organization claim. Signature is a
