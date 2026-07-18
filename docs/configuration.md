@@ -1,15 +1,21 @@
 ---
 summary: "CodexBar config file layout for CLI + app settings."
 read_when:
-  - "Editing the CodexBar config file or moving settings off Keychain."
+  - "Editing the CodexBar config file or changing Keychain-backed settings."
   - "Adding new provider settings fields or defaults."
   - "Explaining CLI/app configuration and security."
 ---
 
 # Configuration
 
-CodexBar reads a single JSON config file for CLI and app provider settings.
-API keys, manual cookie headers, source selection, ordering, and token accounts live here. Keychain is still used for runtime cookie caches, browser Safe Storage access, and provider OAuth/device-flow credentials where those flows require it.
+CodexBar reads a single JSON config file for CLI and app provider settings. On macOS, the app stores provider API
+keys, secret keys, manual cookie headers, StepFun tokens, and token-account tokens in its Data Protection Keychain;
+the JSON file keeps the corresponding provider metadata and a `<keychain>` reference. Existing plaintext values are
+migrated after every Keychain write has been read back successfully. If migration fails, the original file is left
+untouched. Linux config storage is unchanged.
+
+Keychain is also used for runtime cookie caches, browser Safe Storage access, and provider OAuth/device-flow
+credentials where those flows require it.
 
 ## Location
 - `CODEXBAR_CONFIG=/path/to/config.json` when set.
@@ -181,6 +187,10 @@ printf '%s' "$SUB2API_API_KEY" | codexbar config set-api-key --provider sub2api 
 printf '%s' "$AIAND_API_KEY" | codexbar config set-api-key --provider aiand --stdin
 ```
 
+The `set-api-key` shortcuts above remain available on Linux. On macOS, add provider credentials in **Settings →
+Providers** so the app can store them in its Keychain; the standalone CLI deliberately refuses to write app-owned
+Keychain secrets. For CLI-only macOS runs, use the provider's environment variable where supported.
+
 OpenAI API project scoping uses `workspaceID` in config. This maps to `OPENAI_PROJECT_ID` for Admin API usage and is
 only applied to the configured OpenAI key, not to selected OpenAI token accounts:
 
@@ -241,8 +251,9 @@ environment. Add labeled token accounts in Settings when one deployment has mult
 
 See [CLI configuration](cli-configuration.md) for scripting examples and output formats.
 
-Manual cookies are secrets. Keep the CodexBar config file private, leave its permissions at `0600`, never commit it,
-and never paste real cookie values or readable DevTools screenshots into public issues.
+Manual cookies are secrets. On macOS they are Keychain-backed, but the config still contains sensitive account and
+provider metadata. Keep the file private, leave its permissions at `0600`, never commit it, and never paste real
+cookie values or readable DevTools screenshots into public issues.
 
 ### tokenAccounts
 ```json
@@ -273,5 +284,5 @@ The order of `providers` controls display/order in the app and CLI. Reorder the 
 ## Notes
 - Fields not relevant to a provider are ignored.
 - Omitted providers are appended with defaults during normalization.
-- Keep the file private; it contains secrets.
+- Keep the file private; it contains secrets on Linux and sensitive metadata on macOS.
 - Validate the file with `codexbar config validate` (JSON output available with `--format json`).

@@ -54,8 +54,8 @@ Or download release tarballs from GitHub Releases:
 - Install/sign in to the provider sources you rely on: CLIs, browser sessions, OAuth/device flow, API keys, local app files, or provider apps depending on the provider.
 - Optional: Settings → Providers → Codex → OpenAI cookies (Automatic or Manual) to add dashboard extras.
 
-### Set API keys from the CLI
-Provider toggles and API keys live in the resolved CodexBar config file. New installs use
+### Set API keys
+Provider toggles and credential references live in the resolved CodexBar config file. New installs use
 `~/.config/codexbar/config.json`; existing `~/.codexbar/config.json` installs still load from the legacy path. You can
 script the same provider list that Settings → Providers uses:
 
@@ -65,13 +65,20 @@ codexbar config enable --provider grok
 codexbar config disable --provider cursor
 ```
 
-For API-key providers, store a key without opening Settings:
+On macOS, add API keys in **Settings → Providers**. The app stores API keys, secret keys, manual cookie headers, and
+token-account tokens in its Data Protection Keychain; existing plaintext config secrets migrate automatically only
+after verified Keychain writes. The standalone macOS CLI refuses `config set-api-key` and redacts secrets from
+`config dump`.
+
+On Linux, the existing config-file command remains available:
 
 ```bash
 printf '%s' "$ELEVENLABS_API_KEY" | codexbar config set-api-key --provider elevenlabs --stdin
 ```
 
-`set-api-key` trims the piped value, stores it with restrictive config-file permissions, and enables the provider by default. Use `--no-enable` to only save the key, or `--api-key <key>` for one-off local scripts where shell history is not a concern.
+`set-api-key` trims the piped value, stores it with restrictive config-file permissions, and enables the provider by
+default. Use `--no-enable` to only save the key, or `--api-key <key>` for one-off local scripts where shell history is
+not a concern.
 See [CLI configuration](docs/cli-configuration.md) for the full flow.
 
 ## Providers

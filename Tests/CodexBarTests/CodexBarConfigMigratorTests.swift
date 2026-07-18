@@ -93,6 +93,40 @@ struct CodexBarConfigMigratorTests {
         #expect(defaults.bool(forKey: Self.legacyMigrationCompletedKey) == true)
     }
 
+    @Test
+    func `protected config load failure never runs migration or overwrites config`() throws {
+        let suite = "CodexBarConfigMigratorTests-protected-load-failure-\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suite))
+        defaults.removePersistentDomain(forName: suite)
+        defer { defaults.removePersistentDomain(forName: suite) }
+
+        let configStore = testConfigStore(suiteName: suite)
+        try FileManager.default.createDirectory(
+            at: configStore.fileURL.deletingLastPathComponent(),
+            withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: configStore.fileURL.deletingLastPathComponent()) }
+        let protected = CodexBarConfig(providers: [
+            ProviderConfig(
+                id: .bedrock,
+                apiKey: CodexBarConfigStore.protectedSecretPlaceholder),
+        ])
+        let protectedData = try JSONEncoder().encode(protected)
+        try protectedData.write(to: configStore.fileURL)
+
+        let secrets = CountingLegacySecretStore(token: "legacy-token")
+        let accountStore = CountingTokenAccountStore()
+        let result = CodexBarConfigMigrator.loadOrMigrate(
+            configStore: configStore,
+            userDefaults: defaults,
+            stores: Self.legacyStores(secrets: secrets, accountStore: accountStore))
+
+        #expect(result.providerConfig(for: .bedrock)?.apiKey == nil)
+        #expect(secrets.loadCount == 0)
+        #expect(accountStore.loadCount == 0)
+        #expect(defaults.bool(forKey: Self.legacyMigrationCompletedKey) == false)
+        #expect(try Data(contentsOf: configStore.fileURL) == protectedData)
+    }
+
     private static let legacyMigrationCompletedKey = "codexbar.legacySecretsMigrationCompleted"
 
     private static func legacyStores(

@@ -216,6 +216,10 @@ struct CLIConfigCommandTests {
         #expect(help.contains("config disable --provider <name>"))
         #expect(help.contains("--stdin"))
         #expect(help.contains("--usage-scope team"))
+        #if os(macOS)
+        #expect(help.contains("protected by Keychain"))
+        #else
         #expect(help.contains("enables that provider by default"))
+        #endif
     }
 }

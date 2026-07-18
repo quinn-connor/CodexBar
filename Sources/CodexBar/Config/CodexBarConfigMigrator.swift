@@ -33,7 +33,15 @@ struct CodexBarConfigMigrator {
         stores: LegacyStores) -> CodexBarConfig
     {
         let log = CodexBarLog.logger(LogCategories.configMigration)
-        let existing = try? configStore.load()
+        let existing: CodexBarConfig?
+        do {
+            existing = try configStore.load()
+        } catch {
+            // A protected config that cannot currently reach Keychain must never be treated
+            // as a missing config: doing so could overwrite its references with defaults.
+            log.error("Failed to load config; skipping migration: \(error)")
+            return CodexBarConfig.makeDefault()
+        }
         var config = (existing ?? CodexBarConfig.makeDefault()).normalized()
         var state = MigrationState()
 

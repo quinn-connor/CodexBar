@@ -4,6 +4,8 @@ public enum CodexBarConfigStoreError: LocalizedError {
     case invalidURL
     case decodeFailed(String)
     case encodeFailed(String)
+    case protectedSecretsUnavailable
+    case secretVerificationFailed
 
     public var errorDescription: String? {
         switch self {
@@ -13,6 +15,10 @@ public enum CodexBarConfigStoreError: LocalizedError {
             "Failed to decode CodexBar config: \(details)"
         case let .encodeFailed(details):
             "Failed to encode CodexBar config: \(details)"
+        case .protectedSecretsUnavailable:
+            "This CodexBar config contains Keychain-protected secrets that are unavailable to this process."
+        case .secretVerificationFailed:
+            "CodexBar could not verify a credential after writing it to the Keychain."
         }
     }
 }
@@ -20,13 +26,24 @@ public enum CodexBarConfigStoreError: LocalizedError {
 public struct CodexBarConfigStore: @unchecked Sendable {
     public static let pathEnvironmentKey = "CODEXBAR_CONFIG"
     public static let xdgConfigHomeEnvironmentKey = "XDG_CONFIG_HOME"
+    public static let protectedSecretPlaceholder = "<keychain>"
+
+    private static let log = CodexBarLog.logger(LogCategories.configStore)
 
     public let fileURL: URL
     private let fileManager: FileManager
+    private let secretStore: (any CodexBarConfigSecretStoring)?
+    private let accessState: CodexBarConfigStoreAccessState
 
-    public init(fileURL: URL = Self.defaultURL(), fileManager: FileManager = .default) {
+    public init(
+        fileURL: URL = Self.defaultURL(),
+        fileManager: FileManager = .default,
+        secretStore: (any CodexBarConfigSecretStoring)? = nil)
+    {
         self.fileURL = fileURL
         self.fileManager = fileManager
+        self.secretStore = secretStore
+        self.accessState = CodexBarConfigStoreAccessState()
     }
 
     public func load() throws -> CodexBarConfig? {
@@ -34,8 +51,34 @@ public struct CodexBarConfigStore: @unchecked Sendable {
         let data = try Data(contentsOf: self.fileURL)
         let decoder = JSONDecoder()
         do {
-            let decoded = try decoder.decode(CodexBarConfig.self, from: data)
-            return decoded.normalized()
+            let decoded = try decoder.decode(CodexBarConfig.self, from: data).normalized()
+            guard let secretStore else {
+                guard self.referencedSecretKeys(in: decoded).isEmpty else {
+                    self.accessState.markProtectedSecretsUnavailable()
+                    throw CodexBarConfigStoreError.protectedSecretsUnavailable
+                }
+                return decoded
+            }
+
+            let hydration: HydrationResult
+            do {
+                hydration = try self.hydrateSecrets(in: decoded, from: secretStore)
+            } catch {
+                self.accessState.markProtectedSecretsUnavailable()
+                throw error
+            }
+            if hydration.sawPlaintextSecret {
+                do {
+                    try self.save(hydration.config)
+                } catch {
+                    // Migration is fail-safe: keep the original plaintext file until every
+                    // Keychain write verifies and the protected JSON replacement succeeds.
+                    Self.log.error("Failed to migrate config secrets to Keychain: \(error)")
+                }
+            }
+            return hydration.config.normalized()
+        } catch let error as CodexBarConfigStoreError {
+            throw error
         } catch {
             throw CodexBarConfigStoreError.decodeFailed(error.localizedDescription)
         }
@@ -50,13 +93,64 @@ public struct CodexBarConfigStore: @unchecked Sendable {
         return config
     }
 
+    /// Decodes config metadata without resolving Keychain references and strips all secret values.
+    public func loadRedacted() throws -> CodexBarConfig? {
+        guard self.fileManager.fileExists(atPath: self.fileURL.path) else { return nil }
+        do {
+            let data = try Data(contentsOf: self.fileURL)
+            return try JSONDecoder().decode(CodexBarConfig.self, from: data)
+                .normalized()
+                .redactedForDisplay()
+        } catch {
+            throw CodexBarConfigStoreError.decodeFailed(error.localizedDescription)
+        }
+    }
+
     public func save(_ config: CodexBarConfig) throws {
+        guard !self.accessState.protectedSecretsUnavailable else {
+            throw CodexBarConfigStoreError.protectedSecretsUnavailable
+        }
         let normalized = config.normalized()
+        let previousReferences = self.loadReferencedSecretKeys()
+        let configToPersist: CodexBarConfig
+        let desiredSecrets: [CodexBarConfigSecretKey: String]
+        if let secretStore {
+            let protected = try self.protectSecrets(in: normalized, store: secretStore)
+            try self.storeAndVerify(protected.secrets, in: secretStore)
+            configToPersist = protected.config
+            desiredSecrets = protected.secrets
+        } else {
+            guard self.referencedSecretKeys(in: normalized).isEmpty else {
+                throw CodexBarConfigStoreError.protectedSecretsUnavailable
+            }
+            configToPersist = normalized
+            desiredSecrets = [:]
+        }
+
+        try self.write(configToPersist)
+
+        if let secretStore {
+            let staleKeys = previousReferences.subtracting(desiredSecrets.keys)
+            for key in staleKeys {
+                do {
+                    try secretStore.removeSecret(for: key)
+                } catch {
+                    // The config no longer references this item, so a failed cleanup leaves only
+                    // an inaccessible Keychain orphan rather than plaintext or a broken config.
+                    Self.log.warning(
+                        "Failed to remove stale config credential",
+                        metadata: ["provider": key.provider.rawValue])
+                }
+            }
+        }
+    }
+
+    private func write(_ config: CodexBarConfig) throws {
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
         let data: Data
         do {
-            data = try encoder.encode(normalized)
+            data = try encoder.encode(config)
         } catch {
             throw CodexBarConfigStoreError.encodeFailed(error.localizedDescription)
         }
@@ -70,7 +164,12 @@ public struct CodexBarConfigStore: @unchecked Sendable {
 
     public func deleteIfPresent() throws {
         guard self.fileManager.fileExists(atPath: self.fileURL.path) else { return }
+        let references = self.loadReferencedSecretKeys()
         try self.fileManager.removeItem(at: self.fileURL)
+        guard let secretStore else { return }
+        for key in references {
+            try? secretStore.removeSecret(for: key)
+        }
     }
 
     public static func defaultURL(
@@ -121,5 +220,239 @@ public struct CodexBarConfigStore: @unchecked Sendable {
             .posixPermissions: NSNumber(value: Int16(0o600)),
         ], ofItemAtPath: self.fileURL.path)
         #endif
+    }
+
+    private func hydrateSecrets(
+        in config: CodexBarConfig,
+        from secretStore: any CodexBarConfigSecretStoring) throws -> HydrationResult
+    {
+        var hydrated = config
+        var sawPlaintextSecret = false
+        for index in hydrated.providers.indices {
+            var provider = hydrated.providers[index]
+            provider.apiKey = try self.hydratedValue(
+                provider.apiKey,
+                key: CodexBarConfigSecretKey(provider: provider.id, kind: .apiKey),
+                store: secretStore,
+                sawPlaintextSecret: &sawPlaintextSecret)
+            provider.secretKey = try self.hydratedValue(
+                provider.secretKey,
+                key: CodexBarConfigSecretKey(provider: provider.id, kind: .secretKey),
+                store: secretStore,
+                sawPlaintextSecret: &sawPlaintextSecret)
+            provider.cookieHeader = try self.hydratedValue(
+                provider.cookieHeader,
+                key: CodexBarConfigSecretKey(provider: provider.id, kind: .cookieHeader),
+                store: secretStore,
+                sawPlaintextSecret: &sawPlaintextSecret)
+            if provider.id == .stepfun {
+                provider.region = try self.hydratedValue(
+                    provider.region,
+                    key: CodexBarConfigSecretKey(provider: provider.id, kind: .stepfunToken),
+                    store: secretStore,
+                    sawPlaintextSecret: &sawPlaintextSecret)
+            }
+            if let data = provider.tokenAccounts {
+                let accounts = try data.accounts.map { account in
+                    let token = try self.hydratedValue(
+                        account.token,
+                        key: CodexBarConfigSecretKey(provider: provider.id, kind: .tokenAccount(account.id)),
+                        store: secretStore,
+                        sawPlaintextSecret: &sawPlaintextSecret) ?? ""
+                    return Self.account(account, replacingTokenWith: token)
+                }
+                provider.tokenAccounts = ProviderTokenAccountData(
+                    version: data.version,
+                    accounts: accounts,
+                    activeIndex: data.activeIndex)
+            }
+            hydrated.providers[index] = provider
+        }
+        return HydrationResult(config: hydrated, sawPlaintextSecret: sawPlaintextSecret)
+    }
+
+    private func hydratedValue(
+        _ value: String?,
+        key: CodexBarConfigSecretKey,
+        store: any CodexBarConfigSecretStoring,
+        sawPlaintextSecret: inout Bool) throws -> String?
+    {
+        guard let value else { return nil }
+        if value == Self.protectedSecretPlaceholder {
+            do {
+                guard let secret = try store.loadSecret(for: key), Self.cleanedSecret(secret) != nil else {
+                    throw CodexBarConfigStoreError.protectedSecretsUnavailable
+                }
+                return secret
+            } catch {
+                Self.log.error(
+                    "Failed to load protected config credential",
+                    metadata: ["provider": key.provider.rawValue])
+                throw CodexBarConfigStoreError.protectedSecretsUnavailable
+            }
+        }
+        if Self.cleanedSecret(value) != nil {
+            sawPlaintextSecret = true
+        }
+        return value
+    }
+
+    private func protectSecrets(
+        in config: CodexBarConfig,
+        store: any CodexBarConfigSecretStoring) throws -> ProtectionResult
+    {
+        var protected = config
+        var secrets: [CodexBarConfigSecretKey: String] = [:]
+        for index in protected.providers.indices {
+            var provider = protected.providers[index]
+            provider.apiKey = try self.protect(
+                provider.sanitizedAPIKey,
+                key: CodexBarConfigSecretKey(provider: provider.id, kind: .apiKey),
+                store: store,
+                secrets: &secrets)
+            provider.secretKey = try self.protect(
+                provider.sanitizedSecretKey,
+                key: CodexBarConfigSecretKey(provider: provider.id, kind: .secretKey),
+                store: store,
+                secrets: &secrets)
+            provider.cookieHeader = try self.protect(
+                provider.sanitizedCookieHeader,
+                key: CodexBarConfigSecretKey(provider: provider.id, kind: .cookieHeader),
+                store: store,
+                secrets: &secrets)
+            if provider.id == .stepfun {
+                provider.region = try self.protect(
+                    Self.cleanedSecret(provider.region),
+                    key: CodexBarConfigSecretKey(provider: provider.id, kind: .stepfunToken),
+                    store: store,
+                    secrets: &secrets)
+            }
+            if let data = provider.tokenAccounts {
+                let accounts = try data.accounts.map { account in
+                    let token = try self.protect(
+                        Self.cleanedSecret(account.token),
+                        key: CodexBarConfigSecretKey(provider: provider.id, kind: .tokenAccount(account.id)),
+                        store: store,
+                        secrets: &secrets) ?? ""
+                    return Self.account(account, replacingTokenWith: token)
+                }
+                provider.tokenAccounts = ProviderTokenAccountData(
+                    version: data.version,
+                    accounts: accounts,
+                    activeIndex: data.activeIndex)
+            }
+            protected.providers[index] = provider
+        }
+        return ProtectionResult(config: protected, secrets: secrets)
+    }
+
+    private func storeAndVerify(
+        _ secrets: [CodexBarConfigSecretKey: String],
+        in store: any CodexBarConfigSecretStoring) throws
+    {
+        for (key, secret) in secrets.sorted(by: { $0.key.account < $1.key.account }) {
+            try store.storeSecret(secret, for: key)
+            guard try store.loadSecret(for: key) == secret else {
+                throw CodexBarConfigStoreError.secretVerificationFailed
+            }
+        }
+    }
+
+    private func loadReferencedSecretKeys() -> Set<CodexBarConfigSecretKey> {
+        guard self.fileManager.fileExists(atPath: self.fileURL.path),
+              let data = try? Data(contentsOf: self.fileURL),
+              let config = try? JSONDecoder().decode(CodexBarConfig.self, from: data)
+        else {
+            return []
+        }
+        return self.referencedSecretKeys(in: config)
+    }
+
+    private func referencedSecretKeys(in config: CodexBarConfig) -> Set<CodexBarConfigSecretKey> {
+        var keys: Set<CodexBarConfigSecretKey> = []
+        for provider in config.providers {
+            if provider.apiKey == Self.protectedSecretPlaceholder {
+                keys.insert(CodexBarConfigSecretKey(provider: provider.id, kind: .apiKey))
+            }
+            if provider.secretKey == Self.protectedSecretPlaceholder {
+                keys.insert(CodexBarConfigSecretKey(provider: provider.id, kind: .secretKey))
+            }
+            if provider.cookieHeader == Self.protectedSecretPlaceholder {
+                keys.insert(CodexBarConfigSecretKey(provider: provider.id, kind: .cookieHeader))
+            }
+            if provider.id == .stepfun, provider.region == Self.protectedSecretPlaceholder {
+                keys.insert(CodexBarConfigSecretKey(provider: provider.id, kind: .stepfunToken))
+            }
+            for account in provider.tokenAccounts?.accounts ?? []
+                where account.token == Self.protectedSecretPlaceholder
+            {
+                keys.insert(CodexBarConfigSecretKey(provider: provider.id, kind: .tokenAccount(account.id)))
+            }
+        }
+        return keys
+    }
+
+    private func protect(
+        _ secret: String?,
+        key: CodexBarConfigSecretKey,
+        store: any CodexBarConfigSecretStoring,
+        secrets: inout [CodexBarConfigSecretKey: String]) throws -> String?
+    {
+        guard let secret else { return nil }
+        if secret == Self.protectedSecretPlaceholder {
+            guard let existing = try store.loadSecret(for: key) else {
+                throw CodexBarConfigStoreError.secretVerificationFailed
+            }
+            secrets[key] = existing
+            return Self.protectedSecretPlaceholder
+        }
+        secrets[key] = secret
+        return Self.protectedSecretPlaceholder
+    }
+
+    private static func cleanedSecret(_ value: String?) -> String? {
+        let cleaned = value?.trimmingCharacters(in: .whitespacesAndNewlines)
+        return (cleaned?.isEmpty ?? true) ? nil : cleaned
+    }
+
+    private static func account(
+        _ account: ProviderTokenAccount,
+        replacingTokenWith token: String) -> ProviderTokenAccount
+    {
+        ProviderTokenAccount(
+            id: account.id,
+            label: account.label,
+            token: token,
+            addedAt: account.addedAt,
+            lastUsed: account.lastUsed,
+            externalIdentifier: account.externalIdentifier,
+            usageScope: account.usageScope,
+            organizationID: account.organizationID,
+            workspaceID: account.workspaceID)
+    }
+}
+
+private struct HydrationResult {
+    let config: CodexBarConfig
+    let sawPlaintextSecret: Bool
+}
+
+private struct ProtectionResult {
+    let config: CodexBarConfig
+    let secrets: [CodexBarConfigSecretKey: String]
+}
+
+private final class CodexBarConfigStoreAccessState: @unchecked Sendable {
+    private let lock = NSLock()
+    private var secretsUnavailable = false
+
+    var protectedSecretsUnavailable: Bool {
+        self.lock.withLock { self.secretsUnavailable }
+    }
+
+    func markProtectedSecretsUnavailable() {
+        self.lock.withLock {
+            self.secretsUnavailable = true
+        }
     }
 }

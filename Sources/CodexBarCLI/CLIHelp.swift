@@ -178,7 +178,14 @@ extension CodexBarCLI {
     }
 
     static func configHelp(version: String) -> String {
-        """
+        let setAPIKeyDescription = {
+            #if os(macOS)
+            "On macOS, set provider credentials in the app Settings so they are protected by Keychain."
+            #else
+            "set-api-key stores a provider API key in the resolved config file and enables that provider by default."
+            #endif
+        }()
+        return """
         CodexBar \(version)
 
         Usage:
@@ -207,7 +214,7 @@ extension CodexBarCLI {
           Validate or print the CodexBar config file (default: validate). dump always redacts secrets.
           providers lists persistent provider enablement.
           enable/disable updates the same provider toggle used by Settings.
-          set-api-key stores a provider API key in the resolved config file and enables that provider by default.
+          \(setAPIKeyDescription)
           For z.ai team usage, add --usage-scope team with BigModel organization and project IDs; this stores
           the key as a token account instead of a provider-level personal key.
 

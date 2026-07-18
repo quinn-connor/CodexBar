@@ -54,7 +54,13 @@ extension CodexBarCLI {
 
     static func runConfigDump(_ values: ParsedValues) {
         let output = CLIOutputPreferences.from(values: values)
-        let config = Self.loadConfig(output: output)
+        let store = CodexBarConfigStore()
+        let config: CodexBarConfig
+        do {
+            config = try store.loadRedacted() ?? CodexBarConfig.makeDefault()
+        } catch {
+            Self.exit(code: .failure, message: error.localizedDescription, output: output, kind: .config)
+        }
         Self.printJSON(Self.configForDump(config), pretty: output.pretty)
         Self.exit(code: .success, output: output, kind: .config)
     }
@@ -125,6 +131,13 @@ extension CodexBarCLI {
     static func runConfigSetAPIKey(_ values: ParsedValues) {
         let output = CLIOutputPreferences.from(values: values)
 
+        #if os(macOS)
+        Self.exit(
+            code: .failure,
+            message: "Store provider credentials in CodexBar Settings on macOS; the app protects them in Keychain.",
+            output: output,
+            kind: .config)
+        #else
         guard let rawProvider = values.options["provider"]?.last,
               let provider = ProviderDescriptorRegistry.cliNameMap[rawProvider.lowercased()]
         else {
@@ -194,6 +207,7 @@ extension CodexBarCLI {
         }
 
         Self.exit(code: .success, output: output, kind: .config)
+        #endif
     }
 
     static func resolveConfigAPIKeyInput(apiKey: String?, readFromStdin: Bool) throws -> String {

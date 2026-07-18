@@ -249,9 +249,14 @@ final class SettingsStore {
         return false
     }
 
+    static func defaultConfigStore() -> CodexBarConfigStore {
+        guard !self.isRunningTests else { return CodexBarConfigStore() }
+        return CodexBarConfigStore(secretStore: MacOSKeychainConfigSecretStore())
+    }
+
     init(
         userDefaults: UserDefaults = .standard,
-        configStore: CodexBarConfigStore = CodexBarConfigStore(),
+        configStore: CodexBarConfigStore = SettingsStore.defaultConfigStore(),
         zaiTokenStore: any ZaiTokenStoring = KeychainZaiTokenStore(),
         syntheticTokenStore: any SyntheticTokenStoring = KeychainSyntheticTokenStore(),
         codexCookieStore: any CookieHeaderStoring = KeychainCookieHeaderStore(

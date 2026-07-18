@@ -11,7 +11,9 @@ read_when:
 `codexbar config` edits the same resolved config file used by the app's Settings → Providers pane.
 New installs use `~/.config/codexbar/config.json`; absolute `XDG_CONFIG_HOME` paths and `CODEXBAR_CONFIG` are
 supported, and existing `~/.codexbar/config.json` installs keep using the legacy file when no XDG config exists.
-The CLI writes the file with `0600` permissions.
+The CLI writes the file with `0600` permissions. On macOS, app-managed secrets are stored in the app's Keychain and
+the config contains `<keychain>` references; the standalone CLI can edit non-secret metadata but cannot resolve or
+replace those credentials.
 
 ## Providers
 
@@ -37,7 +39,11 @@ If every provider is disabled, `codexbar usage` with no `--provider` prints no t
 
 ## API keys
 
-API keys are stored under the provider entry in config:
+On macOS, add API keys in **CodexBar → Settings → Providers**. The app stores them in its Data Protection Keychain,
+and `codexbar config set-api-key` is disabled so a standalone helper cannot create plaintext or inaccessible
+app-owned secrets. Use a provider environment variable for a CLI-only invocation where supported.
+
+On Linux, API keys continue to be stored under the provider entry in config:
 
 ```bash
 printf '%s' "$ELEVENLABS_API_KEY" | codexbar config set-api-key --provider elevenlabs --stdin
@@ -112,4 +118,5 @@ codexbar config validate
 codexbar config dump --pretty
 ```
 
-`dump` prints normalized config, including providers omitted from a hand-written file.
+On macOS, `dump` prints normalized config with every secret redacted, including providers omitted from a hand-written
+file. Linux dump behavior is unchanged.
