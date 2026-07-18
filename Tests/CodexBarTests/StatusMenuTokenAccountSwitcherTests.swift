@@ -356,7 +356,8 @@ final class StatusMenuTokenAccountSwitcherTests: XCTestCase {
         settings.updateProviderConfig(provider: .sub2api) { config in
             config.enterpriseHost = "https://second.example.test"
         }
-        XCTAssertTrue(try XCTUnwrap(controller.tokenAccountMenuDisplay(for: .sub2api)).snapshots.isEmpty)
+        XCTAssertTrue(settings.tokenAccounts(for: .sub2api).isEmpty)
+        XCTAssertNil(controller.tokenAccountMenuDisplay(for: .sub2api))
     }
 
     func test_multiAccountStackedCancellationCannotRestoreCredentialStaleSnapshots() async {
