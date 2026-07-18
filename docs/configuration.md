@@ -189,7 +189,8 @@ printf '%s' "$AIAND_API_KEY" | codexbar config set-api-key --provider aiand --st
 
 The `set-api-key` shortcuts above remain available on Linux. On macOS, add provider credentials in **Settings →
 Providers** so the app can store them in its Keychain; the standalone CLI deliberately refuses to write app-owned
-Keychain secrets. For CLI-only macOS runs, use the provider's environment variable where supported.
+Keychain secrets. For CLI-only macOS runs, point `CODEXBAR_CONFIG` at an isolated config and use the provider's
+environment variable where supported.
 
 OpenAI API project scoping uses `workspaceID` in config. This maps to `OPENAI_PROJECT_ID` for Admin API usage and is
 only applied to the configured OpenAI key, not to selected OpenAI token accounts:

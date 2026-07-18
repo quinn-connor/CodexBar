@@ -67,8 +67,9 @@ codexbar config disable --provider cursor
 
 On macOS, add API keys in **Settings → Providers**. The app stores API keys, secret keys, manual cookie headers, and
 token-account tokens in its Data Protection Keychain; existing plaintext config secrets migrate automatically only
-after verified Keychain writes. The standalone macOS CLI refuses `config set-api-key` and redacts secrets from
-`config dump`.
+after verified Keychain writes. The standalone macOS CLI refuses `config set-api-key`, redacts secrets from
+`config dump`, and fails closed on commands that would need to resolve app-owned credentials. Use an isolated
+`CODEXBAR_CONFIG` plus provider environment variables for CLI-only workflows.
 
 On Linux, the existing config-file command remains available:
 

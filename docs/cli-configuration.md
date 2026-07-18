@@ -12,8 +12,9 @@ read_when:
 New installs use `~/.config/codexbar/config.json`; absolute `XDG_CONFIG_HOME` paths and `CODEXBAR_CONFIG` are
 supported, and existing `~/.codexbar/config.json` installs keep using the legacy file when no XDG config exists.
 The CLI writes the file with `0600` permissions. On macOS, app-managed secrets are stored in the app's Keychain and
-the config contains `<keychain>` references; the standalone CLI can edit non-secret metadata but cannot resolve or
-replace those credentials.
+the config contains `<keychain>` references. `config validate` and the always-redacted `config dump` remain available,
+but other standalone CLI commands fail closed once the selected config contains a protected reference because the
+helper cannot resolve app-owned credentials.
 
 ## Providers
 
@@ -41,7 +42,8 @@ If every provider is disabled, `codexbar usage` with no `--provider` prints no t
 
 On macOS, add API keys in **CodexBar → Settings → Providers**. The app stores them in its Data Protection Keychain,
 and `codexbar config set-api-key` is disabled so a standalone helper cannot create plaintext or inaccessible
-app-owned secrets. Use a provider environment variable for a CLI-only invocation where supported.
+app-owned secrets. For CLI-only use, select an isolated config with `CODEXBAR_CONFIG` and supply the provider's
+environment variable where supported.
 
 On Linux, API keys continue to be stored under the provider entry in config:
 
