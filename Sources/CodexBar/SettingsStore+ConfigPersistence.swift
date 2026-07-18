@@ -48,7 +48,9 @@ extension SettingsStore {
         self.updateConfig(reason: "provider-\(provider.rawValue)", affectsBackgroundWork: true) { config in
             if let index = config.providers.firstIndex(where: { $0.id == provider }) {
                 var entry = config.providers[index]
+                let previous = entry
                 mutate(&entry)
+                entry.requireCredentialReentryIfDestinationChanged(from: previous)
                 config.providers[index] = entry
             } else {
                 var entry = ProviderConfig(id: provider)
@@ -79,7 +81,9 @@ extension SettingsStore {
         var config = self.config
         if let index = config.providers.firstIndex(where: { $0.id == provider }) {
             var entry = config.providers[index]
+            let previous = entry
             mutate(&entry)
+            entry.requireCredentialReentryIfDestinationChanged(from: previous)
             config.providers[index] = entry
         } else {
             var entry = ProviderConfig(id: provider)

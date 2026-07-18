@@ -310,6 +310,48 @@ public struct ProviderConfig: Codable, Sendable, Identifiable {
         Self.clean(self.deepseekProfileScope)
     }
 
+    /// Stable metadata stored alongside protected credentials. A credential can
+    /// only be hydrated when the provider's configured network destination still
+    /// matches the destination that was approved when the credential was saved.
+    public var credentialDestinationBinding: String {
+        "v1|\(self.id.rawValue)|\(Self.canonicalCredentialDestination(self.sanitizedEnterpriseHost))"
+    }
+
+    /// When a user changes an origin, retain only credentials explicitly replaced
+    /// by the same edit. Unchanged values are cleared so the new destination cannot
+    /// inherit authority granted to the old one.
+    public mutating func requireCredentialReentryIfDestinationChanged(from previous: ProviderConfig) {
+        guard self.credentialDestinationBinding != previous.credentialDestinationBinding else { return }
+
+        if self.apiKey == previous.apiKey { self.apiKey = nil }
+        if self.secretKey == previous.secretKey { self.secretKey = nil }
+        if self.cookieHeader == previous.cookieHeader { self.cookieHeader = nil }
+        if previous.tokenAccounts != nil { self.tokenAccounts = nil }
+    }
+
+    private static func canonicalCredentialDestination(_ raw: String?) -> String {
+        guard let raw else { return "default" }
+        let candidate = raw.contains("://") ? raw : "https://\(raw)"
+        guard var components = URLComponents(string: candidate),
+              components.user == nil,
+              components.password == nil,
+              let host = components.host?.lowercased(),
+              !host.isEmpty
+        else {
+            return "invalid:\(raw)"
+        }
+
+        components.scheme = components.scheme?.lowercased() ?? "https"
+        components.host = host
+        if (components.scheme == "https" && components.port == 443)
+            || (components.scheme == "http" && components.port == 80)
+        {
+            components.port = nil
+        }
+        if components.path == "/" { components.path = "" }
+        return components.string ?? "invalid:\(raw)"
+    }
+
     private static func clean(_ raw: String?) -> String? {
         guard var value = raw?.trimmingCharacters(in: .whitespacesAndNewlines), !value.isEmpty else {
             return nil

@@ -1767,4 +1767,20 @@ struct SettingsStoreTests {
 
         #expect(storeB.costSummaryDisplayStyle == .both)
     }
+
+    @Test
+    func `changing a provider destination requires credential reentry`() {
+        let store = testSettingsStore(suiteName: "SettingsStoreTests-destination-reentry")
+        store.sub2APIBaseURL = "https://first.example.test"
+        store.sub2APIAPIKey = "first-secret"
+        store.addTokenAccount(provider: .sub2api, label: "Primary", token: "account-secret")
+
+        store.sub2APIBaseURL = "https://second.example.test"
+
+        #expect(store.sub2APIAPIKey.isEmpty)
+        #expect(store.tokenAccounts(for: .sub2api).isEmpty)
+
+        store.sub2APIAPIKey = "replacement-secret"
+        #expect(store.sub2APIAPIKey == "replacement-secret")
+    }
 }

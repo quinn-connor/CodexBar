@@ -1,6 +1,6 @@
 import Foundation
 
-public enum CodexBarConfigStoreError: LocalizedError {
+public enum CodexBarConfigStoreError: LocalizedError, Equatable {
     case invalidURL
     case decodeFailed(String)
     case encodeFailed(String)
@@ -10,15 +10,16 @@ public enum CodexBarConfigStoreError: LocalizedError {
     public var errorDescription: String? {
         switch self {
         case .invalidURL:
-            "Invalid CodexBar config path."
+            "Invalid \(AppIdentity.displayName) config path."
         case let .decodeFailed(details):
-            "Failed to decode CodexBar config: \(details)"
+            "Failed to decode \(AppIdentity.displayName) config: \(details)"
         case let .encodeFailed(details):
-            "Failed to encode CodexBar config: \(details)"
+            "Failed to encode \(AppIdentity.displayName) config: \(details)"
         case .protectedSecretsUnavailable:
-            "This CodexBar config contains Keychain-protected secrets that are unavailable to this process."
+            "This \(AppIdentity.displayName) config contains Keychain-protected secrets that are unavailable " +
+                "or bound to a different destination."
         case .secretVerificationFailed:
-            "CodexBar could not verify a credential after writing it to the Keychain."
+            "\(AppIdentity.displayName) could not verify a credential after writing it to the Keychain."
         }
     }
 }
@@ -113,7 +114,7 @@ public struct CodexBarConfigStore: @unchecked Sendable {
         let normalized = config.normalized()
         let previousReferences = self.loadReferencedSecretKeys()
         let configToPersist: CodexBarConfig
-        let desiredSecrets: [CodexBarConfigSecretKey: String]
+        let desiredSecrets: [CodexBarConfigSecretKey: CodexBarConfigStoredSecret]
         if let secretStore {
             let protected = try self.protectSecrets(in: normalized, store: secretStore)
             try self.storeAndVerify(protected.secrets, in: secretStore)
@@ -230,25 +231,30 @@ public struct CodexBarConfigStore: @unchecked Sendable {
         var sawPlaintextSecret = false
         for index in hydrated.providers.indices {
             var provider = hydrated.providers[index]
+            let destinationBinding = provider.credentialDestinationBinding
             provider.apiKey = try self.hydratedValue(
                 provider.apiKey,
                 key: CodexBarConfigSecretKey(provider: provider.id, kind: .apiKey),
+                destinationBinding: destinationBinding,
                 store: secretStore,
                 sawPlaintextSecret: &sawPlaintextSecret)
             provider.secretKey = try self.hydratedValue(
                 provider.secretKey,
                 key: CodexBarConfigSecretKey(provider: provider.id, kind: .secretKey),
+                destinationBinding: destinationBinding,
                 store: secretStore,
                 sawPlaintextSecret: &sawPlaintextSecret)
             provider.cookieHeader = try self.hydratedValue(
                 provider.cookieHeader,
                 key: CodexBarConfigSecretKey(provider: provider.id, kind: .cookieHeader),
+                destinationBinding: destinationBinding,
                 store: secretStore,
                 sawPlaintextSecret: &sawPlaintextSecret)
             if provider.id == .stepfun {
                 provider.region = try self.hydratedValue(
                     provider.region,
                     key: CodexBarConfigSecretKey(provider: provider.id, kind: .stepfunToken),
+                    destinationBinding: destinationBinding,
                     store: secretStore,
                     sawPlaintextSecret: &sawPlaintextSecret)
             }
@@ -257,6 +263,7 @@ public struct CodexBarConfigStore: @unchecked Sendable {
                     let token = try self.hydratedValue(
                         account.token,
                         key: CodexBarConfigSecretKey(provider: provider.id, kind: .tokenAccount(account.id)),
+                        destinationBinding: destinationBinding,
                         store: secretStore,
                         sawPlaintextSecret: &sawPlaintextSecret) ?? ""
                     return Self.account(account, replacingTokenWith: token)
@@ -274,16 +281,20 @@ public struct CodexBarConfigStore: @unchecked Sendable {
     private func hydratedValue(
         _ value: String?,
         key: CodexBarConfigSecretKey,
+        destinationBinding: String,
         store: any CodexBarConfigSecretStoring,
         sawPlaintextSecret: inout Bool) throws -> String?
     {
         guard let value else { return nil }
         if value == Self.protectedSecretPlaceholder {
             do {
-                guard let secret = try store.loadSecret(for: key), Self.cleanedSecret(secret) != nil else {
+                guard let secret = try store.loadSecret(for: key),
+                      secret.destinationBinding == destinationBinding,
+                      Self.cleanedSecret(secret.value) != nil
+                else {
                     throw CodexBarConfigStoreError.protectedSecretsUnavailable
                 }
-                return secret
+                return secret.value
             } catch {
                 Self.log.error(
                     "Failed to load protected config credential",
@@ -302,28 +313,33 @@ public struct CodexBarConfigStore: @unchecked Sendable {
         store: any CodexBarConfigSecretStoring) throws -> ProtectionResult
     {
         var protected = config
-        var secrets: [CodexBarConfigSecretKey: String] = [:]
+        var secrets: [CodexBarConfigSecretKey: CodexBarConfigStoredSecret] = [:]
         for index in protected.providers.indices {
             var provider = protected.providers[index]
+            let destinationBinding = provider.credentialDestinationBinding
             provider.apiKey = try self.protect(
                 provider.sanitizedAPIKey,
                 key: CodexBarConfigSecretKey(provider: provider.id, kind: .apiKey),
+                destinationBinding: destinationBinding,
                 store: store,
                 secrets: &secrets)
             provider.secretKey = try self.protect(
                 provider.sanitizedSecretKey,
                 key: CodexBarConfigSecretKey(provider: provider.id, kind: .secretKey),
+                destinationBinding: destinationBinding,
                 store: store,
                 secrets: &secrets)
             provider.cookieHeader = try self.protect(
                 provider.sanitizedCookieHeader,
                 key: CodexBarConfigSecretKey(provider: provider.id, kind: .cookieHeader),
+                destinationBinding: destinationBinding,
                 store: store,
                 secrets: &secrets)
             if provider.id == .stepfun {
                 provider.region = try self.protect(
                     Self.cleanedSecret(provider.region),
                     key: CodexBarConfigSecretKey(provider: provider.id, kind: .stepfunToken),
+                    destinationBinding: destinationBinding,
                     store: store,
                     secrets: &secrets)
             }
@@ -332,6 +348,7 @@ public struct CodexBarConfigStore: @unchecked Sendable {
                     let token = try self.protect(
                         Self.cleanedSecret(account.token),
                         key: CodexBarConfigSecretKey(provider: provider.id, kind: .tokenAccount(account.id)),
+                        destinationBinding: destinationBinding,
                         store: store,
                         secrets: &secrets) ?? ""
                     return Self.account(account, replacingTokenWith: token)
@@ -347,7 +364,7 @@ public struct CodexBarConfigStore: @unchecked Sendable {
     }
 
     private func storeAndVerify(
-        _ secrets: [CodexBarConfigSecretKey: String],
+        _ secrets: [CodexBarConfigSecretKey: CodexBarConfigStoredSecret],
         in store: any CodexBarConfigSecretStoring) throws
     {
         for (key, secret) in secrets.sorted(by: { $0.key.account < $1.key.account }) {
@@ -395,18 +412,21 @@ public struct CodexBarConfigStore: @unchecked Sendable {
     private func protect(
         _ secret: String?,
         key: CodexBarConfigSecretKey,
+        destinationBinding: String,
         store: any CodexBarConfigSecretStoring,
-        secrets: inout [CodexBarConfigSecretKey: String]) throws -> String?
+        secrets: inout [CodexBarConfigSecretKey: CodexBarConfigStoredSecret]) throws -> String?
     {
         guard let secret else { return nil }
         if secret == Self.protectedSecretPlaceholder {
-            guard let existing = try store.loadSecret(for: key) else {
+            guard let existing = try store.loadSecret(for: key),
+                  existing.destinationBinding == destinationBinding
+            else {
                 throw CodexBarConfigStoreError.secretVerificationFailed
             }
             secrets[key] = existing
             return Self.protectedSecretPlaceholder
         }
-        secrets[key] = secret
+        secrets[key] = CodexBarConfigStoredSecret(value: secret, destinationBinding: destinationBinding)
         return Self.protectedSecretPlaceholder
     }
 
@@ -439,7 +459,7 @@ private struct HydrationResult {
 
 private struct ProtectionResult {
     let config: CodexBarConfig
-    let secrets: [CodexBarConfigSecretKey: String]
+    let secrets: [CodexBarConfigSecretKey: CodexBarConfigStoredSecret]
 }
 
 private final class CodexBarConfigStoreAccessState: @unchecked Sendable {

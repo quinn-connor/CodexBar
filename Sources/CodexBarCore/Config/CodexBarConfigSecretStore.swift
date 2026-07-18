@@ -29,9 +29,23 @@ public struct CodexBarConfigSecretKey: Hashable, Sendable {
     }
 }
 
+public struct CodexBarConfigStoredSecret: Codable, Equatable, Sendable {
+    public static let currentVersion = 1
+
+    public let version: Int
+    public let value: String
+    public let destinationBinding: String
+
+    public init(value: String, destinationBinding: String, version: Int = Self.currentVersion) {
+        self.version = version
+        self.value = value
+        self.destinationBinding = destinationBinding
+    }
+}
+
 public protocol CodexBarConfigSecretStoring: Sendable {
-    func loadSecret(for key: CodexBarConfigSecretKey) throws -> String?
-    func storeSecret(_ secret: String, for key: CodexBarConfigSecretKey) throws
+    func loadSecret(for key: CodexBarConfigSecretKey) throws -> CodexBarConfigStoredSecret?
+    func storeSecret(_ secret: CodexBarConfigStoredSecret, for key: CodexBarConfigSecretKey) throws
     func removeSecret(for key: CodexBarConfigSecretKey) throws
 }
 
@@ -43,11 +57,11 @@ public enum CodexBarConfigSecretStoreError: LocalizedError, Sendable {
     public var errorDescription: String? {
         switch self {
         case .accessDisabled:
-            "CodexBar Keychain access is disabled."
+            "\(AppIdentity.displayName) Keychain access is disabled."
         case .invalidData:
-            "A CodexBar Keychain item contained invalid data."
+            "An \(AppIdentity.displayName) Keychain item contained invalid data."
         case let .operationFailed(operation, status):
-            "CodexBar Keychain \(operation) failed with status \(status)."
+            "\(AppIdentity.displayName) Keychain \(operation) failed with status \(status)."
         }
     }
 }
@@ -65,7 +79,7 @@ public struct MacOSKeychainConfigSecretStore: CodexBarConfigSecretStoring, Senda
         self.service = service
     }
 
-    public func loadSecret(for key: CodexBarConfigSecretKey) throws -> String? {
+    public func loadSecret(for key: CodexBarConfigSecretKey) throws -> CodexBarConfigStoredSecret? {
         try self.requireAccess()
         var query = self.baseQuery(for: key)
         query[kSecMatchLimit as String] = kSecMatchLimitOne
@@ -79,16 +93,22 @@ public struct MacOSKeychainConfigSecretStore: CodexBarConfigSecretStoring, Senda
             throw CodexBarConfigSecretStoreError.operationFailed(operation: "read", status: status)
         }
         guard let data = result as? Data,
-              let secret = String(data: data, encoding: .utf8)
+              let secret = try? JSONDecoder().decode(CodexBarConfigStoredSecret.self, from: data),
+              secret.version == CodexBarConfigStoredSecret.currentVersion
         else {
             throw CodexBarConfigSecretStoreError.invalidData
         }
         return secret
     }
 
-    public func storeSecret(_ secret: String, for key: CodexBarConfigSecretKey) throws {
+    public func storeSecret(_ secret: CodexBarConfigStoredSecret, for key: CodexBarConfigSecretKey) throws {
         try self.requireAccess()
-        let data = Data(secret.utf8)
+        let data: Data
+        do {
+            data = try JSONEncoder().encode(secret)
+        } catch {
+            throw CodexBarConfigSecretStoreError.invalidData
+        }
         var query = self.baseQuery(for: key)
         KeychainNoUIQuery.apply(to: &query)
 
@@ -125,6 +145,7 @@ public struct MacOSKeychainConfigSecretStore: CodexBarConfigSecretStoring, Senda
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: self.service,
             kSecAttrAccount as String: key.account,
+            kSecAttrSynchronizable as String: false,
             kSecUseDataProtectionKeychain as String: true,
         ]
     }

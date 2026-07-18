@@ -139,6 +139,47 @@ struct CodexBarConfigSecretStoreTests {
         #expect(try Data(contentsOf: fileURL) == protectedJSON)
     }
 
+    @Test
+    func `protected credential cannot be rebound by editing config destination`() throws {
+        let fileURL = Self.testFileURL("destination-tamper")
+        defer { try? FileManager.default.removeItem(at: fileURL.deletingLastPathComponent()) }
+        let secretStore = InMemoryConfigSecretStore()
+        let store = CodexBarConfigStore(fileURL: fileURL, secretStore: secretStore)
+        try store.save(CodexBarConfig(providers: [
+            ProviderConfig(
+                id: .sub2api,
+                apiKey: "destination-bound-secret",
+                enterpriseHost: "https://first.example.test/v1"),
+        ]))
+
+        let protectedData = try Data(contentsOf: fileURL)
+        var protectedConfig = try JSONDecoder().decode(CodexBarConfig.self, from: protectedData)
+        var provider = try #require(protectedConfig.providerConfig(for: .sub2api))
+        provider.enterpriseHost = "https://second.example.test/v1"
+        protectedConfig.setProviderConfig(provider)
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        try encoder.encode(protectedConfig).write(to: fileURL, options: .atomic)
+
+        #expect(throws: CodexBarConfigStoreError.protectedSecretsUnavailable) {
+            _ = try store.load()
+        }
+    }
+
+    @Test
+    func `credential destination binding canonicalizes equivalent origins`() {
+        let first = ProviderConfig(
+            id: .sub2api,
+            apiKey: "secret",
+            enterpriseHost: "HTTPS://Proxy.Example.COM:443/v1/")
+        let second = ProviderConfig(
+            id: .sub2api,
+            apiKey: "secret",
+            enterpriseHost: "https://proxy.example.com/v1/")
+
+        #expect(first.credentialDestinationBinding == second.credentialDestinationBinding)
+    }
+
     private static let secretPlaceholders = [
         "access-key-placeholder",
         "secret-key-placeholder",
@@ -181,7 +222,7 @@ struct CodexBarConfigSecretStoreTests {
 
 private final class InMemoryConfigSecretStore: CodexBarConfigSecretStoring, @unchecked Sendable {
     private let lock = NSLock()
-    private var values: [CodexBarConfigSecretKey: String] = [:]
+    private var values: [CodexBarConfigSecretKey: CodexBarConfigStoredSecret] = [:]
     private var removedKeys: Set<CodexBarConfigSecretKey> = []
     private let failStores: Bool
 
@@ -201,11 +242,11 @@ private final class InMemoryConfigSecretStore: CodexBarConfigSecretStoring, @unc
         self.lock.withLock { self.removedKeys.count }
     }
 
-    func loadSecret(for key: CodexBarConfigSecretKey) throws -> String? {
+    func loadSecret(for key: CodexBarConfigSecretKey) throws -> CodexBarConfigStoredSecret? {
         self.lock.withLock { self.values[key] }
     }
 
-    func storeSecret(_ secret: String, for key: CodexBarConfigSecretKey) throws {
+    func storeSecret(_ secret: CodexBarConfigStoredSecret, for key: CodexBarConfigSecretKey) throws {
         if self.failStores { throw InMemoryConfigSecretStoreError.storeFailed }
         self.lock.withLock {
             self.values[key] = secret
