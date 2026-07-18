@@ -51,7 +51,11 @@ public enum KimiProviderDescriptor {
         case .web:
             [KimiWebFetchStrategy()]
         case .auto:
-            [KimiCLICredentialFetchStrategy(), KimiWebFetchStrategy()]
+            if KimiSettingsReader.hasKimiCodeCredential(environment: context.env) {
+                [KimiCLICredentialFetchStrategy()]
+            } else {
+                [KimiWebFetchStrategy()]
+            }
         case .api, .oauth:
             []
         }
@@ -147,7 +151,7 @@ struct KimiWebFetchStrategy: ProviderFetchStrategy {
 
         #if os(macOS)
         if context.settings?.kimi?.cookieSource != .off {
-            return KimiCookieImporter.hasSession()
+            return KimiCookieImporter.hasDefaultBrowserSource(browserDetection: context.browserDetection)
         }
         #endif
 
@@ -185,7 +189,7 @@ struct KimiWebFetchStrategy: ProviderFetchStrategy {
         #if os(macOS)
         if context.settings?.kimi?.cookieSource != .off {
             do {
-                let session = try KimiCookieImporter.importSession()
+                let session = try KimiCookieImporter.importSession(browserDetection: context.browserDetection)
                 if let token = session.authToken {
                     return token
                 }

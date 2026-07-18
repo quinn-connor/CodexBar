@@ -304,6 +304,30 @@ struct KimiCLICredentialFetchStrategyTests {
     }
 
     @Test
+    func `auto mode does not cascade an expired CLI credential into browser access`() async throws {
+        let home = try makeTemporaryKimiCodeHome()
+        defer { try? FileManager.default.removeItem(at: home) }
+        _ = try writeKimiCodeCredential(
+            home: home,
+            accessToken: "expired",
+            expiresAt: Date().addingTimeInterval(-60).timeIntervalSince1970)
+        let context = makeKimiFetchContext(
+            sourceMode: .auto,
+            environment: ["KIMI_CODE_HOME": home.path])
+
+        let outcome = await KimiProviderDescriptor.descriptor.fetchPlan.pipeline.fetch(
+            context: context,
+            provider: .kimi)
+
+        #expect(outcome.attempts.map(\.strategyID) == ["kimi.cli"])
+        guard case let .failure(error) = outcome.result else {
+            Issue.record("Expected expired Kimi Code credential failure")
+            return
+        }
+        #expect(error as? KimiAPIError == .expiredCodeCredential)
+    }
+
+    @Test
     func `explicit signed in mode uses fresh CLI credential`() async throws {
         let home = try makeTemporaryKimiCodeHome()
         defer { try? FileManager.default.removeItem(at: home) }
@@ -333,6 +357,38 @@ struct KimiCLICredentialFetchStrategyTests {
         #expect(keyError as? KimiAPIError == .apiError("failed"))
     }
 }
+
+#if os(macOS)
+struct KimiDefaultBrowserTests {
+    @Test
+    func `cookie import resolves only the system default browser`() {
+        let applicationURL = URL(fileURLWithPath: "/Applications/Default Browser.app")
+
+        let safari = KimiCookieImporter.defaultBrowser(
+            applicationURL: applicationURL,
+            bundleIdentifierForApplication: { _ in "com.apple.Safari" })
+        let firefox = KimiCookieImporter.defaultBrowser(
+            applicationURL: applicationURL,
+            bundleIdentifierForApplication: { _ in "org.mozilla.firefox" })
+        let unsupported = KimiCookieImporter.defaultBrowser(
+            applicationURL: applicationURL,
+            bundleIdentifierForApplication: { _ in "com.example.unknown" })
+
+        #expect(safari == .safari)
+        #expect(firefox == .firefox)
+        #expect(unsupported == nil)
+    }
+
+    @Test
+    func `cookie import does not substitute Chrome when no default browser resolves`() {
+        let browser = KimiCookieImporter.defaultBrowser(
+            applicationURL: nil,
+            bundleIdentifierForApplication: { _ in "com.google.Chrome" })
+
+        #expect(browser == nil)
+    }
+}
+#endif
 
 struct KimiUsageResponseParsingTests {
     @Test

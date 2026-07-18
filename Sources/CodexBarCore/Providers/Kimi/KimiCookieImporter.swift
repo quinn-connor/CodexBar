@@ -1,14 +1,14 @@
 import Foundation
 
 #if os(macOS)
+@preconcurrency import AppKit
 import SweetCookieKit
 
 public enum KimiCookieImporter {
     private static let log = CodexBarLog.logger(LogCategories.kimiCookie)
     private static let cookieClient = BrowserCookieClient()
     private static let cookieDomains = ["www.kimi.com", "kimi.com"]
-    private static let cookieImportOrder: BrowserCookieImportOrder =
-        ProviderDefaults.metadata[.kimi]?.browserCookieOrder ?? Browser.defaultImportOrder
+    private static let dashboardURL = URL(string: "https://www.kimi.com")!
 
     public struct SessionInfo: Sendable {
         public let cookies: [HTTPCookie]
@@ -29,7 +29,7 @@ public enum KimiCookieImporter {
         logger: ((String) -> Void)? = nil) throws -> [SessionInfo]
     {
         var sessions: [SessionInfo] = []
-        let candidates = self.cookieImportOrder.cookieImportCandidates(using: browserDetection)
+        let candidates = self.defaultBrowserCandidates(browserDetection: browserDetection)
         for browserSource in candidates {
             do {
                 let perSource = try self.importSessions(from: browserSource, logger: logger)
@@ -46,6 +46,12 @@ public enum KimiCookieImporter {
             throw KimiCookieImportError.noCookies
         }
         return sessions
+    }
+
+    public static func hasDefaultBrowserSource(
+        browserDetection: BrowserDetection = BrowserDetection()) -> Bool
+    {
+        !self.defaultBrowserCandidates(browserDetection: browserDetection).isEmpty
     }
 
     public static func importSessions(
@@ -103,6 +109,21 @@ public enum KimiCookieImporter {
         } catch {
             return false
         }
+    }
+
+    static func defaultBrowser(
+        applicationURL: URL?,
+        bundleIdentifierForApplication: (URL) -> String? = { Bundle(url: $0)?.bundleIdentifier }) -> Browser?
+    {
+        guard let applicationURL else { return nil }
+        return CursorStatusProbe.interactiveBrowser(
+            bundleIdentifier: bundleIdentifierForApplication(applicationURL))
+    }
+
+    private static func defaultBrowserCandidates(browserDetection: BrowserDetection) -> [Browser] {
+        let applicationURL = NSWorkspace.shared.urlForApplication(toOpen: self.dashboardURL)
+        guard let browser = self.defaultBrowser(applicationURL: applicationURL) else { return [] }
+        return [browser].cookieImportCandidates(using: browserDetection)
     }
 
     private static func cookieNames(from cookies: [HTTPCookie]) -> String {
