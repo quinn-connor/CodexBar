@@ -14,6 +14,7 @@ script = Path(sys.argv[1]).read_text()
 functions = []
 for name in (
     'resolve_package_signing_mode',
+    'resolve_codesign_timestamp_mode',
     'verify_no_quarantine_attribute',
     'verify_packaged_app_integrity',
 ):
@@ -37,6 +38,21 @@ resolve_package_signing_mode
 CODEXBAR_SIGNING=invalid
 if resolve_package_signing_mode 2>/dev/null; then
   echo "Invalid package signing mode unexpectedly succeeded" >&2
+  exit 1
+fi
+
+unset CODEXBAR_CODESIGN_TIMESTAMP
+CODESIGN_TIMESTAMP_MODE=
+resolve_codesign_timestamp_mode
+[[ "$CODESIGN_TIMESTAMP_MODE" == "required" ]]
+
+CODEXBAR_CODESIGN_TIMESTAMP=none
+resolve_codesign_timestamp_mode
+[[ "$CODESIGN_TIMESTAMP_MODE" == "none" ]]
+
+CODEXBAR_CODESIGN_TIMESTAMP=invalid
+if resolve_codesign_timestamp_mode 2>/dev/null; then
+  echo "Invalid codesign timestamp mode unexpectedly succeeded" >&2
   exit 1
 fi
 

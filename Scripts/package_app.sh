@@ -13,6 +13,18 @@ resolve_package_signing_mode() {
   SIGNING_MODE="$requested"
 }
 
+resolve_codesign_timestamp_mode() {
+  local requested="${CODEXBAR_CODESIGN_TIMESTAMP:-required}"
+  case "$requested" in
+    required|none) ;;
+    *)
+      echo "ERROR: Unsupported CODEXBAR_CODESIGN_TIMESTAMP: $requested (expected required or none)" >&2
+      return 1
+      ;;
+  esac
+  CODESIGN_TIMESTAMP_MODE="$requested"
+}
+
 verify_no_quarantine_attribute() {
   local bundle="$1"
   local quarantined
@@ -34,6 +46,8 @@ CONF=${1:-release}
 ALLOW_LLDB=${CODEXBAR_ALLOW_LLDB:-0}
 SIGNING_MODE=
 resolve_package_signing_mode
+CODESIGN_TIMESTAMP_MODE=
+resolve_codesign_timestamp_mode
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
 cd "$ROOT"
 LOWER_CONF=$(printf "%s" "$CONF" | tr '[:upper:]' '[:lower:]')
@@ -487,7 +501,11 @@ else
     exit 1
   fi
   CODESIGN_ID="$APP_IDENTITY"
-  CODESIGN_ARGS=(--force --timestamp --options runtime --sign "$CODESIGN_ID")
+  CODESIGN_TIMESTAMP_ARGS=(--timestamp)
+  if [[ "$CODESIGN_TIMESTAMP_MODE" == "none" ]]; then
+    CODESIGN_TIMESTAMP_ARGS=(--timestamp=none)
+  fi
+  CODESIGN_ARGS=(--force "${CODESIGN_TIMESTAMP_ARGS[@]}" --options runtime --sign "$CODESIGN_ID")
 fi
 
 if [[ -f "$ICON_TARGET" ]]; then
