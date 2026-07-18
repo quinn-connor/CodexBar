@@ -64,11 +64,10 @@ enum GroqConsoleStytch {
         }
         let response = try await transport.response(for: request)
         guard (200..<300).contains(response.statusCode) else {
-            let summary = String(bytes: response.data.prefix(300), encoding: .utf8) ?? ""
             if response.statusCode == 401 || response.statusCode == 403 {
-                throw GroqConsoleError.accessDenied(summary)
+                throw GroqConsoleError.accessDenied("Stytch rejected the session")
             }
-            throw GroqConsoleError.apiError("Stytch HTTP \(response.statusCode): \(summary)")
+            throw GroqConsoleError.apiError("Stytch HTTP \(response.statusCode)")
         }
 
         guard let jwt = (try? JSONDecoder().decode(AuthenticateResponse.self, from: response.data))?

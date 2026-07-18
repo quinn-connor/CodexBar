@@ -498,8 +498,7 @@ public struct StepFunUsageFetcher: Sendable {
         let response = try await ProviderHTTPClient.shared.response(for: request)
         let data = response.data
         guard response.statusCode == 200 else {
-            let body = String(data: data, encoding: .utf8) ?? ""
-            Self.log.error("StepFun RegisterDevice returned \(response.statusCode): \(body)")
+            Self.log.error("StepFun RegisterDevice returned HTTP \(response.statusCode)")
             throw StepFunUsageError.deviceRegistrationFailed("HTTP \(response.statusCode)")
         }
 
@@ -538,8 +537,7 @@ public struct StepFunUsageFetcher: Sendable {
         let response = try await ProviderHTTPClient.shared.response(for: request)
         let data = response.data
         guard response.statusCode == 200 else {
-            let body = String(data: data, encoding: .utf8) ?? ""
-            Self.log.error("StepFun SignInByPassword returned \(response.statusCode): \(body)")
+            Self.log.error("StepFun SignInByPassword returned HTTP \(response.statusCode)")
             throw StepFunUsageError.loginFailed("HTTP \(response.statusCode)")
         }
 
@@ -580,8 +578,7 @@ public struct StepFunUsageFetcher: Sendable {
         let response = try await ProviderHTTPClient.shared.response(for: request)
         let data = response.data
         guard response.statusCode == 200 else {
-            let body = String(data: data, encoding: .utf8) ?? ""
-            Self.log.error("StepFun RefreshToken returned \(response.statusCode): \(body)")
+            Self.log.error("StepFun RefreshToken returned HTTP \(response.statusCode)")
             throw StepFunUsageError.tokenRefreshFailed("HTTP \(response.statusCode)")
         }
 
@@ -624,13 +621,8 @@ public struct StepFunUsageFetcher: Sendable {
         let response = try await ProviderHTTPClient.shared.response(for: request)
         let data = response.data
         guard response.statusCode == 200 else {
-            let body = String(data: data, encoding: .utf8) ?? ""
-            Self.log.error("StepFun API returned \(response.statusCode): \(body)")
+            Self.log.error("StepFun API returned HTTP \(response.statusCode)")
             throw StepFunUsageError.apiError("HTTP \(response.statusCode)")
-        }
-
-        if let jsonString = String(data: data, encoding: .utf8) {
-            Self.log.debug("StepFun API response: \(jsonString)")
         }
 
         var snapshot = try self.parseSnapshot(data: data)

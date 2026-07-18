@@ -38,9 +38,7 @@ public struct AuggieCLIProbe: Sendable {
         let errorOutput = result.stderr
 
         guard !output.isEmpty else {
-            if !errorOutput.isEmpty {
-                Self.log.error("Auggie stderr: \(errorOutput)")
-            }
+            if !errorOutput.isEmpty { Self.log.error("Auggie returned stderr without usable output") }
             throw AuggieCLIError.noOutput
         }
 
@@ -138,13 +136,13 @@ public struct AuggieCLIProbe: Sendable {
         }
 
         guard let finalRemaining = remaining else {
-            Self.log.error("Failed to parse auggie output: \(output)")
+            Self.log.error("Failed to parse Auggie account status output")
             throw AuggieCLIError.parseError("Could not extract credits from output")
         }
 
         let finalTotal = total ?? maxCredits
         guard let finalTotal else {
-            Self.log.error("Failed to parse auggie output: \(output)")
+            Self.log.error("Failed to parse Auggie account status output")
             throw AuggieCLIError.parseError("Could not extract credits from output")
         }
 

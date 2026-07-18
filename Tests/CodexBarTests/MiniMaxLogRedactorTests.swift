@@ -114,4 +114,57 @@ struct MiniMaxLogRedactorTests {
         #expect(redacted.contains("part.two") == false)
         #expect(redacted.contains("Authorization: <redacted>"))
     }
+
+    @Test
+    func `common secret assignments are redacted`() {
+        let secret = "credential-placeholder-value"
+        let inputs = [
+            "api_key=\(secret)",
+            #"{"access_token":"credential-placeholder-value"}"#,
+            "client-secret: \(secret)",
+            "password='\(secret)'",
+            "AWS_SECRET_ACCESS_KEY=\(secret)",
+        ]
+
+        for input in inputs {
+            let redacted = LogRedactor.redact(input)
+            #expect(!redacted.contains(secret))
+            #expect(redacted.contains("<redacted>"))
+        }
+    }
+
+    @Test
+    func `sensitive headers are redacted through line end`() {
+        let secret = "credential placeholder with spaces"
+        let redacted = LogRedactor.redact("X-API-Key: \(secret)\nstatus=401")
+
+        #expect(!redacted.contains(secret))
+        #expect(redacted.contains("X-API-Key: <redacted>"))
+        #expect(redacted.contains("status=401"))
+    }
+
+    @Test
+    func `opaque provider and source control tokens are redacted`() {
+        let tokens = [
+            "sk-proj-abcdefghijklmnop",
+            "github_pat_abcdefghijklmnopqrstuv",
+            "ghp_abcdefghijklmnopqrstuvwxyz",
+            ["xox", "b-1234567890-abcdefghijklmnop"].joined(),
+        ]
+
+        for token in tokens {
+            let redacted = LogRedactor.redact("credential \(token)")
+            #expect(!redacted.contains(token))
+            #expect(redacted.contains("<redacted-secret>"))
+        }
+    }
+
+    @Test
+    func `AWS access key identifiers are redacted`() {
+        let accessKey = "AKIAIOSFODNN7EXAMPLE"
+        let redacted = LogRedactor.redact("AWS caller \(accessKey)")
+
+        #expect(!redacted.contains(accessKey))
+        #expect(redacted.contains("<redacted-aws-access-key>"))
+    }
 }
