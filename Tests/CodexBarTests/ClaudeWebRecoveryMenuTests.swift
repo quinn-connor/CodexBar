@@ -62,7 +62,7 @@ struct ClaudeWebRecoveryMenuTests {
     @Test
     func `default account action localizes ambient Claude Code sign in`() {
         let actions = CodexBarLocalizationOverride.$appLanguage.withValue("zh-Hant") {
-            self.actions(source: .auto)
+            self.actions(source: .cli)
         }
 
         #expect(actions.contains {
@@ -89,15 +89,12 @@ struct ClaudeWebRecoveryMenuTests {
     }
 
     @Test
-    func `auto source shows relogin action for terminal web session error`() {
+    func `CLI source does not show relogin action for terminal web session error`() {
         let actions = self.actions(
             error: ClaudeWebAPIFetcher.FetchError.unauthorized.localizedDescription,
-            source: .auto)
+            source: .cli)
 
-        #expect(actions.contains {
-            $0.0 == "Re-login at claude.ai" &&
-                $0.1 == .loginToProvider(url: "https://claude.ai/")
-        })
+        #expect(!actions.contains { $0.0 == "Re-login at claude.ai" })
     }
 
     @Test
@@ -153,7 +150,7 @@ struct ClaudeWebRecoveryMenuTests {
     func `generic unavailable error without web attempt keeps account action`() {
         let actions = self.actions(
             error: ProviderFetchError.noAvailableStrategy(.claude).localizedDescription,
-            source: .auto,
+            source: .cli,
             attempts: [
                 ProviderFetchAttempt(
                     strategyID: "claude.cli",
