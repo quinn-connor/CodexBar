@@ -159,7 +159,7 @@ scan fails, while provider/account configuration changes replace obsolete result
 - Details: `docs/minimax.md`.
 
 ## Kimi
-- Kimi Code API key via `~/.codexbar/config.json` or `KIMI_CODE_API_KEY`.
+- Kimi Code sign-in reuses a fresh OAuth access token from the signed-in official CLI; Auto tries it before web fallback.
 - Web fallback uses the JWT from `kimi-auth` cookie via manual entry or `KIMI_AUTH_TOKEN` env var.
 - Shows weekly quota and 5-hour rate limit (300 minutes).
 - Status: none yet.

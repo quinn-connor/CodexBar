@@ -19,9 +19,9 @@ public enum KimiAPIError: LocalizedError, Sendable, Equatable {
         case .invalidToken:
             "Kimi auth token is invalid or expired. Please refresh your token."
         case .missingAPIKey:
-            "Kimi Code API key is missing. Add it in Settings > Providers > Kimi or set KIMI_CODE_API_KEY."
+            "Kimi Code credential is missing. Sign in with Kimi Code CLI, then select Kimi Code sign-in."
         case .invalidAPIKey:
-            "Kimi Code API key is invalid or expired. Please refresh your API key."
+            "Kimi Code credential was rejected. Sign in again with Kimi Code CLI."
         case let .invalidRequest(message):
             "Invalid request: \(message)"
         case let .networkError(message):
@@ -31,11 +31,11 @@ public enum KimiAPIError: LocalizedError, Sendable, Equatable {
         case let .parseFailed(message):
             "Failed to parse Kimi usage data: \(message)"
         case .expiredCodeCredential:
-            "Kimi Code CLI credential is expired. Sign in again with Kimi Code CLI or set KIMI_CODE_API_KEY; " +
-                "CodexBar does not refresh CLI-owned credentials."
+            "Kimi Code CLI credential is expired. Sign in again with Kimi Code CLI; CodexBar does not refresh " +
+                "CLI-owned credentials."
         case .invalidCodeCredential:
-            "Kimi Code CLI credential is invalid or expired. Sign in again with Kimi Code CLI or set " +
-                "KIMI_CODE_API_KEY; CodexBar does not refresh CLI-owned credentials."
+            "Kimi Code CLI credential is invalid or expired. Sign in again with Kimi Code CLI; CodexBar does not " +
+                "refresh CLI-owned credentials."
         }
     }
 }

@@ -1100,11 +1100,10 @@ struct KimiAPIErrorTests {
     func `error descriptions are helpful`() {
         #expect(KimiAPIError.missingToken.errorDescription?.contains("missing") == true)
         #expect(KimiAPIError.invalidToken.errorDescription?.contains("invalid") == true)
-        #expect(KimiAPIError.missingAPIKey.errorDescription?.contains("Settings > Providers > Kimi") == true)
-        #expect(KimiAPIError.missingAPIKey.errorDescription?.contains("KIMI_CODE_API_KEY") == true)
+        #expect(KimiAPIError.missingAPIKey.errorDescription?.contains("Kimi Code sign-in") == true)
         #expect(KimiAPIError.expiredCodeCredential.errorDescription?.contains("does not refresh") == true)
         #expect(KimiAPIError.invalidCodeCredential.errorDescription?.contains("Sign in again") == true)
-        #expect(KimiAPIError.invalidAPIKey.errorDescription?.contains("API key") == true)
+        #expect(KimiAPIError.invalidAPIKey.errorDescription?.contains("Sign in again") == true)
         #expect(KimiAPIError.invalidRequest("Bad request").errorDescription?.contains("Bad request") == true)
         #expect(KimiAPIError.networkError("Timeout").errorDescription?.contains("Timeout") == true)
         #expect(KimiAPIError.apiError("HTTP 500").errorDescription?.contains("HTTP 500") == true)
