@@ -139,6 +139,60 @@ struct KimiCostUsageTests {
     }
 
     @Test
+    func `Kimi menu card shows the shared inline cost history dashboard`() throws {
+        let now = Date(timeIntervalSince1970: 1_721_342_400)
+        let metadata = try #require(ProviderDefaults.metadata[.kimi])
+        let tokenSnapshot = CostUsageTokenSnapshot(
+            sessionTokens: 29_000_000,
+            sessionCostUSD: 0,
+            last30DaysTokens: 3_500_000_000,
+            last30DaysCostUSD: 4195.90,
+            daily: [
+                CostUsageDailyReport.Entry(
+                    date: "2024-07-19",
+                    inputTokens: 20_000_000,
+                    outputTokens: 9_000_000,
+                    totalTokens: 29_000_000,
+                    costUSD: 384,
+                    modelsUsed: ["kimi-k3"],
+                    modelBreakdowns: [
+                        CostUsageDailyReport.ModelBreakdown(
+                            modelName: "kimi-k3",
+                            costUSD: 384,
+                            totalTokens: 29_000_000),
+                    ]),
+            ],
+            updatedAt: now)
+
+        let model = UsageMenuCardView.Model.make(.init(
+            provider: .kimi,
+            metadata: metadata,
+            snapshot: UsageSnapshot(primary: nil, secondary: nil, updatedAt: now),
+            credits: nil,
+            creditsError: nil,
+            dashboard: nil,
+            dashboardError: nil,
+            tokenSnapshot: tokenSnapshot,
+            tokenError: nil,
+            account: AccountInfo(email: nil, plan: nil),
+            isRefreshing: false,
+            lastError: nil,
+            usageBarsShowUsed: false,
+            resetTimeDisplayStyle: .countdown,
+            tokenCostUsageEnabled: true,
+            showOptionalCreditsAndExtraUsage: true,
+            hidePersonalInfo: false,
+            now: now))
+
+        let dashboard = try #require(model.inlineUsageDashboard)
+        #expect(dashboard.kpis.map(\.title) == ["Today", "30d cost", "30d tokens", "Latest tokens"])
+        #expect(dashboard.kpis.map(\.value) == ["$0.00", "$4,195.90", "3.5B", "29M"])
+        #expect(dashboard.points.map(\.value) == [384])
+        #expect(dashboard.detailLines == ["Top model: kimi-k3"])
+        #expect(dashboard.currencyCode == "USD")
+    }
+
+    @Test
     func `automatic cost source detection includes Kimi Code wire logs`() throws {
         let environment = try KimiCostUsageTestEnvironment()
         defer { environment.cleanup() }
