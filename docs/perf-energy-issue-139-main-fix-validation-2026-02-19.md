@@ -35,8 +35,7 @@ Practical simulation used:
 - Script behavior:
   - exits immediately for `app-server` args (forces RPC failure/fallback path),
   - otherwise busy-loops with no `/status` output (simulates heavy stuck CLI PTY behavior).
-- Command run (3 times):
-  - `./.build/debug/CodexBarCLI usage --provider codex --source cli --format json --pretty`
+- The then-current standalone diagnostic harness was run three times. That harness has since been removed.
 - Collected:
   - wall time (`/usr/bin/time -p`),
   - sampled child CPU every 0.5s,

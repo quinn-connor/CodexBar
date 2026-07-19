@@ -49,12 +49,6 @@ For the console request, CodexBar forwards only the `csrftoken` and `ory_session
   available.
 - Token-cost history is supported through the billing web session; no local log scan is used.
 
-## CLI Usage
-
-```bash
-codexbar usage --provider mistral --verbose
-```
-
 ## Troubleshooting
 
 ### "No Mistral session cookies found"

@@ -2,6 +2,9 @@
 
 ## 0.44.1 — Unreleased
 
+### Removed
+- Fork hardening: remove the bundled command-line app and its SSH/Tailscale Agent Sessions integration; local Agent Sessions remain available.
+
 ### Fixed
 - Menu Bar settings: remove the Layout editor's container-wide focus ring while preserving keyboard access to its tokens and controls.
 

@@ -137,8 +137,7 @@ All provider fields are optional unless noted.
 
 ## Manual cookies
 Use manual cookies when automatic browser import is unavailable, disabled, or too noisy for your setup.
-The app and CLI both read the same resolved config file, so a manual cookie saved in the UI is also used by
-`codexbar`, and a cookie written by tooling is shown in the app after reload.
+The app reads manual-cookie metadata from the resolved config while storing the cookie value in its Keychain.
 
 `cookieHeader` expects the HTTP `Cookie:` request header value for the provider origin, not a raw Netscape cookie
 export. In browser DevTools, open the Network tab, select a request for the provider site, and copy the request
@@ -164,33 +163,8 @@ Example placeholder config:
 }
 ```
 
-Validate after editing:
-
-```bash
-codexbar config validate
-codexbar usage --provider example-provider --verbose
-```
-
-CLI shortcuts:
-
-```bash
-codexbar config providers
-codexbar config enable --provider grok
-codexbar config disable --provider cursor
-printf '%s' "$ELEVENLABS_API_KEY" | codexbar config set-api-key --provider elevenlabs --stdin
-printf '%s' "$OPENAI_ADMIN_KEY" | codexbar config set-api-key --provider openai --stdin
-printf '%s' "$GROQ_API_KEY" | codexbar config set-api-key --provider groq --stdin
-printf '%s' "$LLM_PROXY_API_KEY" | codexbar config set-api-key --provider llmproxy --stdin
-printf '%s' "$LITELLM_API_KEY" | codexbar config set-api-key --provider litellm --stdin
-printf '%s' "$CLAWROUTER_API_KEY" | codexbar config set-api-key --provider clawrouter --stdin
-printf '%s' "$SUB2API_API_KEY" | codexbar config set-api-key --provider sub2api --stdin
-printf '%s' "$AIAND_API_KEY" | codexbar config set-api-key --provider aiand --stdin
-```
-
-The `set-api-key` shortcuts above remain available on Linux. On macOS, add provider credentials in **Settings →
-Providers** so the app can store them in its Keychain; the standalone CLI deliberately refuses to write app-owned
-Keychain secrets. For CLI-only macOS runs, point `CODEXBAR_CONFIG` at an isolated config and use the provider's
-environment variable where supported.
+After editing provider metadata, relaunch the app and confirm the provider appears correctly. Add or replace provider
+credentials through **Settings → Providers** so the app can store them in its Keychain.
 
 OpenAI API project scoping uses `workspaceID` in config. This maps to `OPENAI_PROJECT_ID` for Admin API usage and is
 only applied to the configured OpenAI key, not to selected OpenAI token accounts:
@@ -250,8 +224,6 @@ environment. Add labeled token accounts in Settings when one deployment has mult
 }
 ```
 
-See [CLI configuration](cli-configuration.md) for scripting examples and output formats.
-
 Manual cookies are secrets. On macOS they are Keychain-backed, but the config still contains sensitive account and
 provider metadata. Keep the file private, leave its permissions at `0600`, never commit it, and never paste real
 cookie values or readable DevTools screenshots into public issues.
@@ -280,10 +252,9 @@ Current IDs (see `Sources/CodexBarCore/Providers/Providers.swift`):
 `codex`, `openai`, `azureopenai`, `claude`, `clinepass`, `cursor`, `opencode`, `opencodego`, `alibaba`, `alibabatokenplan`, `factory`, `gemini`, `antigravity`, `copilot`, `devin`, `zai`, `minimax`, `manus`, `kimi`, `kilo`, `kiro`, `vertexai`, `augment`, `jetbrains`, `moonshot`, `amp`, `t3chat`, `ollama`, `synthetic`, `warp`, `openrouter`, `elevenlabs`, `windsurf`, `zed`, `perplexity`, `mimo`, `doubao`, `sakana`, `abacus`, `mistral`, `deepseek`, `deepinfra`, `codebuff`, `crof`, `venice`, `commandcode`, `qoder`, `stepfun`, `bedrock`, `grok`, `groq`, `llmproxy`, `litellm`, `deepgram`, `poe`, `chutes`, `neuralwatt`, `clawrouter`, `longcat`, `sub2api`, `wayfinder`, `zenmux`, `aiand`.
 
 ## Ordering
-The order of `providers` controls display/order in the app and CLI. Reorder the array to change ordering.
+The order of `providers` controls display order in the app. Reorder the array to change ordering.
 
 ## Notes
 - Fields not relevant to a provider are ignored.
 - Omitted providers are appended with defaults during normalization.
-- Keep the file private; it contains secrets on Linux and sensitive metadata on macOS.
-- Validate the file with `codexbar config validate` (JSON output available with `--format json`).
+- Keep the file private; it contains sensitive provider metadata.

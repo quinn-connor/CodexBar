@@ -22,9 +22,7 @@ export SYNTHETIC_API_KEY="..."
 
 You can also store the key through the CLI:
 
-```bash
-printf '%s' "$SYNTHETIC_API_KEY" | codexbar config set-api-key --provider synthetic --stdin
-```
+Add the key in **Settings → Providers → Synthetic** or set `SYNTHETIC_API_KEY` in the app environment.
 
 ## Data source
 
@@ -56,13 +54,6 @@ If those keys are absent, CodexBar falls back to generic quota payloads such as
 - Plan name, when returned, is displayed as provider identity context.
 - Synthetic does not currently provide CodexBar cost history.
 - External status page: [status.synthetic.new](https://status.synthetic.new) (not linked or auto-polled by CodexBar).
-
-## CLI usage
-
-```bash
-codexbar usage --provider synthetic
-codexbar usage --provider synthetic.new
-```
 
 ## Key files
 

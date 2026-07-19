@@ -24,28 +24,9 @@ Set **API region** to **Global (api.z.ai)** or **BigModel CN (open.bigmodel.cn)*
 
 - UI: Settings → Providers → z.ai. For team usage, add a token account, turn on **Team mode**, then enter the API key,
   Organization ID, and Project ID.
-- CLI personal:
-
-  ```bash
-  printf '%s' "$Z_AI_API_KEY" | codexbar config set-api-key --provider zai --stdin
-  ```
-
-- CLI team:
-
-  ```bash
-  printf '%s' "$Z_AI_API_KEY" | codexbar config set-api-key --provider zai --stdin \
-    --label Team \
-    --usage-scope team \
-    --organization-id org_... \
-    --workspace-id proj_...
-  ```
-
-- Check:
-
-  ```bash
-  codexbar config validate
-  codexbar usage --provider zai --account Team
-  ```
+- Personal: add the key in Settings or set `Z_AI_API_KEY` in the app environment.
+- Team: configure the token account label, Team mode, Organization ID, and Project ID in Settings, then refresh the
+  account to validate it.
 
 Personal config can use `providers[].apiKey`. Team config uses `tokenAccounts`:
 

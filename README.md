@@ -5,7 +5,6 @@
 [![Latest release](https://img.shields.io/github/v/release/steipete/CodexBar?style=flat-square&color=0a0a0c)](https://github.com/steipete/CodexBar/releases/latest)
 [![macOS 14+](https://img.shields.io/badge/macOS-14%2B-0a0a0c?style=flat-square)](https://github.com/steipete/CodexBar/releases/latest)
 [![Homebrew](https://img.shields.io/badge/brew-steipete%2Ftap%2Fcodexbar-orange?style=flat-square)](https://github.com/steipete/homebrew-tap)
-[![AUR](https://img.shields.io/aur/version/codexbar-cli?style=flat-square&color=1793d1)](https://aur.archlinux.org/packages/codexbar-cli)
 [![License: MIT](https://img.shields.io/badge/license-MIT-6e5aff?style=flat-square)](LICENSE)
 [![Site](https://img.shields.io/badge/site-codexbar.app-16d3b4?style=flat-square)](https://codexbar.app)
 
@@ -35,52 +34,15 @@ Download: <https://github.com/steipete/CodexBar/releases>
 brew install --cask codexbar
 ```
 
-### CLI Tarballs (macOS/Linux)
-Homebrew formula (Linux today):
-```bash
-brew install steipete/tap/codexbar
-```
-Arch Linux AUR package:
-```bash
-yay -S codexbar-cli
-```
-Or download release tarballs from GitHub Releases:
-- macOS: `CodexBarCLI-v<tag>-macos-arm64.tar.gz`, `CodexBarCLI-v<tag>-macos-x86_64.tar.gz`
-- Linux (glibc): `CodexBarCLI-v<tag>-linux-aarch64.tar.gz`, `CodexBarCLI-v<tag>-linux-x86_64.tar.gz`
-- Linux (static musl): `CodexBarCLI-v<tag>-linux-musl-aarch64.tar.gz`, `CodexBarCLI-v<tag>-linux-musl-x86_64.tar.gz`
-
 ### First run
 - Open Settings → Providers and enable what you use.
 - Install/sign in to the provider sources you rely on: CLIs, browser sessions, OAuth/device flow, API keys, local app files, or provider apps depending on the provider.
 - Optional: Settings → Providers → Codex → OpenAI cookies (Automatic or Manual) to add dashboard extras.
 
 ### Set API keys
-Provider toggles and credential references live in the resolved CodexBar config file. New installs use
-`~/.config/codexbar/config.json`; existing `~/.codexbar/config.json` installs still load from the legacy path. You can
-script the same provider list that Settings → Providers uses:
-
-```bash
-codexbar config providers
-codexbar config enable --provider grok
-codexbar config disable --provider cursor
-```
-
-On macOS, add API keys in **Settings → Providers**. The app stores API keys, secret keys, manual cookie headers, and
-token-account tokens in its Data Protection Keychain; existing plaintext config secrets migrate automatically only
-after verified Keychain writes. The standalone macOS CLI refuses `config set-api-key`, redacts secrets from
-`config dump`, and fails closed on commands that would need to resolve app-owned credentials. Use an isolated
-`CODEXBAR_CONFIG` plus provider environment variables for CLI-only workflows.
-
-On Linux, the existing config-file command remains available:
-
-```bash
-printf '%s' "$ELEVENLABS_API_KEY" | codexbar config set-api-key --provider elevenlabs --stdin
-```
-
-`set-api-key` trims the piped value, stores it with restrictive config-file permissions, and enables the provider by
-default. Use `--no-enable` to only save the key, or `--api-key <key>` for one-off local scripts where shell history is
-not a concern.
-See [CLI configuration](docs/cli-configuration.md) for the full flow.
+Add API keys in **Settings → Providers**. The app stores API keys, secret keys, manual cookie headers, and
+token-account tokens in its Data Protection Keychain. Existing plaintext config secrets migrate automatically only
+after verified Keychain writes.
 
 ## Providers
 
@@ -162,7 +124,6 @@ show an incident indicator.
 - Display controls for provider icons, labels, bars, reset-time style, and highest-usage auto-selection.
 - Fresh installs default to Adaptive refresh. Existing users keep every valid stored choice, while legacy unset or
   invalid preferences resolve to 5 minutes. Manual and fixed 1m, 2m, 5m, 15m, and 30m alternatives remain available.
-- Bundled CLI (`codexbar`) for scripts and CI (including `codexbar cost --provider codex`, `claude`, or `both` for local cost usage); macOS and Linux CLI builds available.
 - WidgetKit widgets for supported providers.
 - Localized app and website with a shared 21-language catalog, automatic website detection, persistent pickers, and RTL support.
 - Optional session quota notifications and weekly-reset confetti.
@@ -200,7 +161,6 @@ Wondering if CodexBar scans your disk? It doesn’t crawl your filesystem; it re
 - CLI reference: [docs/cli.md](docs/cli.md)
 - Configuration: [docs/configuration.md](docs/configuration.md)
 - Keychain prompts: [docs/keychain-prompts.md](docs/keychain-prompts.md)
-- CLI configuration: [docs/cli-configuration.md](docs/cli-configuration.md)
 - Widgets: [docs/widgets.md](docs/widgets.md)
 - Architecture: [docs/architecture.md](docs/architecture.md)
 - Refresh loop: [docs/refresh-loop.md](docs/refresh-loop.md)
@@ -232,12 +192,6 @@ make check                           # SwiftFormat + SwiftLint
 make docs-list                       # list docs with frontmatter summaries
 ```
 
-CLI install:
-```bash
-# after installing AgentBar.app in /Applications
-./bin/install-codexbar-cli.sh
-```
-
 ## Related
 - ✂️ [Trimmy](https://github.com/steipete/Trimmy) — “Paste once, run once.” Flatten multi-line shell snippets so they paste and run.
 - 🧳 [MCPorter](https://mcporter.dev) — TypeScript toolkit + CLI for Model Context Protocol servers.
@@ -245,17 +199,6 @@ CLI install:
 
 ## Looking for a Windows version?
 - [Win-CodexBar](https://github.com/Finesssee/Win-CodexBar)
-
-## Linux desktop integration?
-- [codexbar-waybar](https://github.com/Marouan-chak/codexbar-waybar) — Waybar custom module + GTK4 popover for Hyprland / Sway / other Wayland compositors, built on top of the bundled Linux CLI.
-- [Codexbar GNOME](https://extensions.gnome.org/extension/9841/codexbar/) — GNOME Shell extension that brings CodexBar usage into the desktop panel.
-- [codexbar-cinnamon-applet](https://github.com/jacobcalvert/codexbar-cinnamon-applet) — Linux Mint Cinnamon panel applet powered by CodexBar's JSON output.
-- [noctalia-codex-usage](https://github.com/rayoplateado/noctalia-codex-usage) — Noctalia/Quickshell plugin that shows Codex 5-hour and weekly usage limits, built on top of the bundled Linux CLI.
-- [KodexBar](https://github.com/tylxr59/KodexBar) — KDE Plasma widget that shows CodexBar usage in the Plasma panel, built on top of the bundled Linux CLI.
-- [codexbar-plasmoid](https://github.com/psimaker/codexbar-plasmoid) — KDE Plasma 6 widget for CodexBar's meter icon, provider switcher, quota windows, pace, credits, local cost, and status, powered by the bundled Linux CLI.
-
-## Status bar & terminal integration
-- [showy-quota](https://github.com/enieuwy/showy-quota) — always-on AI plan quota strips for SketchyBar, tmux, and Zellij (standalone WASM plugin), built on `codexbar serve` / the bundled CLI.
 
 ## Credits
 Inspired by [ccusage](https://github.com/ryoppippi/ccusage) (MIT), specifically the cost usage tracking.

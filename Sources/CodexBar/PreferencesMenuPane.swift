@@ -75,8 +75,6 @@ struct MenuPane: View {
                         subtitle: L("agent_sessions_subtitle"))
                 }
 
-                TextField(L("agent_sessions_hosts_title"), text: self.$settings.agentSessionsManualHosts)
-                    .disabled(!self.settings.agentSessionsEnabled)
             } header: {
                 Text(L("section_agent_sessions"))
             } footer: {

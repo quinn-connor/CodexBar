@@ -26,14 +26,12 @@ export OPENROUTER_API_KEY="sk-or-v1-..."
 
 You can also configure the API key in CodexBar Settings → Providers → OpenRouter.
 
-### CLI config
+### API key
 
 To monitor multiple OpenRouter accounts, add labeled API keys in the same provider settings. CodexBar fetches each
 key independently. Choose the segmented account switcher or stacked account cards under Settings → Display.
 
-```bash
-printf '%s' "$OPENROUTER_API_KEY" | codexbar config set-api-key --provider openrouter --stdin
-```
+Add the key in **Settings → Providers → OpenRouter** or set `OPENROUTER_API_KEY` in the app environment.
 
 ## Data Source
 
@@ -51,8 +49,6 @@ The OpenRouter menu card shows:
 - **Spend notes**: Daily, weekly, and monthly API key spend when OpenRouter returns those fields
 - **Spend chart**: Day/week/month spend can reuse the shared inline dashboard when enough history is available
 - **Balance**: Displayed in the identity section as "Balance: $X.XX"
-
-## CLI Usage
 
 ```bash
 codexbar --provider openrouter

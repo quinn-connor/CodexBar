@@ -488,7 +488,7 @@ struct AntigravityCLIHTTPSFetchStrategy: ProviderFetchStrategy {
     }
 
     static func shouldResetSessionAfterFetch(_ context: ProviderFetchContext) -> Bool {
-        // Long-lived hosts (the app, `codexbar serve`) keep the warm `agy`
+        // Long-lived hosts such as the app keep the warm `agy`
         // session between fetches; only one-shot CLI invocations reset it.
         context.runtime == .cli && !context.persistsCLISessions
     }

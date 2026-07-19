@@ -169,7 +169,6 @@
 "Historical tracking" = "Theo dõi lịch sử";
 "How often CodexBar polls providers in the background." = "Tần suất CodexBar thăm dò ý kiến ​​các nhà cung cấp trong nền.";
 "Inactive" = "Không hoạt động";
-"Install CLI" = "Cài đặt CLI";
 "Install the Claude CLI (npm i -g @anthropic-ai/claude-code) and try again." = "Cài đặt Claude CLI (npm i -g @anthropic-ai/claude-code) và thử lại.";
 "Install the Codex CLI (npm i -g @openai/codex) and try again." = "Cài đặt Codex CLI (npm i -g @openai/codex) và thử lại.";
 "Install the Gemini CLI (npm i -g @google/gemini-cli) and try again." = "Cài đặt Gemini CLI (npm i -g @google/gemini-cli) và thử lại.";
@@ -329,7 +328,6 @@
 "Stores local Codex usage history (8 weeks) to personalize Pace predictions." = "Stores Codex cục bộ Mức sử dụng (8 tuần) để cá nhân hóa dự đoán Pace.";
 "Surprise me" = "Làm tôi ngạc nhiên";
 "Switcher shows icons" = "Trình chuyển đổi hiển thị các biểu tượng";
-"Symlink CodexBarCLI to /usr/local/bin and /opt/homebrew/bin as codexbar." = "Symlink CodexBarCLI tới /usr/local/bin và /opt/homebrew/bin dưới dạng codexbar.";
 "System" = "Hệ thống";
 "Temporarily shows the loading animation after the next refresh." = "Tạm thời hiển thị hoạt ảnh đang tải sau lần làm mới tiếp theo.";
 "terminal_app_subtitle" = "Terminal dùng cho tác vụ Mở Terminal";
@@ -592,18 +590,13 @@
 "overview_rows_follow_order" = "Các hàng tổng quan luôn tuân theo thứ tự Nhà cung cấp.";
 "overview_no_providers_selected" = "Không có nhà cung cấp nào được chọn";
 "agent_sessions_title" = "Phiên tác nhân";
-"agent_sessions_subtitle" = "Hiển thị các phiên Codex và Claude Code cục bộ cùng các phiên được phát hiện qua SSH trong menu.";
-"agent_sessions_hosts_title" = "Máy chủ SSH bổ sung";
-"agent_sessions_footer" = "Các máy Mac trên tailnet của bạn được tự động phát hiện. Các phiên cục bộ được làm mới 30 giây một lần; các máy chủ từ xa được làm mới 60 giây một lần và khi menu mở.";
+"agent_sessions_subtitle" = "Show local Codex and Claude Code sessions in the menu.";
+"agent_sessions_footer" = "Local sessions refresh every 30 seconds and when the menu opens.";
 
 /* Advanced Pane */
 "section_keyboard_shortcut" = "Phím tắt";
 "open_menu_shortcut_title" = "Mở menu";
 "open_menu_shortcut_subtitle" = "Kích hoạt menu thanh menu từ mọi nơi.";
-"install_cli" = "Cài đặt CLI";
-"install_cli_subtitle" = "Liên kết tượng trưng CodexBarCLI tới /usr/local/bin và /opt/homebrew/bin dưới dạng codexbar.";
-"cli_not_found" = "Không tìm thấy CodexBarCLI trong gói ứng dụng.";
-"no_writable_bin_dirs" = "Không tìm thấy thư mục bin có thể ghi.";
 "show_debug_settings_title" = "Hiển thị gỡ lỗi Cài đặt";
 "show_debug_settings_subtitle" = "Hiển thị các công cụ khắc phục sự cố trong tab Gỡ lỗi.";
 "surprise_me_title" = "Làm tôi ngạc nhiên";
@@ -1204,7 +1197,6 @@
 "Disable" = "Tắt";
 "providers_on_count" = "%d đang bật";
 "section_cost_summary" = "Tóm tắt chi phí";
-"section_command_line" = "Dòng lệnh";
 "section_privacy" = "Quyền riêng tư";
 "section_diagnostics" = "Chẩn đoán";
 "section_updates" = "Cập nhật";

@@ -1,9 +1,7 @@
 import CodexBarCore
-import Commander
 import Foundation
 import Testing
 @testable import CodexBar
-@testable import CodexBarCLI
 
 private actor OpenRouterAccountFetchRecorder {
     struct Request: Sendable {
@@ -147,58 +145,6 @@ struct OpenRouterMultiAccountTests {
         #expect(segmented.layout == .segmented)
         #expect(segmented.activeIndex == 1)
         #expect(segmented.snapshots.isEmpty)
-    }
-
-    @Test
-    func `OpenRouter CLI routes selected and all accounts`() throws {
-        let accounts = [
-            Self.account(label: "Personal", token: "test-key", seed: 1),
-            Self.account(label: "Work", token: "test-auth-token", seed: 2),
-        ]
-        let config = CodexBarConfig(providers: [
-            ProviderConfig(
-                id: .openrouter,
-                apiKey: "decoy-token",
-                tokenAccounts: ProviderTokenAccountData(version: 1, accounts: accounts, activeIndex: 0)),
-        ])
-        let parser = CommandParser(signature: CodexBarCLI._usageSignatureForTesting())
-        let selectedValues = try parser.parse(arguments: [
-            "--provider", "openrouter",
-            "--account", "Work",
-        ])
-        let allValues = try parser.parse(arguments: [
-            "--provider", "openrouter",
-            "--all-accounts",
-        ])
-
-        let selectedContext = try TokenAccountCLIContext(
-            selection: TokenAccountCLISelection(
-                label: selectedValues.options["account"]?.last,
-                index: nil,
-                allAccounts: false),
-            config: config,
-            verbose: false,
-            baseEnvironment: [OpenRouterSettingsReader.envKey: "test-token-placeholder"])
-        let selected = try selectedContext.resolvedAccounts(for: .openrouter)
-        #expect(selected.map(\.label) == ["Work"])
-        #expect(selectedContext.environment(
-            base: [OpenRouterSettingsReader.envKey: "test-token-placeholder"],
-            provider: .openrouter,
-            account: selected[0])[OpenRouterSettingsReader.envKey] == "test-auth-token")
-
-        let allContext = try TokenAccountCLIContext(
-            selection: TokenAccountCLISelection(
-                label: nil,
-                index: nil,
-                allAccounts: allValues.flags.contains("allAccounts")),
-            config: config,
-            verbose: false,
-            baseEnvironment: [OpenRouterSettingsReader.envKey: "test-token-placeholder"])
-        let all = try allContext.resolvedAccounts(for: .openrouter)
-        #expect(all.map(\.label) == ["Personal", "Work"])
-        #expect(all.map {
-            allContext.environment(base: [:], provider: .openrouter, account: $0)[OpenRouterSettingsReader.envKey]
-        } == ["test-key", "test-auth-token"])
     }
 
     private static func makeSettings(suite: String) -> SettingsStore {

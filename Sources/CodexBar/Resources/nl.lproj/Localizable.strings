@@ -169,7 +169,6 @@
 "Historical tracking" = "Historische tracking";
 "How often CodexBar polls providers in the background." = "Hoe vaak CodexBar providers op de achtergrond ondervraagt.";
 "Inactive" = "Inactief";
-"Install CLI" = "Installeer CLI";
 "Install the Claude CLI (npm i -g @anthropic-ai/claude-code) and try again." = "Installeer de Claude CLI (npm i -g @anthropic-ai/claude-code) en probeer het opnieuw.";
 "Install the Codex CLI (npm i -g @openai/codex) and try again." = "Installeer de Codex CLI (npm i -g @openai/codex) en probeer het opnieuw.";
 "Install the Gemini CLI (npm i -g @google/gemini-cli) and try again." = "Installeer de Gemini CLI (npm i -g @google/gemini-cli) en probeer het opnieuw.";
@@ -329,7 +328,6 @@
 "Stores local Codex usage history (8 weeks) to personalize Pace predictions." = "Slaat de lokale Codex-gebruiksgeschiedenis op (8 weken) om tempo-voorspellingen te personaliseren.";
 "Surprise me" = "Verras mij";
 "Switcher shows icons" = "Switcher toont pictogrammen";
-"Symlink CodexBarCLI to /usr/local/bin and /opt/homebrew/bin as codexbar." = "Symlink CodexBarCLI naar /usr/local/bin en /opt/homebrew/bin als codexbar.";
 "System" = "Systeem";
 "Temporarily shows the loading animation after the next refresh." = "Toont tijdelijk de laadanimatie na de volgende vernieuwing.";
 "terminal_app_subtitle" = "Terminal gebruikt door de actie Terminal openen";
@@ -596,18 +594,13 @@
 "overview_rows_follow_order" = "Overzichtsrijen volgen altijd de volgorde van de provider.";
 "overview_no_providers_selected" = "Geen aanbieders geselecteerd";
 "agent_sessions_title" = "Agentsessies";
-"agent_sessions_subtitle" = "Toon lokale en via SSH gevonden Codex- en Claude Code-sessies in het menu.";
-"agent_sessions_hosts_title" = "Aanvullende SSH-hosts";
-"agent_sessions_footer" = "Macs op uw tailnet worden automatisch gevonden. Lokale sessies worden elke 30 seconden vernieuwd; externe hosts elke 60 seconden en wanneer het menu wordt geopend.";
+"agent_sessions_subtitle" = "Show local Codex and Claude Code sessions in the menu.";
+"agent_sessions_footer" = "Local sessions refresh every 30 seconds and when the menu opens.";
 
 /* Advanced Pane */
 "section_keyboard_shortcut" = "Sneltoets";
 "open_menu_shortcut_title" = "Menu openen";
 "open_menu_shortcut_subtitle" = "Activeer het menubalkmenu vanaf elke locatie.";
-"install_cli" = "Installeer CLI";
-"install_cli_subtitle" = "Symlink CodexBarCLI naar /usr/local/bin en /opt/homebrew/bin als codexbar.";
-"cli_not_found" = "CodexBarCLI niet gevonden in appbundel.";
-"no_writable_bin_dirs" = "Geen beschrijfbare mapmap gevonden.";
 "show_debug_settings_title" = "Toon foutopsporingsinstellingen";
 "show_debug_settings_subtitle" = "Geef hulpprogramma's voor probleemoplossing weer op het tabblad Foutopsporing.";
 "surprise_me_title" = "Verras mij";
@@ -1203,7 +1196,6 @@
 "Disable" = "Uitschakelen";
 "providers_on_count" = "%d aan";
 "section_cost_summary" = "Kostenoverzicht";
-"section_command_line" = "Opdrachtregel";
 "section_privacy" = "Privacy";
 "section_diagnostics" = "Diagnostiek";
 "section_updates" = "Updates";

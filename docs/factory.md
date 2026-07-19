@@ -14,8 +14,7 @@ Factory (displayed as "Droid") supports API-key and web-based auth. Source mode 
 
 ### API (`api`)
 1. Resolve a Factory API key from, in order:
-   - `~/.codexbar/config.json` `providers[].apiKey` for `factory` (also via Settings or
-     `codexbar config set-api-key --provider factory`)
+   - Settings → Providers → Droid
    - `FACTORY_API_KEY`
    - optional `~/.factory/.env` (`FACTORY_API_KEY=…` or `export FACTORY_API_KEY=…`)
 2. Call Factory APIs with `Authorization: Bearer <apiKey>` (same billing-limits / bearer path as session tokens).
@@ -51,13 +50,6 @@ Manual option:
   - Usage source: `Auto`, `API key`, `Browser cookies`
   - API key: optional override for `FACTORY_API_KEY` / `~/.factory/.env`
   - Cookie source: Automatic / Manual (web path)
-
-## CLI
-```bash
-printf '%s' "$FACTORY_API_KEY" | codexbar config set-api-key --provider factory --stdin
-codexbar usage --provider factory --source api
-codexbar usage --provider factory --source web
-```
 
 ## Cookie import
 - Cookie domains: `factory.ai`, `app.factory.ai`, `auth.factory.ai`.
@@ -136,7 +128,7 @@ Endpoints:
 - Plan/tier + org name from auth response.
 
 ## Troubleshooting
-- Missing API key: set `FACTORY_API_KEY`, Settings → Droid → API key, or `codexbar config set-api-key --provider factory`.
+- Missing API key: set `FACTORY_API_KEY` or use Settings → Droid → API key.
 - Unauthorized API key (401/403): regenerate at app.factory.ai/settings/api-keys.
 - Missing session: log in to app.factory.ai in a supported browser, or paste a Cookie header in Manual mode.
 

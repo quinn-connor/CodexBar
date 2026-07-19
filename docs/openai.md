@@ -22,11 +22,9 @@ CodexBar's OpenAI API provider targets the API Platform organization dashboard, 
 
 ## Setup
 
-Store a key in the shared app/CLI config:
+Store a key through the app:
 
-```bash
-printf '%s' "$OPENAI_ADMIN_KEY" | codexbar config set-api-key --provider openai --stdin
-```
+Add the key in **Settings → Providers → OpenAI** or set `OPENAI_ADMIN_KEY` in the app environment.
 
 Settings → Providers → OpenAI writes the same `~/.codexbar/config.json` field. `OPENAI_ADMIN_KEY` is preferred over
 `OPENAI_API_KEY` because it unlocks organization costs and usage; a normal API key only supports the legacy balance

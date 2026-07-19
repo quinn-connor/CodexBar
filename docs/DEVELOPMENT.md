@@ -86,21 +86,20 @@ CodexBar/
 ├── Sources/CodexBar/          # Main app (SwiftUI + AppKit)
 │   ├── CodexbarApp.swift      # App entry point
 │   ├── StatusItemController*.swift  # Menu bar icon, menu rendering, and actions
-│   ├── UsageStore*.swift      # Usage refresh, caching, widgets, and history
+│   ├── UsageStore*.swift      # Usage refresh, caching, and history
 │   ├── SettingsStore*.swift   # User preferences and config persistence
 │   ├── Providers/             # App-side provider settings/runtime glue
 │   └── Resources/             # Assets and localized strings
-├── Sources/CodexBarCore/      # Shared business logic used by app, CLI, and widgets
+├── Sources/CodexBarCore/      # Shared business logic used by the app and widget
 │   ├── Config/                # Config file model, reader, writer, and validation
 │   ├── Providers/             # Provider descriptors, fetchers, parsers, and status probes
 │   ├── OpenAIWeb/             # OpenAI dashboard integration helpers
 │   ├── WebKit/                # Web session helpers
 │   └── Vendored/              # Embedded support code
-├── Sources/CodexBarCLI/       # Bundled codexbar command-line tool
 ├── Sources/CodexBarWidget/    # WidgetKit support
 ├── WidgetExtension/           # Xcode wrapper for the packaged widget extension
 ├── Tests/CodexBarTests/       # macOS app/core test suite (XCTest + Swift Testing)
-├── TestsLinux/                # Linux-specific CLI/core test coverage
+├── TestsLinux/                # Linux-specific core test coverage
 └── Scripts/                   # Build and packaging scripts
 ```
 

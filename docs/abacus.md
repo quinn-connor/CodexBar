@@ -42,12 +42,6 @@ Cookie domains: `abacus.ai`, `apps.abacus.ai`. Session cookies are validated bef
 
 The billing cycle window is set to 30 days for pace calculation.
 
-## CLI
-
-```bash
-codexbar usage --provider abacusai --verbose
-```
-
 ## Troubleshooting
 
 ### "No Abacus AI session found"

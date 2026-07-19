@@ -172,7 +172,6 @@
 "Historical tracking" = "歷史追蹤";
 "How often CodexBar polls providers in the background." = "CodexBar 在背景輪詢提供者的頻率。";
 "Inactive" = "非作用中";
-"Install CLI" = "安裝 CLI";
 "Install the Claude CLI (npm i -g @anthropic-ai/claude-code) and try again." = "安裝 Claude CLI（npm i -g @anthropic-ai/claude-code）後重試。";
 "Install the Codex CLI (npm i -g @openai/codex) and try again." = "安裝 Codex CLI（npm i -g @openai/codex）後重試。";
 "Install the Gemini CLI (npm i -g @google/gemini-cli) and try again." = "安裝 Gemini CLI（npm i -g @google/gemini-cli）後重試。";
@@ -341,7 +340,6 @@
 "Stores local Codex usage history (8 weeks) to personalize Pace predictions." = "儲存本機 Codex 使用量歷史（8 週），用於個人化進度預測。";
 "Surprise me" = "給我驚喜";
 "Switcher shows icons" = "切換器顯示圖示";
-"Symlink CodexBarCLI to /usr/local/bin and /opt/homebrew/bin as codexbar." = "將 CodexBarCLI 作為 codexbar 符號連結到 /usr/local/bin 和 /opt/homebrew/bin。";
 "System" = "系統";
 "Temporarily shows the loading animation after the next refresh." = "下次重新整理後暫時顯示載入動畫。";
 "Tertiary (\\(label))" = "第三（\\(label)）";
@@ -595,16 +593,11 @@
 "overview_rows_follow_order" = "概覽列一律依提供者順序排列。";
 "overview_no_providers_selected" = "未選擇提供者";
 "agent_sessions_title" = "Agent 工作階段";
-"agent_sessions_subtitle" = "在選單中顯示本機及透過 SSH 發現的 Codex 和 Claude Code 工作階段。";
-"agent_sessions_hosts_title" = "其他 SSH 主機";
-"agent_sessions_footer" = "系統會自動發現 tailnet 上的 Mac。本機工作階段每 30 秒重新整理一次；遠端主機每 60 秒以及開啟選單時重新整理。";
+"agent_sessions_subtitle" = "Show local Codex and Claude Code sessions in the menu.";
+"agent_sessions_footer" = "Local sessions refresh every 30 seconds and when the menu opens.";
 "section_keyboard_shortcut" = "快速鍵";
 "open_menu_shortcut_title" = "開啟選單";
 "open_menu_shortcut_subtitle" = "從任意位置觸發選單列選單。";
-"install_cli" = "安裝 CLI";
-"install_cli_subtitle" = "將 CodexBarCLI 作為 codexbar 符號連結到 /usr/local/bin 和 /opt/homebrew/bin。";
-"cli_not_found" = "在 App 套件中找不到 CodexBarCLI。";
-"no_writable_bin_dirs" = "找不到可寫的 bin 目錄。";
 "show_debug_settings_title" = "顯示除錯設定";
 "show_debug_settings_subtitle" = "在「除錯」標籤中顯示疑難排解工具。";
 "1.5× headroom" = "1.5 倍餘裕";
@@ -1239,7 +1232,6 @@
 "Disable" = "停用";
 "providers_on_count" = "%d 個已開啟";
 "section_cost_summary" = "費用摘要";
-"section_command_line" = "命令列";
 "section_privacy" = "隱私權";
 "section_diagnostics" = "診斷";
 "section_updates" = "更新";

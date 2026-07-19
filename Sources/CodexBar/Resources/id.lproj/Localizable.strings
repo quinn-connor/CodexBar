@@ -153,7 +153,6 @@
 "Historical tracking" = "Pelacakan riwayat";
 "How often CodexBar polls providers in the background." = "Seberapa sering CodexBar memeriksa penyedia di latar belakang.";
 "Inactive" = "Tidak aktif";
-"Install CLI" = "Pasang CLI";
 "Install the Claude CLI (npm i -g @anthropic-ai/claude-code) and try again." = "Pasang Claude CLI (npm i -g @anthropic-ai/claude-code) dan coba lagi.";
 "Install the Codex CLI (npm i -g @openai/codex) and try again." = "Pasang Codex CLI (npm i -g @openai/codex) dan coba lagi.";
 "Install the Gemini CLI (npm i -g @google/gemini-cli) and try again." = "Pasang Gemini CLI (npm i -g @google/gemini-cli) dan coba lagi.";
@@ -315,7 +314,6 @@
 "Stores local Codex usage history (8 weeks) to personalize Pace predictions." = "Menyimpan riwayat penggunaan Codex lokal (8 minggu) untuk personalisasi prediksi Pace.";
 "Surprise me" = "Kejutkan saya";
 "Switcher shows icons" = "Pengalih tampilkan ikon";
-"Symlink CodexBarCLI to /usr/local/bin and /opt/homebrew/bin as codexbar." = "Symlink CodexBarCLI ke /usr/local/bin dan /opt/homebrew/bin sebagai codexbar.";
 "System" = "Sistem";
 "Temporarily shows the loading animation after the next refresh." = "Sementara menampilkan animasi pemuatan setelah penyegaran berikutnya.";
 "terminal_app_subtitle" = "Terminal yang digunakan oleh tindakan Buka Terminal";
@@ -604,18 +602,13 @@
 "overview_rows_follow_order" = "Baris ikhtisar selalu mengikuti urutan penyedia.";
 "overview_no_providers_selected" = "Tidak ada penyedia dipilih";
 "agent_sessions_title" = "Sesi agen";
-"agent_sessions_subtitle" = "Tampilkan sesi Codex dan Claude Code lokal serta yang ditemukan melalui SSH di menu.";
-"agent_sessions_hosts_title" = "Host SSH tambahan";
-"agent_sessions_footer" = "Mac di tailnet Anda ditemukan secara otomatis. Sesi lokal disegarkan setiap 30 detik; host jarak jauh setiap 60 detik dan saat menu dibuka.";
+"agent_sessions_subtitle" = "Show local Codex and Claude Code sessions in the menu.";
+"agent_sessions_footer" = "Local sessions refresh every 30 seconds and when the menu opens.";
 
 /* Advanced Pane */
 "section_keyboard_shortcut" = "Pintasan keyboard";
 "open_menu_shortcut_title" = "Buka menu";
 "open_menu_shortcut_subtitle" = "Picu menu bar dari mana saja.";
-"install_cli" = "Pasang CLI";
-"install_cli_subtitle" = "Symlink CodexBarCLI ke /usr/local/bin dan /opt/homebrew/bin sebagai codexbar.";
-"cli_not_found" = "CodexBarCLI tidak ditemukan di bundel aplikasi.";
-"no_writable_bin_dirs" = "Tidak ada direktori bin yang dapat ditulis.";
 "show_debug_settings_title" = "Tampilkan Pengaturan Debug";
 "show_debug_settings_subtitle" = "Tampilkan alat pemecahan masalah di tab Debug.";
 "surprise_me_title" = "Kejutkan saya";
@@ -1221,7 +1214,6 @@
 "Disable" = "Nonaktifkan";
 "providers_on_count" = "%d aktif";
 "section_cost_summary" = "Ringkasan biaya";
-"section_command_line" = "Baris perintah";
 "section_privacy" = "Privasi";
 "section_diagnostics" = "Diagnostik";
 "section_updates" = "Pembaruan";

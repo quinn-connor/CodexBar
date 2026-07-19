@@ -169,7 +169,6 @@
 "Historical tracking" = "Історичне відстеження";
 "How often CodexBar polls providers in the background." = "Як часто CodexBar опитує постачальників у фоновому режимі.";
 "Inactive" = "Неактивний";
-"Install CLI" = "Встановіть CLI";
 "Install the Claude CLI (npm i -g @anthropic-ai/claude-code) and try again." = "Встановіть CLAude CLI (npm i -g @anthropic-ai/claude-code) і повторіть спробу.";
 "Install the Codex CLI (npm i -g @openai/codex) and try again." = "Встановіть Codex CLI (npm i -g @openai/codex) і повторіть спробу.";
 "Install the Gemini CLI (npm i -g @google/gemini-cli) and try again." = "Установіть Gemini CLI (npm i -g @google/gemini-cli) і повторіть спробу.";
@@ -329,7 +328,6 @@
 "Stores local Codex usage history (8 weeks) to personalize Pace predictions." = "Зберігає локальну історію використання Codex (8 тижнів) для персоналізації прогнозів Pace.";
 "Surprise me" = "Здивуйте мене";
 "Switcher shows icons" = "Перемикач показує значки";
-"Symlink CodexBarCLI to /usr/local/bin and /opt/homebrew/bin as codexbar." = "Символьне посилання CodexBarCLI на /usr/local/bin і /opt/homebrew/bin як codexbar.";
 "System" = "Система";
 "Temporarily shows the loading animation after the next refresh." = "Тимчасово показує анімацію завантаження після наступного оновлення.";
 "terminal_app_subtitle" = "Термінал, який використовується дією «Відкрити термінал»";
@@ -596,18 +594,13 @@
 "overview_rows_follow_order" = "Оглядові рядки завжди відповідають порядку постачальника.";
 "overview_no_providers_selected" = "Не вибрано жодного постачальника";
 "agent_sessions_title" = "Сеанси агентів";
-"agent_sessions_subtitle" = "Показувати в меню локальні й виявлені через SSH сеанси Codex і Claude Code.";
-"agent_sessions_hosts_title" = "Додаткові хости SSH";
-"agent_sessions_footer" = "Комп’ютери Mac у вашій мережі tailnet виявляються автоматично. Локальні сеанси оновлюються кожні 30 секунд; віддалені хости — кожні 60 секунд і під час відкриття меню.";
+"agent_sessions_subtitle" = "Show local Codex and Claude Code sessions in the menu.";
+"agent_sessions_footer" = "Local sessions refresh every 30 seconds and when the menu opens.";
 
 /* Advanced Pane */
 "section_keyboard_shortcut" = "Комбінація клавіш";
 "open_menu_shortcut_title" = "Відкрити меню";
 "open_menu_shortcut_subtitle" = "Викликати меню панелі меню з будь-якого місця.";
-"install_cli" = "Встановіть CLI";
-"install_cli_subtitle" = "Символьне посилання CodexBarCLI на /usr/local/bin і /opt/homebrew/bin як codexbar.";
-"cli_not_found" = "CodexBarCLI не знайдено в пакеті програм.";
-"no_writable_bin_dirs" = "Не знайдено записуваних каталогів кошика.";
 "show_debug_settings_title" = "Показати налаштування налагодження";
 "show_debug_settings_subtitle" = "Розкрийте інструменти усунення несправностей на вкладці Debug.";
 "surprise_me_title" = "Здивуйте мене";
@@ -1203,7 +1196,6 @@
 "Disable" = "Вимкнути";
 "providers_on_count" = "%d увімкнено";
 "section_cost_summary" = "Зведення витрат";
-"section_command_line" = "Командний рядок";
 "section_privacy" = "Конфіденційність";
 "section_diagnostics" = "Діагностика";
 "section_updates" = "Оновлення";

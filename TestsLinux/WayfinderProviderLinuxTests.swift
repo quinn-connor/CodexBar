@@ -4,7 +4,6 @@ import Foundation
 import FoundationNetworking
 #endif
 import Testing
-@testable import CodexBarCLI
 
 /// Fixtures below were captured verbatim from a locally running Wayfinder gateway
 /// (`wayfinder-router serve`, two-tier priced config) after routing real traffic.
@@ -296,25 +295,6 @@ struct WayfinderProviderLinuxTests {
                 baseURL: #require(URL(string: "http://127.0.0.1:8088")),
                 transport: redirecting)
         }
-    }
-
-    @Test
-    func `text CLI renders gateway health routed split savings and latency`() throws {
-        let output = try CLIRenderer.renderText(
-            provider: .wayfinder,
-            snapshot: Self.makeSnapshot().toUsageSnapshot(),
-            credits: nil,
-            context: RenderContext(
-                header: "Wayfinder (api)",
-                status: nil,
-                useColor: false,
-                resetStyle: .countdown))
-
-        #expect(output.contains("Gateway: ok · 2 models"))
-        #expect(output.contains("Routed: local: 10 · cloud: 4"))
-        #expect(output.contains("Saved: <$0.01 · 61.5% vs highest-cost route"))
-        #expect(output.contains("Avg decision: 0.1 ms"))
-        #expect(!output.contains("Cost:"))
     }
 
     @Test

@@ -1,10 +1,10 @@
 # Agent Sessions (prototype)
 
-Track live Codex + Claude Code agent sessions — local Mac first, other Macs on the tailnet second — and surface them in the CodexBar menu with click-to-focus of the owning terminal window.
+Track live local Codex + Claude Code agent sessions and surface them in the CodexBar menu with click-to-focus of the owning terminal window.
 
 ## Why in CodexBar
 
-CodexBar already parses `~/.claude/projects` JSONL (cost scanner) and ships a bundled CLI on macOS + Linux. Sessions reuse both: the local scanner feeds the menu UI, and the same scanner exposed as `codexbar sessions --json` is what remote Macs run over SSH. No daemon, no new app.
+CodexBar already parses `~/.claude/projects` JSONL for local cost scans. Agent Sessions reuses that local parsing infrastructure without a daemon, network discovery, or SSH.
 
 ## Data model (CodexBarCore)
 
@@ -45,29 +45,14 @@ public struct AgentSession: Codable, Sendable, Identifiable {
 
 Scanner is `Sendable`, pure functions where possible; ps/lsof output parsing lives in dedicated parser types fed by strings so tests use fixtures.
 
-## CLI (CodexBarCLI)
-
-- `codexbar sessions` — table; `--json` — `[AgentSession]` (stable field names above; ISO-8601 dates).
-- `codexbar sessions focus <id>` — macOS only: focus the session's terminal window (see Focus). Exit 1 if id unknown, 2 if focus failed.
-- Follows existing `CLI*Command.swift` conventions. Works on Linux for listing (ps/proc paths guarded), focus is Darwin-only.
-
-## Remote hosts (CodexBarCore + app)
-
-`RemoteSessionFetcher`:
-
-- Host list = manual entries (settings, ssh destinations like `steipete@clawmac`) ∪ automatic Tailscale discovery (no-op when tailscale is absent): run `tailscale status --json` (PATH, then `/Applications/Tailscale.app/Contents/MacOS/Tailscale`), take online peers with `"OS": "macOS"|"linux"`, use first `DNSName` label as host. Local host excluded.
-- Fetch per host (parallel, 5 s budget): `ssh -o BatchMode=yes -o ConnectTimeout=3 <host> sh -lc 'codexbar sessions --json'` with fallback to the bundled app CLI path (resolve the canonical bundled location from `Scripts/package_app.sh` and hardcode it as fallback: `… || <bundled-path> sessions --json`). Host errors are non-fatal: host shown as unreachable, others still render.
-- Remote focus: fire-and-forget `ssh <host> sh -lc 'codexbar sessions focus <id>'`.
-- Refresh: local scan every 30 s while the status item exists (cheap), remote every 60 s and immediately on menu open; both skipped when the feature is off. Reuse existing refresh loop plumbing rather than new timers if it fits.
-
 ## Menu UI (CodexBar app)
 
-- New menu section **Agent Sessions (N)** (N = total, all hosts) above the settings/footer area, built through the existing `MenuDescriptor`-style seam so it's testable headless.
-- Local sessions first, then one group per remote host (`clawmac — 2`, unreachable hosts greyed with a tooltip). Row: state dot (● active / ○ idle), provider glyph, `projectName — provider · source · 12m`.
-- Click local row → `SessionWindowFocuser`. Click remote row → remote focus ssh call.
-- Settings: "Sessions" group — a single enable toggle (default on) plus a manual hosts text field (comma-separated); Tailscale discovery is always on while the feature is enabled. Persist in `SettingsStore` like neighboring prefs.
+- Menu section **Agent Sessions (N)** above the settings/footer area, built through the existing `MenuDescriptor` seam so it is testable headless.
+- Row: state dot (● active / ○ idle), provider glyph, `projectName — provider · source · 12m`.
+- Click a row to invoke `SessionWindowFocuser` locally.
+- Settings: a single opt-in enable toggle persisted in `SettingsStore`.
 
-## Focus (macOS, app + CLI shared in Core or app-adjacent target)
+## Focus (macOS app)
 
 `SessionWindowFocuser`:
 
@@ -85,14 +70,12 @@ Fixture-driven, no live processes, no Keychain/AX:
 - lsof `-Fn` parser.
 - Claude cwd escaping → project dir mapping; newest-jsonl selection (temp dirs).
 - Codex rollout first-line parse → AgentSession (fixture JSONL), file-only window cutoff.
-- Tailscale status JSON → host list (fixture; offline/iOS peers excluded).
-- Sessions JSON round-trip (CLI output schema stability).
-- Menu section descriptor: counts, grouping, unreachable-host rendering.
+- Menu section descriptor: local counts and empty-state rendering.
 
 ## Non-goals (prototype)
 
-Claude.ai chat sessions; Codex cloud tasks; historical session browsing/analytics; "waiting on permission" state; tmux pane/tab focus; Bonjour/mDNS; persistent remote daemon or push transport; widget changes. No new SPM dependencies.
+Claude.ai chat sessions; Codex cloud tasks; historical session browsing/analytics; "waiting on permission" state; tmux pane/tab focus; remote discovery or SSH; Bonjour/mDNS; persistent remote daemon or push transport; widget changes. No new SPM dependencies.
 
 ## Proof
 
-`make check` clean; `make test` (or focused `swift test --filter` covering the new tests) green; `swift run CodexBarCLI sessions --json` produces plausible output on this Mac.
+`make check` clean; `make test` (or focused `swift test --filter` covering the new tests) green.

@@ -41,12 +41,6 @@ and caches valid cookie headers. Invalid cached sessions are skipped so a fresh 
 - Uses `nextResetAt` when the API includes a reset timestamp.
 - Token-cost history is not supported.
 
-## CLI Usage
-
-```bash
-codexbar usage --provider qoder --verbose
-```
-
 ## Troubleshooting
 
 ### "Qoder session cookie not found"

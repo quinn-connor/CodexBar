@@ -28,9 +28,7 @@ export CHUTES_API_KEY="cpk_..."
 
 Or configure it through the CLI:
 
-```bash
-printf '%s' "$CHUTES_API_KEY" | codexbar config set-api-key --provider chutes --stdin
-```
+Add the key in **Settings → Providers → Chutes** or set `CHUTES_API_KEY` in the app environment.
 
 ## Data Source
 
@@ -45,8 +43,6 @@ All requests use `Authorization: Bearer cpk_...`. Subscription usage is required
 ## Display
 
 The provider prefers the rolling four-hour window as the primary meter and monthly subscription usage as the secondary meter. Accounts without a subscription can still show available pay-as-you-go quota data.
-
-## CLI Usage
 
 ```bash
 codexbar --provider chutes

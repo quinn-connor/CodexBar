@@ -169,7 +169,6 @@
 "Historical tracking" = "기록 추적";
 "How often CodexBar polls providers in the background." = "CodexBar가 백그라운드에서 공급자를 폴링하는 빈도입니다.";
 "Inactive" = "비활성";
-"Install CLI" = "CLI 설치";
 "Install the Claude CLI (npm i -g @anthropic-ai/claude-code) and try again." = "Claude CLI(npm i -g @anthropic-ai/claude-code)를 설치한 후 다시 시도하세요.";
 "Install the Codex CLI (npm i -g @openai/codex) and try again." = "Codex CLI(npm i -g @openai/codex)를 설치한 후 다시 시도하세요.";
 "Install the Gemini CLI (npm i -g @google/gemini-cli) and try again." = "Gemini CLI(npm i -g @google/gemini-cli)를 설치한 후 다시 시도하세요.";
@@ -329,7 +328,6 @@
 "Stores local Codex usage history (8 weeks) to personalize Pace predictions." = "사용 속도 예측을 개인화하기 위해 로컬 Codex 사용 기록(8주)을 저장합니다.";
 "Surprise me" = "랜덤으로 선택";
 "Switcher shows icons" = "전환기에 아이콘 표시";
-"Symlink CodexBarCLI to /usr/local/bin and /opt/homebrew/bin as codexbar." = "CodexBarCLI를 codexbar로 /usr/local/bin 및 /opt/homebrew/bin에 심볼릭 링크합니다.";
 "System" = "시스템";
 "Temporarily shows the loading animation after the next refresh." = "다음 새로 고침 후 불러오는 중 애니메이션을 일시적으로 표시합니다.";
 "terminal_app_subtitle" = "터미널 열기 동작에서 사용하는 터미널";
@@ -585,16 +583,11 @@
 "overview_rows_follow_order" = "개요 행은 항상 공급자 순서를 따릅니다.";
 "overview_no_providers_selected" = "선택된 공급자 없음";
 "agent_sessions_title" = "에이전트 세션";
-"agent_sessions_subtitle" = "메뉴에 로컬 및 SSH로 검색된 Codex 및 Claude Code 세션을 표시합니다.";
-"agent_sessions_hosts_title" = "추가 SSH 호스트";
-"agent_sessions_footer" = "tailnet의 Mac은 자동으로 검색됩니다. 로컬 세션은 30초마다, 원격 호스트는 60초마다 그리고 메뉴를 열 때 새로 고칩니다.";
+"agent_sessions_subtitle" = "Show local Codex and Claude Code sessions in the menu.";
+"agent_sessions_footer" = "Local sessions refresh every 30 seconds and when the menu opens.";
 "section_keyboard_shortcut" = "키보드 단축키";
 "open_menu_shortcut_title" = "메뉴 열기";
 "open_menu_shortcut_subtitle" = "어디서나 메뉴 막대 메뉴를 실행합니다.";
-"install_cli" = "CLI 설치";
-"install_cli_subtitle" = "CodexBarCLI를 codexbar로 /usr/local/bin 및 /opt/homebrew/bin에 심볼릭 링크합니다.";
-"cli_not_found" = "앱 번들에서 CodexBarCLI를 찾을 수 없습니다.";
-"no_writable_bin_dirs" = "쓰기 가능한 bin 디렉터리를 찾을 수 없습니다.";
 "show_debug_settings_title" = "디버그 설정 표시";
 "show_debug_settings_subtitle" = "디버그 탭에 문제 해결 도구를 표시합니다.";
 "surprise_me_title" = "깜짝 놀래주기";
@@ -1172,7 +1165,6 @@
 "Disable" = "비활성화";
 "providers_on_count" = "%d개 켜짐";
 "section_cost_summary" = "비용 요약";
-"section_command_line" = "명령줄";
 "section_privacy" = "개인정보 보호";
 "section_diagnostics" = "진단";
 "section_updates" = "업데이트";

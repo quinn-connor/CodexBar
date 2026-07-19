@@ -74,7 +74,7 @@ struct MenuDescriptor {
         case about
         case quit
         case copyError(String)
-        case focusAgentSession(AgentSession, remoteHost: String?)
+        case focusAgentSession(AgentSession)
     }
 
     var sections: [Section]
@@ -90,7 +90,6 @@ struct MenuDescriptor {
         includeContextualActions: Bool = true,
         agentSessionsEnabled: Bool = false,
         localAgentSessions: [AgentSession] = [],
-        remoteAgentHosts: [RemoteSessionHostResult] = [],
         now: Date = Date()) -> MenuDescriptor
     {
         var sections: [Section] = []
@@ -141,42 +140,22 @@ struct MenuDescriptor {
             }
         }
         if agentSessionsEnabled {
-            sections.append(Self.agentSessionsSection(
-                localSessions: localAgentSessions,
-                remoteHosts: remoteAgentHosts,
-                now: now))
+            sections.append(Self.agentSessionsSection(localSessions: localAgentSessions, now: now))
         }
         sections.append(Self.metaSection())
 
         return MenuDescriptor(sections: sections)
     }
 
-    static func agentSessionsSection(
-        localSessions: [AgentSession],
-        remoteHosts: [RemoteSessionHostResult],
-        now: Date = Date()) -> Section
-    {
-        let totalCount = localSessions.count + remoteHosts.reduce(0) { $0 + $1.sessions.count }
-        var entries: [Entry] = [.text("Agent Sessions (\(totalCount))", .headline)]
+    static func agentSessionsSection(localSessions: [AgentSession], now: Date = Date()) -> Section {
+        var entries: [Entry] = [.text("Agent Sessions (\(localSessions.count))", .headline)]
 
         for session in localSessions {
             entries.append(.action(
                 self.agentSessionRowTitle(session, now: now),
-                .focusAgentSession(session, remoteHost: nil)))
+                .focusAgentSession(session)))
         }
-        for remoteHost in remoteHosts {
-            if let error = remoteHost.error {
-                entries.append(.unavailable("\(remoteHost.host) — unreachable", error))
-                continue
-            }
-            entries.append(.text("\(remoteHost.host) — \(remoteHost.sessions.count)", .secondary))
-            for session in remoteHost.sessions {
-                entries.append(.action(
-                    self.agentSessionRowTitle(session, now: now),
-                    .focusAgentSession(session, remoteHost: remoteHost.host)))
-            }
-        }
-        if totalCount == 0 {
+        if localSessions.isEmpty {
             entries.append(.unavailable("No agent sessions found", nil))
         }
         return Section(entries: entries)

@@ -211,8 +211,7 @@ credentials.
    fixture data.
 3. **Bounded transport:** add URL/auth policy and an injected HTTP transport; prove redirect, timeout, size, content-type,
    status, and redaction behavior.
-4. **Config and CLI integration:** version-2 migration, `codexbar config validate`, local approval records and interactive
-   approval command, diagnostics, and custom-provider CLI output. No live credentials in tests.
+4. **Config integration:** version-2 migration, local approval records, app diagnostics, and no live credentials in tests.
 5. **App integration:** generic metadata/icon, refresh lifecycle, menu rendering, persistence, and disabled/error states
    through existing shared provider UI.
 

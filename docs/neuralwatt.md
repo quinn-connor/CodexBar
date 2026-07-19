@@ -26,13 +26,11 @@ endpoint exposes both surfaces plus current-month spend and optional per-key spe
 
 ## Setup
 
-### CLI
+### API key
 
 Store the API key without opening Settings:
 
-```bash
-printf '%s' "$NEURALWATT_API_KEY" | codexbar config set-api-key --provider neuralwatt --stdin
-```
+Add the key in **Settings → Providers → Neuralwatt** or set `NEURALWATT_API_KEY` in the app environment.
 
 This trims the piped key, writes it to CodexBar's config file (`~/.config/codexbar/config.json`
 by default, or the legacy `~/.codexbar/config.json` when already present), and enables Neuralwatt by
@@ -72,8 +70,7 @@ For tests or self-hosted/proxy setups, override the API base URL with `NEURALWAT
 
 ### "Missing Neuralwatt API key"
 
-Set the key with `codexbar config set-api-key --provider neuralwatt --stdin`, add it in
-**Settings → Providers → Neuralwatt**, set `NEURALWATT_API_KEY`, or configure a Neuralwatt token
+Add the key in **Settings → Providers → Neuralwatt**, set `NEURALWATT_API_KEY`, or configure a Neuralwatt token
 account in CodexBar.
 
 ### "Neuralwatt API error"

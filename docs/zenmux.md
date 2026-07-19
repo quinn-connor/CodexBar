@@ -27,9 +27,7 @@ export ZENMUX_MANAGEMENT_API_KEY="..."
 
 Or configure it through the CLI:
 
-```bash
-printf '%s' "$ZENMUX_MANAGEMENT_API_KEY" | codexbar config set-api-key --provider zenmux --stdin
-```
+Add the key in **Settings → Providers → ZenMux** or set `ZENMUX_MANAGEMENT_API_KEY` in the app environment.
 
 ## Data Source
 
@@ -46,8 +44,6 @@ dashboard sessions, request logs, or inference prompts.
 The primary meter shows the rolling five-hour quota. The secondary meter shows the rolling seven-day quota. Both show
 the exact flow count and use reset timestamps returned by ZenMux. The menu also shows the subscription tier,
 non-healthy account status, plan expiry, and PAYG balance in US dollars when available.
-
-## CLI Usage
 
 ```bash
 codexbar --provider zenmux

@@ -249,8 +249,7 @@ public struct OpenAIDashboardBrowserCookieImporter {
     }
 
     private nonisolated static func fullDiskAccessTarget(processName: String, executablePath: String) -> String {
-        guard processName != "CodexBarCLI",
-              let appSuffix = executablePath.range(of: ".app/")
+        guard let appSuffix = executablePath.range(of: ".app/")
         else {
             return "\(processName) (\(executablePath))"
         }

@@ -16,9 +16,7 @@ model provider configured there; CodexBar does not need a separate provider plug
 
 Create a ClawRouter key with access to the routes you want, then store it in CodexBar:
 
-```bash
-printf '%s' "$CLAWROUTER_API_KEY" | codexbar config set-api-key --provider clawrouter --stdin
-```
+Add the key in **Settings → Providers → ClawRouter** or set `CLAWROUTER_API_KEY` in the app environment.
 
 You can also paste the key in CodexBar Settings → Providers → ClawRouter. The hosted service is used by default:
 

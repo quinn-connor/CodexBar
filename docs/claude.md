@@ -31,10 +31,9 @@ Usage source picker:
 - Preferences → Providers → Claude → Usage source (Auto/OAuth/Web/CLI).
 
 Admin API key setup:
-- Preferences → Providers → Claude → Admin API key, stored in `~/.codexbar/config.json`.
-- CLI/env: `printf '%s' "$ANTHROPIC_ADMIN_KEY" | codexbar config set-api-key --provider claude --stdin`.
-- Token accounts can also hold `sk-ant-admin...` keys; they route to the Admin API instead of cookie/OAuth usage.
+- Preferences → Providers → Claude → Admin API key, stored in the app Keychain.
 - Environment fallback: `ANTHROPIC_ADMIN_KEY`.
+- Token accounts can also hold `sk-ant-admin...` keys; they route to the Admin API instead of cookie/OAuth usage.
 
 ## Admin API
 - Key prefix: `sk-ant-admin...`.
@@ -125,17 +124,13 @@ The accepted multi-account design in
 - Behavior: on each Claude refresh, CodexBar runs `cswap --list --json` independently of the ambient Claude fetch (no
   shell, fixed arguments, bounded runtime and output), requires `schemaVersion == 1`, and parses only slot number,
   active state, usage status, email (display only), and the 5-hour/7-day windows.
-- Display: when claude-swap reports more than one account, the Claude menu and `codexbar cards` show one card per
+- Display: when claude-swap reports more than one account, the Claude menu shows one card per
   account (active account first, then numeric slot) instead of ambient/token-account Claude cards; with zero or one
   account those views are unchanged. Account identity is `claude-swap:<slot>`, never the display email.
-- Terminal scope: this automatic precedence is cards-only and works on every supported CLI platform. An explicit
-  Claude provider or `--source auto` remains eligible, while `--account`, `--account-index`, `--all-accounts`, and
-  explicit non-auto source flags bypass the adapter. `codexbar usage` and `codexbar serve` are unchanged.
+- Scope: this automatic precedence is limited to the app's Claude cards.
 - Isolation: CodexBar never reads claude-swap or Claude Code credential storage for this feature; the
   subprocess handles its own credential access. In the app, adapter failures keep the last successful accounts as
-  stale data, surface the error in provider settings, and never affect the ambient Claude usage card. In terminal
-  cards, a list failure retains the current ambient output, adds a distinct `Claude (claude-swap)` footer entry, and
-  exits non-zero.
+  stale data, surface the error in provider settings, and never affect the ambient Claude usage card.
 - Sentinel statuses (`token_expired`, `api_key`, `keychain_unavailable`, `no_credentials`,
   `unavailable`, and unknown future values) render as per-account notes instead of usage bars in both full and brief
   cards. Active rows are marked `[active]`; no claude-swap row infers a plan badge.

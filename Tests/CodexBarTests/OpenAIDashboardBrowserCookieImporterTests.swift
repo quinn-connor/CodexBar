@@ -65,19 +65,6 @@ private final class CookieTimeoutProbe: @unchecked Sendable {
 
 struct OpenAIDashboardBrowserCookieImporterTests {
     @Test
-    func `profile denial names exact running component`() {
-        let hint = OpenAIDashboardBrowserCookieImporter.browserProfileAccessHint(
-            for: .chrome,
-            issue: .accessDenied,
-            processName: "CodexBarCLI",
-            executablePath: "/Applications/CodexBar.app/Contents/Helpers/CodexBarCLI")
-
-        #expect(hint.contains("macOS denied Chrome profile access"))
-        #expect(hint.contains("CodexBarCLI (/Applications/CodexBar.app/Contents/Helpers/CodexBarCLI)"))
-        #expect(hint.contains("Full Disk Access"))
-    }
-
-    @Test
     func `profile denial names app bundle for menu refresh`() {
         let hint = OpenAIDashboardBrowserCookieImporter.browserProfileAccessHint(
             for: .chrome,
@@ -92,8 +79,8 @@ struct OpenAIDashboardBrowserCookieImporterTests {
     func `browser cookie timeout remains distinct from permission denial`() {
         let error = OpenAIDashboardBrowserCookieImporter.browserCookieLoadTimeoutError(
             for: .chrome,
-            processName: "CodexBarCLI",
-            executablePath: "/Applications/CodexBar.app/Contents/Helpers/CodexBarCLI")
+            processName: AppIdentity.displayName,
+            executablePath: "/Applications/AgentBar.app/Contents/MacOS/CodexBar")
 
         if case .browserCookieLoadTimedOut = error {
             // Expected: a shared deadline does not prove macOS denied access.
@@ -102,7 +89,7 @@ struct OpenAIDashboardBrowserCookieImporterTests {
         }
         #expect(error.localizedDescription.contains("Chrome did not finish before the web timeout"))
         #expect(!error.localizedDescription.contains("access denied"))
-        #expect(error.localizedDescription.contains("CodexBarCLI"))
+        #expect(error.localizedDescription.contains("AgentBar.app"))
         #expect(error.localizedDescription.contains("Keychain prompt"))
         #expect(error.localizedDescription.contains("Full Disk Access"))
     }

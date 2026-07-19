@@ -123,7 +123,7 @@ Example:
   `npm install -g --include=optional @openai/codex@latest` before retrying Add Account.
 
 ### Codex CLI PTY diagnostics (`/status`)
-- Manual/debug parser only; automatic background refresh and `CodexBarCLI usage --source cli` do not launch bare Codex TUI.
+- Manual/debug parser only; automatic background refresh does not launch the bare Codex TUI.
 - Kept for explicit diagnostics/parser coverage because bare `codex` TUI can start interactive auth and open browser tabs.
 - Parses rendered `/status` output:
   - `Credits:` line

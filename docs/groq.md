@@ -45,14 +45,12 @@ Source modes: `web` (console only), `api` (Prometheus only), `auto` (console the
   buckets and renders the shared cost-history inline dashboard (as used by the OpenAI API provider).
 - Identity login method: `Console`.
 
-### Testing / CLI overrides
+### Testing overrides
 
 - `GROQ_SESSION_TOKEN` — an opaque `stytch_session` value; exercises the full refresh path.
 - `GROQ_SESSION_JWT` — a session JWT used directly (skips refresh); handy for a quick check but expires in minutes.
 
-```bash
-GROQ_SESSION_TOKEN=<stytch_session> codexbar usage --provider groq --json
-```
+Set `GROQ_SESSION_TOKEN` in the app environment for manual session-token testing.
 
 ## Prometheus metrics (Enterprise, optional)
 

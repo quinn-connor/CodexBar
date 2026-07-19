@@ -153,7 +153,6 @@
 "Historical tracking" = "التتبع التاريخي";
 "How often CodexBar polls providers in the background." = "كم مرة CodexBar استطلاعات في الخلفية.";
 "Inactive" = "غير نشط";
-"Install CLI" = "تثبيت CLI";
 "Install the Claude CLI (npm i -g @anthropic-ai/claude-code) and try again." = "ثبت Claude CLI (npm i -g @anthropic-ai/claude-code) وجرب مرة أخرى.";
 "Install the Codex CLI (npm i -g @openai/codex) and try again." = "ثبت Codex CLI (npm i -g @openai/codex) وجرب مرة أخرى.";
 "Install the Gemini CLI (npm i -g @google/gemini-cli) and try again." = "ثبت Gemini CLI (npm i -g @google/gemini-cli) وجرب مرة أخرى.";
@@ -315,7 +314,6 @@
 "Stores local Codex usage history (8 weeks) to personalize Pace predictions." = "يخزن تاريخ استخدام Codex محليا (8 أسابيع) لتخصيص توقعات Pac.";
 "Surprise me" = "فاجئني";
 "Switcher shows icons" = "المحول يعرض الأيقونات";
-"Symlink CodexBarCLI to /usr/local/bin and /opt/homebrew/bin as codexbar." = "Symlink CodexBarCLI إلى /usr/local/bin و /opt/homebrew/bin ك codexbar.";
 "System" = "النظام";
 "Temporarily shows the loading animation after the next refresh." = "يعرض مؤقتا حركة التحميل بعد التحديث التالي.";
 "terminal_app_subtitle" = "الطرفية المستخدمة في إجراء الطرفية المفتوحة";
@@ -602,18 +600,13 @@
 "overview_rows_follow_order" = "الصفوف العامة دائما تتبع ترتيب مقدم الخدمة.";
 "overview_no_providers_selected" = "لم يتم اختيار أي مقدمي خدمة";
 "agent_sessions_title" = "جلسات الوكلاء";
-"agent_sessions_subtitle" = "إظهار جلسات Codex وClaude Code المحلية والمكتشفة عبر SSH في القائمة.";
-"agent_sessions_hosts_title" = "مضيفو SSH إضافيون";
-"agent_sessions_footer" = "يتم اكتشاف أجهزة Mac على شبكة tailnet تلقائيًا. يتم تحديث الجلسات المحلية كل 30 ثانية؛ والمضيفون البعيدون كل 60 ثانية وعند فتح القائمة.";
+"agent_sessions_subtitle" = "Show local Codex and Claude Code sessions in the menu.";
+"agent_sessions_footer" = "Local sessions refresh every 30 seconds and when the menu opens.";
 
 /* Advanced Pane */
 "section_keyboard_shortcut" = "اختصار لوحة المفاتيح";
 "open_menu_shortcut_title" = "قائمة مفتوحة";
 "open_menu_shortcut_subtitle" = "فعل قائمة شريط القوائم من أي مكان.";
-"install_cli" = "تثبيت CLI";
-"install_cli_subtitle" = "Symlink CodexBarCLI إلى /usr/local/bin و /opt/homebrew/bin ك codexbar.";
-"cli_not_found" = "CodexBarCLI غير موجود في حزمة التطبيقات.";
-"no_writable_bin_dirs" = "لم يتم العثور على أي سجلات قابلة للكتابة.";
 "show_debug_settings_title" = "عرض إعدادات التصحيح";
 "show_debug_settings_subtitle" = "اعرض أدوات استكشاف الأخطاء في تبويب التصحيح.";
 "surprise_me_title" = "فاجئني";
@@ -1222,7 +1215,6 @@
 "Disable" = "تعطيل";
 "providers_on_count" = "%d مفعّل";
 "section_cost_summary" = "ملخص التكلفة";
-"section_command_line" = "سطر الأوامر";
 "section_privacy" = "الخصوصية";
 "section_diagnostics" = "التشخيصات";
 "section_updates" = "التحديثات";

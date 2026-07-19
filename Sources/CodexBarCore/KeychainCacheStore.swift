@@ -508,7 +508,6 @@ public enum KeychainCacheStore {
             ?? executableURL.flatMap(self.appBundleURL(containing:))
         if let appBundle {
             append(appBundle.path)
-            append(appBundle.appendingPathComponent("Contents/Helpers/CodexBarCLI").path)
         }
         if let executableURL {
             append(executableURL.path)
@@ -587,7 +586,7 @@ public enum KeychainCacheStore {
 
     private static func securitySymbol(named name: String) -> UnsafeMutableRawPointer? {
         // Resolve deprecated SecKeychain ACL helpers at runtime so release builds stay warning-free
-        // while still granting the app bundle and bundled CLI prompt-free access to cache entries.
+        // while still granting this app bundle prompt-free access to cache entries.
         guard let securityFrameworkHandle else { return nil }
         return dlsym(securityFrameworkHandle, name)
     }

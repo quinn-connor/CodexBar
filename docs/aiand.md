@@ -24,9 +24,7 @@ export AIAND_API_KEY="..."
 
 Or configure it through the CLI:
 
-```bash
-printf '%s' "$AIAND_API_KEY" | codexbar config set-api-key --provider aiand --stdin
-```
+Add the key in **Settings → Providers → AI & D** or set `AIAND_API_KEY` in the app environment.
 
 ## Data Source
 
@@ -61,12 +59,6 @@ Notes:
   truncation.
 - If log rows ever disagree on currency, only rows matching the newest row's currency are summed.
 - API keys are organization-scoped: every key in the same organization reports the same org-wide spend.
-
-## CLI Usage
-
-```bash
-codexbar usage --provider aiand
-```
 
 `ai&` and `ai-and` also work as provider aliases.
 

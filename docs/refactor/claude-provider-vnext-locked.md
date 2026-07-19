@@ -97,7 +97,7 @@ Routing parity requirements:
 
 - OAuth token account values must route to OAuth path (not cookie mode).
 - Cookie/session-key account values must route to web cookie path.
-- CLI token-account behavior must remain consistent in both app and `CodexBarCLI`.
+- Token-account behavior must remain consistent across app refresh paths.
 - Scope note: current string heuristics are mostly edge-routing logic, not deep OAuth credential decoding internals.
 
 ### 4) Ownership and refresh contract

@@ -1,7 +1,6 @@
 import Foundation
 import Testing
 @testable import CodexBar
-@testable import CodexBarCLI
 @testable import CodexBarCore
 #if os(macOS)
 import SweetCookieKit
@@ -96,35 +95,6 @@ struct QoderProviderBehaviorTests {
         func sitesSnapshot() -> [QoderWebSite] {
             self.lock.withLock { self.sites }
         }
-    }
-
-    @Test
-    func `token account selection forces manual cookie source in CLI settings snapshot`() throws {
-        let accounts = ProviderTokenAccountData(
-            version: 1,
-            accounts: [
-                ProviderTokenAccount(
-                    id: UUID(),
-                    label: "Qoder",
-                    token: "sid=qoder-account-token",
-                    addedAt: 0,
-                    lastUsed: nil),
-            ],
-            activeIndex: 0)
-        let config = CodexBarConfig(providers: [
-            ProviderConfig(
-                id: .qoder,
-                cookieSource: .auto,
-                tokenAccounts: accounts),
-        ])
-        let selection = TokenAccountCLISelection(label: nil, index: nil, allAccounts: false)
-        let tokenContext = try TokenAccountCLIContext(selection: selection, config: config, verbose: false)
-        let account = try #require(tokenContext.resolvedAccounts(for: .qoder).first)
-        let snapshot = try #require(tokenContext.settingsSnapshot(for: .qoder, account: account))
-        let qoderSettings = try #require(snapshot.qoder)
-
-        #expect(qoderSettings.cookieSource == .manual)
-        #expect(qoderSettings.manualCookieHeader == "sid=qoder-account-token")
     }
 
     @Test

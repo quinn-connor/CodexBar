@@ -151,7 +151,6 @@
 "Historical tracking" = "Seguimento histórico";
 "How often CodexBar polls providers in the background." = "Con que frecuencia CodexBar consulta os provedores en segundo plano.";
 "Inactive" = "Inactivo";
-"Install CLI" = "Instalar a CLI";
 "Install the Claude CLI (npm i -g @anthropic-ai/claude-code) and try again." = "Instala a CLI de Claude (npm i -g @anthropic-ai/claude-code) e téntao de novo.";
 "Install the Codex CLI (npm i -g @openai/codex) and try again." = "Instala a CLI de Codex (npm i -g @openai/codex) e téntao de novo.";
 "Install the Gemini CLI (npm i -g @google/gemini-cli) and try again." = "Instala a CLI de Gemini (npm i -g @google/gemini-cli) e téntao de novo.";
@@ -312,7 +311,6 @@
 "Stores local Codex usage history (8 weeks) to personalize Pace predictions." = "Garda o historial de uso local de Codex (8 semanas) para personalizar as predicións de Ritmo.";
 "Surprise me" = "Sorpréndeme";
 "Switcher shows icons" = "O selector amosa iconas";
-"Symlink CodexBarCLI to /usr/local/bin and /opt/homebrew/bin as codexbar." = "Crea un enlace simbólico de CodexBarCLI a /usr/local/bin e /opt/homebrew/bin como codexbar.";
 "System" = "Sistema";
 "Temporarily shows the loading animation after the next refresh." = "Amosa temporalmente a animación de carga despois da seguinte actualización.";
 "Tertiary (\\(label))" = "Terciario (\\(label))";
@@ -575,18 +573,13 @@
 "overview_rows_follow_order" = "As filas de Resumo sempre seguen a orde dos provedores.";
 "overview_no_providers_selected" = "Non se seleccionou ningún provedor";
 "agent_sessions_title" = "Sesións de axentes";
-"agent_sessions_subtitle" = "Amosa no menú as sesións de Codex e Claude Code locais e descubertas mediante SSH.";
-"agent_sessions_hosts_title" = "Hosts SSH adicionais";
-"agent_sessions_footer" = "Os Mac da túa tailnet descóbrense automaticamente. As sesións locais actualízanse cada 30 segundos; os hosts remotos cada 60 segundos e cando se abre o menú.";
+"agent_sessions_subtitle" = "Show local Codex and Claude Code sessions in the menu.";
+"agent_sessions_footer" = "Local sessions refresh every 30 seconds and when the menu opens.";
 
 /* Advanced Pane */
 "section_keyboard_shortcut" = "Atallo de teclado";
 "open_menu_shortcut_title" = "Abrir o menú";
 "open_menu_shortcut_subtitle" = "Abre o menú da barra de menús desde calquera lugar.";
-"install_cli" = "Instalar a CLI";
-"install_cli_subtitle" = "Crea un enlace simbólico de CodexBarCLI a /usr/local/bin e /opt/homebrew/bin como codexbar.";
-"cli_not_found" = "Non se atopou CodexBarCLI no paquete da aplicación.";
-"no_writable_bin_dirs" = "Non se atoparon directorios bin con permisos de escritura.";
 "show_debug_settings_title" = "Amosar os axustes de depuración";
 "show_debug_settings_subtitle" = "Amosa ferramentas de diagnose na lapela Depuración.";
 "surprise_me_title" = "Sorpréndeme";
@@ -1207,7 +1200,6 @@
 "adaptive_activity_consent_decline" = "Usar o Adaptativo normal";
 "refresh_on_open_subtitle" = "Obtén o uso máis recente de cada provedor cada vez que abras o menú.";
 "refresh_on_open_title" = "Actualizar ao abrir o menú";
-"section_command_line" = "Liña de ordes";
 "section_cost_summary" = "Resumo de custos";
 "section_diagnostics" = "Diagnóstico";
 "section_links" = "Ligazóns";

@@ -36,8 +36,6 @@ Current Claude behavior is defined by several active owners, not one central pla
   still owns a separate direct `.auto` path, delegated refresh, prompt/cooldown handling, and web-extra enrichment.
 - `Sources/CodexBar/Providers/Claude/ClaudeSettingsStore.swift`
   owns app-side token-account routing into cookie or OAuth behavior.
-- `Sources/CodexBarCLI/TokenAccountCLI.swift`
-  owns CLI-side token-account routing and effective source-mode overrides.
 - `Sources/CodexBarCore/TokenAccountSupport.swift`
   owns the current string heuristics that distinguish Claude OAuth access tokens from cookie/session-key inputs.
 

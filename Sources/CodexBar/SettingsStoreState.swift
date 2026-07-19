@@ -71,5 +71,4 @@ struct SettingsDefaultsState {
     var appLanguageRaw: String?
     var terminalAppRaw: String?
     var agentSessionsEnabled: Bool
-    var agentSessionsManualHosts: String
 }

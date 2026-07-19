@@ -36,7 +36,7 @@ Local packaging creates `AgentBar.app` and uses ad hoc signing unless identity s
 
 ## Security notes
 
-- The standalone CLI can inspect only redacted protected config metadata.
+- The fork does not build or bundle a command-line executable.
 - Provider credentials are never written to the JSON config by the macOS app.
 - Browser credential access is distinct from app-owned config credential storage.
 - Logs and diagnostics must not include raw tokens, cookie headers, response bodies, or subprocess credential output.

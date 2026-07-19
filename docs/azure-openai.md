@@ -30,9 +30,7 @@ export AZURE_OPENAI_DEPLOYMENT_NAME="chat-prod"
 
 You can store the API key through the CLI:
 
-```bash
-printf '%s' "$AZURE_OPENAI_API_KEY" | codexbar config set-api-key --provider azure-openai --stdin
-```
+Add the key in **Settings → Providers → Azure OpenAI** or set `AZURE_OPENAI_API_KEY` in the app environment.
 
 The endpoint and deployment are stored as `enterpriseHost` and `workspaceID` in the `azureopenai` provider config:
 
@@ -88,14 +86,6 @@ output tokens for the configured deployment.
   one.
 - The menu bar usage meter does not show spend, quota, or reset history because the provider only performs deployment
   validation.
-
-## CLI usage
-
-```bash
-codexbar usage --provider azure-openai
-codexbar usage --provider azureopenai
-codexbar usage --provider aoai
-```
 
 ## Key files
 

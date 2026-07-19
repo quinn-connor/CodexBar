@@ -1,7 +1,6 @@
 import CodexBarCore
 import Foundation
 import Testing
-@testable import CodexBarCLI
 
 #if canImport(SQLite3)
 import SQLite3
@@ -12,27 +11,6 @@ import CSQLite3
 #if canImport(SQLite3) || canImport(CSQLite3)
 @Suite
 struct OpenCodeGoLinuxTests {
-    @Test
-    func autoSourceDoesNotRequireWebSupport() {
-        #expect(!CodexBarCLI.sourceModeRequiresWebSupport(.auto, provider: .opencodego))
-        #expect(CodexBarCLI.sourceModeRequiresWebSupport(.web, provider: .opencodego))
-    }
-
-    @Test
-    func commandCodeManualCookieDoesNotRequireMacOSWebSupport() {
-        let settings = ProviderSettingsSnapshot.make(
-            commandcode: .init(cookieSource: .manual, manualCookieHeader: "session=manual"))
-
-        #expect(!CodexBarCLI.sourceModeRequiresWebSupport(
-            .auto,
-            provider: .commandcode,
-            settings: settings))
-        #expect(!CodexBarCLI.sourceModeRequiresWebSupport(
-            .web,
-            provider: .commandcode,
-            settings: settings))
-    }
-
     @Test
     func localReaderLoadsOpenCodeDatabase() throws {
         let root = FileManager.default.temporaryDirectory

@@ -54,12 +54,6 @@ variables. Browser-imported cookies are cached and invalid cached cookies are cl
 
 Purchased credits do not reset, so the menu displays that balance without a reset prefix.
 
-## CLI Usage
-
-```bash
-codexbar usage --provider perplexity --verbose
-```
-
 ## Troubleshooting
 
 ### "Perplexity session token is missing"

@@ -12,11 +12,9 @@ Prometheus metrics API.
 
 ## Setup
 
-Store the key in the shared app/CLI config:
+Store the key through the app:
 
-```bash
-printf '%s' "$GROQ_API_KEY" | codexbar config set-api-key --provider groq --stdin
-```
+Add the key in **Settings → Providers → GroqCloud** or set `GROQ_API_KEY` in the app environment.
 
 Or set `GROQ_API_KEY` in the process environment. `GROQ_API_URL` can override the default `https://api.groq.com/v1`
 base URL for private gateways.

@@ -171,7 +171,6 @@
 "Historical tracking" = "历史跟踪";
 "How often CodexBar polls providers in the background." = "CodexBar 在后台轮询提供商的频率。";
 "Inactive" = "非活跃";
-"Install CLI" = "安装 CLI";
 "Install the Claude CLI (npm i -g @anthropic-ai/claude-code) and try again." = "安装 Claude CLI（npm i -g @anthropic-ai/claude-code）后重试。";
 "Install the Codex CLI (npm i -g @openai/codex) and try again." = "安装 Codex CLI（npm i -g @openai/codex）后重试。";
 "Install the Gemini CLI (npm i -g @google/gemini-cli) and try again." = "安装 Gemini CLI（npm i -g @google/gemini-cli）后重试。";
@@ -338,7 +337,6 @@
 "Stores local Codex usage history (8 weeks) to personalize Pace predictions." = "存储本地 Codex 用量历史（8 周），用于个性化进度预测。";
 "Surprise me" = "给我惊喜";
 "Switcher shows icons" = "切换器显示图标";
-"Symlink CodexBarCLI to /usr/local/bin and /opt/homebrew/bin as codexbar." = "将 CodexBarCLI 作为 codexbar 符号链接到 /usr/local/bin 和 /opt/homebrew/bin。";
 "System" = "系统";
 "Temporarily shows the loading animation after the next refresh." = "下次刷新后临时显示加载动画。";
 "terminal_app_subtitle" = "“打开终端”操作使用的终端";
@@ -572,16 +570,11 @@
 "overview_rows_follow_order" = "概览行始终遵循提供商顺序。";
 "overview_no_providers_selected" = "未选择提供商";
 "agent_sessions_title" = "智能体会话";
-"agent_sessions_subtitle" = "在菜单中显示本地及通过 SSH 发现的 Codex 和 Claude Code 会话。";
-"agent_sessions_hosts_title" = "其他 SSH 主机";
-"agent_sessions_footer" = "系统会自动发现 tailnet 上的 Mac。本地会话每 30 秒刷新一次；远程主机每 60 秒以及打开菜单时刷新。";
+"agent_sessions_subtitle" = "Show local Codex and Claude Code sessions in the menu.";
+"agent_sessions_footer" = "Local sessions refresh every 30 seconds and when the menu opens.";
 "section_keyboard_shortcut" = "快捷键";
 "open_menu_shortcut_title" = "打开菜单";
 "open_menu_shortcut_subtitle" = "从任意位置触发菜单栏菜单。";
-"install_cli" = "安装 CLI";
-"install_cli_subtitle" = "将 CodexBarCLI 作为 codexbar 符号链接到 /usr/local/bin 和 /opt/homebrew/bin。";
-"cli_not_found" = "在应用包中未找到 CodexBarCLI。";
-"no_writable_bin_dirs" = "未找到可写的 bin 目录。";
 "show_debug_settings_title" = "显示调试设置";
 "show_debug_settings_subtitle" = "在“调试”标签中显示故障排除工具。";
 "surprise_me_title" = "给我惊喜";
@@ -1180,7 +1173,6 @@
 "Disable" = "停用";
 "providers_on_count" = "%d 个已开启";
 "section_cost_summary" = "费用摘要";
-"section_command_line" = "命令行";
 "section_privacy" = "隐私";
 "section_diagnostics" = "诊断";
 "section_updates" = "更新";

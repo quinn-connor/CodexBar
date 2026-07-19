@@ -34,7 +34,7 @@ struct KeychainPromptCoordinatorTests {
     @Test
     func `ignores unrelated executable paths`() {
         #expect(!KeychainPromptCoordinator.isUnbundledCodexBarExecutable(
-            "/Users/me/CodexBar/.build/debug/CodexBarCLI"))
+            "/Users/me/CodexBar/.build/debug/OtherTool"))
         #expect(!KeychainPromptCoordinator.isUnbundledCodexBarExecutable(""))
         #expect(!KeychainPromptCoordinator.isUnbundledCodexBarExecutable("CodexBar"))
     }

@@ -370,15 +370,16 @@ Replay proves the policy table at reconstructed decision points. It does not rep
 callback, because the frozen trace sampled activity only on decision records. Timer integration tests separately prove
 that a live activity observation can pull a pending 30-minute sleep forward and cannot postpone an earlier refresh.
 
-A 20-run `hyperfine` sample of exact-head `.build/debug/CodexBarCLI sessions --json`, with one attributable Codex
-session, measured 153.0 ms ± 14.4 ms wall time and 134.3 ms combined user plus system CPU time per invocation. At the
+A 20-run `hyperfine` sample of the then-current session-scanner harness, with one attributable Codex session, measured
+153.0 ms ± 14.4 ms wall time and 134.3 ms combined user plus system CPU time per invocation. At the
 30-second unconstrained cadence, that CPU figure extrapolates to 6.5 CPU-minutes per day. Agent-aware scans pause under
 Low Power Mode and serious/critical thermal pressure. The CLI process startup is included, so this is a conservative
 same-machine sample for in-process work, not a scanner upper bound or general energy claim. Simulated refresh counts and
-scanner CPU are reported separately; the replay does not claim net energy savings.
+scanner CPU are reported separately; the replay does not claim net energy savings. The standalone harness used for
+this historical measurement has since been removed.
 
 An exact-head synthetic stress fixture then exercised 12 agent-like processes and 512 recent Codex rollout entries.
-After bounding the scanner, 20 runs of `.build/debug/CodexBarCLI sessions --json` measured 231.4 ms ± 12.4 ms wall time
+After bounding the scanner, 20 runs of the same harness measured 231.4 ms ± 12.4 ms wall time
 and 209.3 ms combined user plus system CPU time. At a continuous 30-second cadence that CPU figure extrapolates to 10.1
 CPU-minutes per day. The CLI startup is included. This is a stress sample rather than a population or energy claim, and
 directory metadata enumeration is additionally capped by the shared entry, depth, and time budget.

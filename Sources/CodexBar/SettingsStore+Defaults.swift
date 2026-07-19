@@ -971,14 +971,6 @@ extension SettingsStore {
             self.userDefaults.set(newValue, forKey: "agentSessionsEnabled")
         }
     }
-
-    var agentSessionsManualHosts: String {
-        get { self.defaultsState.agentSessionsManualHosts }
-        set {
-            self.defaultsState.agentSessionsManualHosts = newValue
-            self.userDefaults.set(newValue, forKey: "agentSessionsManualHosts")
-        }
-    }
 }
 
 extension SettingsStore {

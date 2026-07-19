@@ -526,7 +526,6 @@ extension SettingsStore {
             forKey: "providersSortedAlphabetically") as? Bool ?? false
         let appLanguageRaw = userDefaults.string(forKey: "appLanguage")
         let agentSessionsEnabled = userDefaults.object(forKey: "agentSessionsEnabled") as? Bool ?? false
-        let agentSessionsManualHosts = userDefaults.string(forKey: "agentSessionsManualHosts") ?? ""
         return SettingsDefaultsState(
             refreshFrequency: refreshFrequency,
             adaptiveActivityScanConsent: adaptiveActivityScanConsent,
@@ -597,8 +596,7 @@ extension SettingsStore {
             providersSortedAlphabetically: providersSortedAlphabetically,
             appLanguageRaw: appLanguageRaw,
             terminalAppRaw: userDefaults.string(forKey: "terminalApp"),
-            agentSessionsEnabled: agentSessionsEnabled,
-            agentSessionsManualHosts: agentSessionsManualHosts)
+            agentSessionsEnabled: agentSessionsEnabled)
     }
 
     private static func hadPreviousAppLaunch(userDefaults: UserDefaults) -> Bool {

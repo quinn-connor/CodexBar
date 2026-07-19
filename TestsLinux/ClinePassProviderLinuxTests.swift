@@ -3,7 +3,6 @@ import Foundation
 import FoundationNetworking
 #endif
 import Testing
-@testable import CodexBarCLI
 @testable import CodexBarCore
 
 struct ClinePassProviderLinuxTests {
@@ -124,16 +123,13 @@ struct ClinePassProviderLinuxTests {
     }
 
     @Test
-    func `registers descriptor and CLI selection`() throws {
+    func `registers descriptor`() {
         let descriptor = ProviderDescriptorRegistry.descriptor(for: .clinepass)
-        let selection = try #require(ProviderSelection(argument: "clinepass"))
 
         #expect(descriptor.metadata.displayName == "ClinePass")
         #expect(descriptor.cli.name == "clinepass")
         #expect(descriptor.fetchPlan.sourceModes == [.auto, .api])
         #expect(ProviderDescriptorRegistry.cliNameMap["clinepass"] == .clinepass)
-        #expect(selection.asList == [.clinepass])
-        #expect(ProviderHelp.list.split(separator: "|").contains("clinepass"))
     }
 
     @Test

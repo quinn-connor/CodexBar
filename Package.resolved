@@ -1,15 +1,6 @@
 {
-  "originHash" : "f76166433feb2f981ac9c77869f3483ca3e6d0f7aa2eed6cc7faacfbf3fa71db",
+  "originHash" : "b9c4084acad94949df6c57cc647697a63101969f993bdb874cde6d6e162f9ebc",
   "pins" : [
-    {
-      "identity" : "commander",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/steipete/Commander",
-      "state" : {
-        "revision" : "ae2ce746b386ff94b26648cfe5625cfa8d02639b",
-        "version" : "0.2.2"
-      }
-    },
     {
       "identity" : "keyboardshortcuts",
       "kind" : "remoteSourceControl",

@@ -419,7 +419,7 @@ scan fails, while provider/account configuration changes replace obsolete result
 
 ## Command Code
 - Browser session cookies from automatic import or manual `Cookie:` header.
-- Linux CLI supports configured manual cookies; automatic browser import remains macOS-only.
+- The app supports configured manual cookies and automatic browser import on macOS.
 - Reads monthly USD credits and billing-cycle usage from `api.commandcode.ai`.
 - Automatic import looks for better-auth session cookies from `commandcode.ai` / `www.commandcode.ai`.
 - Status: none yet.

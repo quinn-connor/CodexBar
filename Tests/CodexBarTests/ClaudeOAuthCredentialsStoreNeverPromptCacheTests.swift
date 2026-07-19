@@ -419,67 +419,6 @@ struct ClaudeOAuthCredentialsStoreNeverPromptCacheTests {
     }
 
     @Test
-    func `bundled CLI resolves the owning app prompt policy domain`() throws {
-        let tempDirectory = FileManager.default.temporaryDirectory
-            .appendingPathComponent(UUID().uuidString, isDirectory: true)
-        let appURL = tempDirectory.appendingPathComponent("CodexBar.app", isDirectory: true)
-        let contentsURL = appURL.appendingPathComponent("Contents", isDirectory: true)
-        let helpersURL = contentsURL.appendingPathComponent("Helpers", isDirectory: true)
-        let macOSURL = contentsURL.appendingPathComponent("MacOS", isDirectory: true)
-        let binURL = tempDirectory.appendingPathComponent("bin", isDirectory: true)
-        try FileManager.default.createDirectory(at: helpersURL, withIntermediateDirectories: true)
-        try FileManager.default.createDirectory(at: macOSURL, withIntermediateDirectories: true)
-        try FileManager.default.createDirectory(at: binURL, withIntermediateDirectories: true)
-        defer { try? FileManager.default.removeItem(at: tempDirectory) }
-
-        let info: [String: Any] = [
-            "CFBundleExecutable": "CodexBar",
-            "CFBundleIdentifier": ClaudeOAuthKeychainPromptPreference.debugApplicationDefaultsDomain,
-            "CFBundlePackageType": "APPL",
-        ]
-        let infoData = try PropertyListSerialization.data(
-            fromPropertyList: info,
-            format: .xml,
-            options: 0)
-        try infoData.write(to: contentsURL.appendingPathComponent("Info.plist"))
-        try Data().write(to: macOSURL.appendingPathComponent("CodexBar"))
-
-        let helperURL = helpersURL.appendingPathComponent("CodexBarCLI")
-        try Data().write(to: helperURL)
-        let symlinkURL = binURL.appendingPathComponent("codexbar")
-        try FileManager.default.createSymbolicLink(at: symlinkURL, withDestinationURL: helperURL)
-
-        let bundledCLIDomain = ClaudeOAuthKeychainPromptPreference.resolveApplicationDefaultsDomain(
-            bundleIdentifier: nil,
-            bundleURL: nil,
-            executableURL: nil,
-            invocationURL: symlinkURL)
-        #expect(bundledCLIDomain == ClaudeOAuthKeychainPromptPreference.debugApplicationDefaultsDomain)
-
-        let debugWidgetDomain = ClaudeOAuthKeychainPromptPreference.resolveApplicationDefaultsDomain(
-            bundleIdentifier: "\(ClaudeOAuthKeychainPromptPreference.debugApplicationDefaultsDomain).widget",
-            bundleURL: nil,
-            executableURL: nil,
-            invocationURL: nil)
-        #expect(debugWidgetDomain == ClaudeOAuthKeychainPromptPreference.debugApplicationDefaultsDomain)
-
-        let standaloneDomain = ClaudeOAuthKeychainPromptPreference.resolveApplicationDefaultsDomain(
-            bundleIdentifier: nil,
-            bundleURL: nil,
-            executableURL: URL(fileURLWithPath: "/usr/local/bin/codexbar"),
-            invocationURL: nil)
-        #expect(standaloneDomain == ClaudeOAuthKeychainPromptPreference.releaseApplicationDefaultsDomain)
-
-        let testProcessDomain = ClaudeOAuthKeychainPromptPreference.resolveApplicationDefaultsDomain(
-            bundleIdentifier: nil,
-            bundleURL: Bundle.main.bundleURL,
-            executableURL: Bundle.main.executableURL,
-            invocationURL: CommandLine.arguments.first.map(URL.init(fileURLWithPath:)),
-            bundleIdentifierForApp: { _ in nil })
-        #expect(testProcessDomain == ClaudeOAuthKeychainPromptPreference.releaseApplicationDefaultsDomain)
-    }
-
-    @Test
     func `shared tombstone propagates across process boundaries`() throws {
         let domain = "ClaudeOAuthPendingCacheTests.\(UUID().uuidString)"
         let key = "pending"

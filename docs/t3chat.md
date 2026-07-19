@@ -82,19 +82,7 @@ T3 Chat's server clock.
 allowance. Reset timing comes from the active subscription's current-period end; if no subscription
 metadata is present, the reset time is shown as unknown.
 
-## CLI
-
-```bash
-# Show T3 Chat usage
-codexbar usage --provider t3chat
-
-# Or use the alias
-codexbar usage --provider t3-chat
-codexbar usage --provider t3
-```
-
-T3 Chat provides no token-cost data. The `usage --format json` output contains usage and identity
-data, while `codexbar cost --provider t3chat` is unsupported.
+T3 Chat provides no token-cost data.
 
 ## Common errors
 

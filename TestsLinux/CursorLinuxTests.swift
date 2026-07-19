@@ -1,7 +1,6 @@
 #if os(Linux)
 import Foundation
 import Testing
-@testable import CodexBarCLI
 @testable import CodexBarCore
 
 struct CursorLinuxTests {
@@ -30,37 +29,9 @@ struct CursorLinuxTests {
     }
 
     @Test
-    func `Cursor automatic source does not require macOS web support`() {
-        #expect(!CodexBarCLI.sourceModeRequiresWebSupport(
-            .auto,
-            provider: .cursor,
-            settings: ProviderSettingsSnapshot.make(
-                cursor: .init(cookieSource: .auto, manualCookieHeader: nil))))
-    }
-
-    @Test
     func `Cursor descriptor accepts explicit web source`() {
         #expect(CursorProviderDescriptor.descriptor.fetchPlan.sourceModes.contains(.web))
     }
 
-    @Test
-    func `Cursor manual cookie does not require macOS web support`() {
-        #expect(!CodexBarCLI.sourceModeRequiresWebSupport(
-            .web,
-            provider: .cursor,
-            settings: ProviderSettingsSnapshot.make(
-                cursor: .init(
-                    cookieSource: .manual,
-                    manualCookieHeader: "WorkosCursorSessionToken=test"))))
-    }
-
-    @Test
-    func `disabled Cursor web source still requires macOS web support`() {
-        #expect(CodexBarCLI.sourceModeRequiresWebSupport(
-            .web,
-            provider: .cursor,
-            settings: ProviderSettingsSnapshot.make(
-                cursor: .init(cookieSource: .off, manualCookieHeader: nil))))
-    }
 }
 #endif

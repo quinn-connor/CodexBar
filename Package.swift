@@ -27,7 +27,6 @@ let package = Package(
     products: {
         var products: [Product] = [
             .library(name: "CodexBarCore", targets: ["CodexBarCore"]),
-            .executable(name: "CodexBarCLI", targets: ["CodexBarCLI"]),
             // Offline adaptive-refresh replay harness. Keep the supporting library package-internal.
             .executable(name: "AdaptiveReplayCLI", targets: ["AdaptiveReplayCLI"]),
         ]
@@ -44,7 +43,6 @@ let package = Package(
         return products
     }(),
     dependencies: [
-        .package(url: "https://github.com/steipete/Commander", from: "0.2.1"),
         .package(url: "https://github.com/apple/swift-crypto.git", from: "3.0.0"),
         .package(url: "https://github.com/apple/swift-log", from: "1.13.2"),
         .package(url: "https://github.com/sindresorhus/KeyboardShortcuts", from: "2.4.0"),
@@ -68,18 +66,6 @@ let package = Package(
                     .product(name: "Logging", package: "swift-log"),
                     .product(name: "SweetCookieKit", package: "SweetCookieKit"),
                 ],
-                swiftSettings: [
-                    .enableUpcomingFeature("StrictConcurrency"),
-                ],
-                linkerSettings: sqlite3LinkerSettings),
-            .executableTarget(
-                name: "CodexBarCLI",
-                dependencies: [
-                    "CodexBarCore",
-                    .product(name: "Commander", package: "Commander"),
-                    .product(name: "Crypto", package: "swift-crypto"),
-                ],
-                path: "Sources/CodexBarCLI",
                 swiftSettings: [
                     .enableUpcomingFeature("StrictConcurrency"),
                 ],
@@ -130,7 +116,6 @@ let package = Package(
                 name: "CodexBarLinuxTests",
                 dependencies: [
                     "CodexBarCore",
-                    "CodexBarCLI",
                     .target(name: "CSQLite3", condition: .when(platforms: [.linux])),
                 ],
                 path: "TestsLinux",
@@ -183,7 +168,7 @@ let package = Package(
 
         targets.append(.testTarget(
             name: "CodexBarTests",
-            dependencies: ["CodexBar", "CodexBarCore", "CodexBarCLI", "CodexBarWidget"],
+            dependencies: ["CodexBar", "CodexBarCore", "CodexBarWidget"],
             path: "Tests",
             exclude: ["AdaptiveReplayCLITests", "AdaptiveReplayKitTests"],
             resources: [

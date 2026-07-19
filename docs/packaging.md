@@ -1,8 +1,8 @@
 ---
-summary: "Packaging, signing, and bundled CLI notes."
+summary: "Packaging and signing notes."
 read_when:
   - Packaging/signing builds
-  - Updating bundle layout or CLI bundling
+  - Updating bundle layout
 ---
 
 # Packaging & signing
@@ -13,7 +13,6 @@ read_when:
 
 ## Bundle contents
 - `CodexBarWidget.appex` is built by `WidgetExtension/CodexBarWidgetExtension.xcodeproj` as a real macOS app extension, then bundled with app-group entitlements.
-- `CodexBarCLI` copied to `AgentBar.app/Contents/Helpers/` for symlinking.
 - SwiftPM resource bundles (e.g. `KeyboardShortcuts_KeyboardShortcuts.bundle`) copied into `Contents/Resources` (required for `KeyboardShortcuts.Recorder`).
 
 ## Releases

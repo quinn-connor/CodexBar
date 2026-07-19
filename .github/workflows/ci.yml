@@ -206,7 +206,7 @@ jobs:
             printf '| swift-test-macos result | `%s` |\n' "$MACOS_RESULT"
           } >> "$GITHUB_STEP_SUMMARY"
 
-  build-linux-cli:
+  test-linux-core:
     timeout-minutes: 20
     strategy:
       fail-fast: false
@@ -286,28 +286,10 @@ jobs:
           hash -r
           swift --version
 
-      - name: Build CodexBarCLI (release, static Swift stdlib)
-        run: swift build -c release --product CodexBarCLI --static-swift-stdlib
-
       - name: Swift Test (Linux only)
         run: swift test --parallel
 
-      - name: Smoke test CodexBarCLI
-        shell: bash
-        run: |
-          set -euo pipefail
-          BIN_DIR="$(swift build -c release --product CodexBarCLI --static-swift-stdlib --show-bin-path)"
-          BIN="$BIN_DIR/CodexBarCLI"
-          "$BIN" --help >/dev/null
-          "$BIN" --version >/dev/null
-          if "$BIN" usage --provider codex --web >/dev/null 2>&1; then
-            echo "Expected --web to fail on Linux"
-            exit 1
-          fi
-          "$BIN" usage --provider codex --web 2>&1 | tee /tmp/codexbarcli-stderr.txt >/dev/null || true
-          grep -q "macOS" /tmp/codexbarcli-stderr.txt
-
-      - name: Summarize Linux CLI build
+      - name: Summarize Linux core tests
         if: ${{ always() }}
         shell: bash
         env:
@@ -317,7 +299,7 @@ jobs:
         run: |
           set -euo pipefail
           {
-            printf '### Linux CLI build\n\n'
+            printf '### Linux core tests\n\n'
             printf '| Field | Value |\n'
             printf '| --- | --- |\n'
             printf '| Matrix | `%s` |\n' "$MATRIX_NAME"

@@ -90,19 +90,10 @@ timeout or outlive the refresh that started it.
   the legitimate way to show the *weekly* window there. Reusing it for the PAYG balance would silently replace the
   weekly percentage for anyone who picks that preference, so the balance is menu-only for now.
 
-## CLI usage
-
-```
-codexbar usage --provider sakana
-codexbar usage --provider sakana-ai   # alias
-```
-
 Set the cookie via the environment variable or Settings UI:
 
-- **Environment variable**: `SAKANA_COOKIE=<cookie-header-value> codexbar usage --provider sakana`
+- **Environment variable**: set `SAKANA_COOKIE` in the app environment.
 - **Settings UI**: Settings → Providers → Sakana AI → Cookie header
-
-There is no `codexbar config set` command for `cookieHeader`; use one of the paths above.
 
 ## Errors
 
@@ -116,7 +107,7 @@ There is no `codexbar config set` command for `cookieHeader`; use one of the pat
 ## Related files
 
 - `Sources/CodexBarCore/Providers/Sakana/`
-  - `SakanaProviderDescriptor.swift` — provider metadata, fetch plan, CLI config
+  - `SakanaProviderDescriptor.swift` — provider metadata and fetch plan
   - `SakanaSettingsReader.swift` — `SAKANA_COOKIE` env key, cookie normalizer
   - `SakanaUsageFetcher.swift` — billing-page HTML fetch and quota parser; also defines
     `SakanaPayAsYouGoSnapshot` and the pay-as-you-go tab fetch/parser

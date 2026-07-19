@@ -153,7 +153,6 @@
 "Historical tracking" = "Śledzenie historyczne";
 "How often CodexBar polls providers in the background." = "Jak często CodexBar odpyta dostawców w tle.";
 "Inactive" = "Nieaktywne";
-"Install CLI" = "Zainstaluj CLI";
 "Install the Claude CLI (npm i -g @anthropic-ai/claude-code) and try again." = "Zainstaluj Claude CLI (`npm i -g @anthropic-ai/claude-code`) i spróbuj ponownie.";
 "Install the Codex CLI (npm i -g @openai/codex) and try again." = "Zainstaluj Codex CLI (`npm i -g @openai/codex`) i spróbuj ponownie.";
 "Install the Gemini CLI (npm i -g @google/gemini-cli) and try again." = "Zainstaluj Gemini CLI (`npm i -g @google/gemini-cli`) i spróbuj ponownie.";
@@ -315,7 +314,6 @@
 "Stores local Codex usage history (8 weeks) to personalize Pace predictions." = "Przechowuje lokalną historię użycia Codex (8 tygodni), aby personalizować prognozy Tempo.";
 "Surprise me" = "Zaskocz mnie";
 "Switcher shows icons" = "Przełącznik pokazuje ikony";
-"Symlink CodexBarCLI to /usr/local/bin and /opt/homebrew/bin as codexbar." = "Dowiąż symbolicznie CodexBarCLI do /usr/local/bin i /opt/homebrew/bin jako codexbar.";
 "System" = "System";
 "Temporarily shows the loading animation after the next refresh." = "Tymczasowo pokazuje animację ładowania po następnym odświeżeniu.";
 "terminal_app_subtitle" = "Terminal używany przez akcję Otwórz terminal";
@@ -604,18 +602,13 @@
 "overview_rows_follow_order" = "Wiersze Przeglądu zawsze podążają za kolejnością dostawców.";
 "overview_no_providers_selected" = "Nie wybrano dostawców";
 "agent_sessions_title" = "Sesje agentów";
-"agent_sessions_subtitle" = "Pokazuj w menu lokalne oraz wykryte przez SSH sesje Codex i Claude Code.";
-"agent_sessions_hosts_title" = "Dodatkowe hosty SSH";
-"agent_sessions_footer" = "Komputery Mac w twojej sieci tailnet są wykrywane automatycznie. Sesje lokalne są odświeżane co 30 sekund; hosty zdalne co 60 sekund i po otwarciu menu.";
+"agent_sessions_subtitle" = "Show local Codex and Claude Code sessions in the menu.";
+"agent_sessions_footer" = "Local sessions refresh every 30 seconds and when the menu opens.";
 
 /* Advanced Pane */
 "section_keyboard_shortcut" = "Skrót klawiaturowy";
 "open_menu_shortcut_title" = "Skrót otwierania menu";
 "open_menu_shortcut_subtitle" = "Skrót klawiaturowy do otwierania menu CodexBar.";
-"install_cli" = "Zainstaluj CLI";
-"install_cli_subtitle" = "Utwórz dowiązanie symboliczne CodexBarCLI do /usr/local/bin i /opt/homebrew/bin jako codexbar.";
-"cli_not_found" = "Nie znaleziono CodexBarCLI w pakiecie aplikacji.";
-"no_writable_bin_dirs" = "Nie znaleziono zapisywalnych katalogów bin.";
 "show_debug_settings_title" = "Pokaż ustawienia debugowania";
 "show_debug_settings_subtitle" = "Pokazuje dodatkowe ustawienia debugowania i diagnostyki.";
 "surprise_me_title" = "Zaskocz mnie";
@@ -1221,7 +1214,6 @@
 "Disable" = "Wyłącz";
 "providers_on_count" = "%d wł.";
 "section_cost_summary" = "Podsumowanie kosztów";
-"section_command_line" = "Wiersz poleceń";
 "section_privacy" = "Prywatność";
 "section_diagnostics" = "Diagnostyka";
 "section_updates" = "Aktualizacje";

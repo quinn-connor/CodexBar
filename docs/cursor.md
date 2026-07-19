@@ -67,9 +67,6 @@ Manual option:
 - Chrome/Chromium forks: `~/Library/Application Support/Google/Chrome/*/Cookies`
 - Firefox: `~/Library/Application Support/Firefox/Profiles/*/cookies.sqlite`
 
-## Linux CLI
-- `codexbar usage --provider cursor` reads the signed-in Cursor app's access token from the Linux global state DB and reuses the same `cursor.com` usage endpoints as macOS.
-- Automatic browser cookie import and the external-browser Add/Switch flow are macOS app features.
 - Manual cookie headers from `~/.config/codexbar/config.json` (or legacy `~/.codexbar/config.json`) work on Linux.
 
 ## Local storage footprint
@@ -92,7 +89,7 @@ Unlike Claude and Codex cost (scanned from local session logs on this machine), 
 Auth reuses the exact status-probe session resolution and cookie-source policy:
 - **Auto**: cached cookie header → browser cookie import → stored WebKit session → Cursor.app local auth.
 - **Manual**: a non-empty pasted cookie header is required and forwarded as-is, so cost and status share the same session; an empty header fails closed instead of falling back to another account.
-- **Off**: the fetch is skipped in the app; `codexbar cost --provider cursor` fails explicitly and `/cost` returns a provider error row.
+- **Off**: the fetch is skipped in the app.
 
 Fetch behavior:
 - `POST https://cursor.com/api/dashboard/get-filtered-usage-events` (cookie-authenticated; requires a matching `Origin` for CSRF).

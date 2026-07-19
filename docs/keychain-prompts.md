@@ -31,7 +31,7 @@ that is already running from it. That process can continue to request Keychain a
 shows a prompt such as "CodexBar wants to use your confidential information stored in 'Chrome Safe Storage'", the
 usual causes are:
 
-- A CodexBar process or bundled helper is still running.
+- A CodexBar process is still running.
 - CodexBar is still enabled in Login Items and relaunched from an existing install.
 - Another copy of `AgentBar.app` exists elsewhere on the machine.
 - The uninstall path did not remove the same copy that launched the process. Finder, Homebrew cask, release archives,
@@ -41,7 +41,7 @@ usual causes are:
 Safe checks:
 
 ```bash
-pgrep -fl 'CodexBar|CodexBarCLI'
+pgrep -fl 'CodexBar'
 ls -ld /Applications/AgentBar.app
 brew info --cask codexbar
 mdfind 'kMDItemCFBundleIdentifier == "com.steipete.codexbar"'
@@ -49,7 +49,7 @@ mdfind 'kMDItemCFBundleIdentifier == "com.steipete.codexbar"'
 
 Also check:
 
-- **Activity Monitor**: search for `CodexBar` and `CodexBarCLI`.
+- **Activity Monitor**: search for `CodexBar`.
 - **System Settings -> General -> Login Items**: remove CodexBar if it remains listed.
 - **Keychain prompt screenshot**: capture the full prompt, especially any requesting app/path details. Redact user
   names or unrelated window contents if needed, but do not include secrets.

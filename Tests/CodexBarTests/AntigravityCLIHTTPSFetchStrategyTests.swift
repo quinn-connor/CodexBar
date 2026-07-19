@@ -327,7 +327,7 @@ struct AntigravityCLIHTTPSFetchStrategyTests {
         #expect(AntigravityCLIHTTPSFetchStrategy.shouldResetSessionAfterFetch(self.makeFetchContext(runtime: .cli)))
         // App runtime keeps the warm session.
         #expect(!AntigravityCLIHTTPSFetchStrategy.shouldResetSessionAfterFetch(self.makeFetchContext(runtime: .app)))
-        // Long-lived CLI host (codexbar serve) keeps the warm session even at .cli runtime.
+        // A long-lived host keeps the warm session even at .cli runtime.
         #expect(!AntigravityCLIHTTPSFetchStrategy.shouldResetSessionAfterFetch(
             self.makeFetchContext(runtime: .cli, persistsCLISessions: true)))
     }

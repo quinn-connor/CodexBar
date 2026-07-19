@@ -45,8 +45,7 @@ extension StatusItemController {
             updateReady: false,
             includeContextualActions: includeContextualActions,
             agentSessionsEnabled: self.settings.agentSessionsEnabled,
-            localAgentSessions: self.agentSessions.localSessions,
-            remoteAgentHosts: self.agentSessions.remoteHosts)
+            localAgentSessions: self.agentSessions.localSessions)
     }
 
     func measuredStandardMenuWidth(for sections: [MenuDescriptor.Section], baseWidth: CGFloat) -> CGFloat {
@@ -139,8 +138,8 @@ extension StatusItemController {
             "quit"
         case let .copyError(message):
             "copyError:\(message)"
-        case let .focusAgentSession(session, remoteHost):
-            "focusAgentSession:\(remoteHost ?? "local"):\(session.id)"
+        case let .focusAgentSession(session):
+            "focusAgentSession:\(session.id)"
         }
     }
 }

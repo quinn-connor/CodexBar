@@ -36,11 +36,9 @@ If `DEEPGRAM_PROJECT_ID` is omitted, CodexBar calls Deepgram's project list endp
 
 You can also configure the API key and optional project ID in CodexBar Settings → Providers → Deepgram.
 
-### CLI config
+### API key
 
-```bash
-printf '%s' "$DEEPGRAM_API_KEY" | codexbar config set-api-key --provider deepgram --stdin
-```
+Add the key in **Settings → Providers → Deepgram** or set `DEEPGRAM_API_KEY` in the app environment.
 
 ## Data Source
 
@@ -71,8 +69,6 @@ The Deepgram menu card shows:
 * **Identity**: Project name, project ID, or aggregated project count
 
 Deepgram does not currently provide a credit balance through this provider. The provider displays usage, not remaining credits.
-
-## CLI Usage
 
 ```bash
 codexbar --provider deepgram

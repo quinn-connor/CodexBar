@@ -21,9 +21,7 @@ export POE_API_KEY="..."
 
 Or configure it through the CLI:
 
-```bash
-printf '%s' "$POE_API_KEY" | codexbar config set-api-key --provider poe --stdin
-```
+Add the key in **Settings → Providers → Poe** or set `POE_API_KEY` in the app environment.
 
 ## Data Source
 
@@ -37,8 +35,6 @@ The current balance request is required. Recent points history is best-effort, s
 ## Display
 
 The provider shows the current point balance in the menu and menu bar. When available, recent history is grouped by day and shown in the usage detail.
-
-## CLI Usage
 
 ```bash
 codexbar --provider poe

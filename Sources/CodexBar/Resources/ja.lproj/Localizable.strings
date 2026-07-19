@@ -169,7 +169,6 @@
 "Historical tracking" = "履歴トラッキング";
 "How often CodexBar polls providers in the background." = "CodexBar がバックグラウンドでプロバイダをポーリングする頻度です。";
 "Inactive" = "非アクティブ";
-"Install CLI" = "CLI をインストール";
 "Install the Claude CLI (npm i -g @anthropic-ai/claude-code) and try again." = "Claude CLI をインストールして（npm i -g @anthropic-ai/claude-code）、もう一度お試しください。";
 "Install the Codex CLI (npm i -g @openai/codex) and try again." = "Codex CLI をインストールして（npm i -g @openai/codex）、もう一度お試しください。";
 "Install the Gemini CLI (npm i -g @google/gemini-cli) and try again." = "Gemini CLI をインストールして（npm i -g @google/gemini-cli）、もう一度お試しください。";
@@ -329,7 +328,6 @@
 "Stores local Codex usage history (8 weeks) to personalize Pace predictions." = "ローカルの Codex 使用履歴（8 週間分）を保存して、ペース予測をパーソナライズします。";
 "Surprise me" = "サプライズ";
 "Switcher shows icons" = "切替バーにアイコンを表示";
-"Symlink CodexBarCLI to /usr/local/bin and /opt/homebrew/bin as codexbar." = "CodexBarCLI を codexbar として /usr/local/bin と /opt/homebrew/bin にシンボリックリンクします。";
 "System" = "システム";
 "Temporarily shows the loading animation after the next refresh." = "次回の更新後に読み込みアニメーションを一時的に表示します。";
 "terminal_app_subtitle" = "「ターミナルを開く」アクションで使用するターミナル";
@@ -593,18 +591,13 @@
 "overview_rows_follow_order" = "概要の行は常にプロバイダの並び順に従います。";
 "overview_no_providers_selected" = "プロバイダが選択されていません";
 "agent_sessions_title" = "エージェントセッション";
-"agent_sessions_subtitle" = "ローカルおよび SSH で検出された Codex と Claude Code のセッションをメニューに表示します。";
-"agent_sessions_hosts_title" = "追加の SSH ホスト";
-"agent_sessions_footer" = "tailnet 上の Mac は自動的に検出されます。ローカルセッションは 30 秒ごと、リモートホストは 60 秒ごと、およびメニューを開いたときに更新されます。";
+"agent_sessions_subtitle" = "Show local Codex and Claude Code sessions in the menu.";
+"agent_sessions_footer" = "Local sessions refresh every 30 seconds and when the menu opens.";
 
 /* Advanced Pane */
 "section_keyboard_shortcut" = "キーボードショートカット";
 "open_menu_shortcut_title" = "メニューを開く";
 "open_menu_shortcut_subtitle" = "どこからでもメニューバーのメニューを開きます。";
-"install_cli" = "CLI をインストール";
-"install_cli_subtitle" = "CodexBarCLI を codexbar として /usr/local/bin と /opt/homebrew/bin にシンボリックリンクします。";
-"cli_not_found" = "アプリバンドル内に CodexBarCLI が見つかりません。";
-"no_writable_bin_dirs" = "書き込み可能な bin ディレクトリが見つかりません。";
 "show_debug_settings_title" = "デバッグ設定を表示";
 "show_debug_settings_subtitle" = "デバッグタブにトラブルシューティングツールを表示します。";
 "surprise_me_title" = "サプライズ";
@@ -1204,7 +1197,6 @@
 "Disable" = "無効にする";
 "providers_on_count" = "%d 件オン";
 "section_cost_summary" = "コスト概要";
-"section_command_line" = "コマンドライン";
 "section_privacy" = "プライバシー";
 "section_diagnostics" = "診断";
 "section_updates" = "アップデート";
