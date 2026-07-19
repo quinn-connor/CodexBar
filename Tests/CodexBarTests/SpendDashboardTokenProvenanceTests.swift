@@ -258,21 +258,6 @@ struct SpendDashboardTokenProvenanceTests {
     }
 
     @Test
-    func `widget does not project raw provider cost without current provenance`() async throws {
-        let (_, store) = Self.makeStore(provider: .mistral)
-        store._setSnapshotForTesting(Self.mistralUsage(cost: 8), provider: .mistral)
-        var savedSnapshots: [WidgetSnapshot] = []
-        store._test_widgetSnapshotSaveOverride = { savedSnapshots.append($0) }
-
-        store.persistWidgetSnapshot(reason: "provenance-test")
-        await store.widgetSnapshotPersistTask?.value
-
-        let entry = try #require(savedSnapshots.last?.entries.first { $0.provider == .mistral })
-        #expect(entry.tokenUsage == nil)
-        #expect(entry.dailyUsage.isEmpty)
-    }
-
-    @Test
     func `token publication counter remains monotonic across clear and identical republish`() {
         let (_, store) = Self.makeStore(provider: .claude)
         let snapshot = Self.tokenSnapshot(cost: 9)

@@ -655,24 +655,6 @@ if ('IntersectionObserver' in window) {
   document.querySelectorAll('[data-scroll-section]').forEach(revealSection);
 }
 
-document.querySelectorAll('.mac-widget-gallery-wrap').forEach((wrap) => {
-  const gallery = wrap.querySelector('.mac-widget-gallery');
-  if (!gallery) return;
-
-  const syncScrollFade = () => {
-    const overflows = gallery.scrollHeight > gallery.clientHeight + 1;
-    const atBottom = gallery.scrollTop + gallery.clientHeight >= gallery.scrollHeight - 2;
-    wrap.classList.toggle('has-scroll-fade', overflows && !atBottom);
-  };
-
-  gallery.addEventListener('scroll', syncScrollFade, { passive: true });
-  window.addEventListener('resize', syncScrollFade);
-  if ('ResizeObserver' in window) {
-    new ResizeObserver(syncScrollFade).observe(gallery);
-  }
-  syncScrollFade();
-});
-
 const mockupStage = document.querySelector('#mockup-stage');
 const menubarItems = mockupStage.querySelectorAll('.system-menubar > *');
 const heroRootStyles = getComputedStyle(document.documentElement);

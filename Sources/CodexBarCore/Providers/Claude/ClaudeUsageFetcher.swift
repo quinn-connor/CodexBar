@@ -362,7 +362,7 @@ public struct ClaudeUsageFetcher: ClaudeUsageFetching, Sendable {
         private func loadAfterDelegatedRefresh(allowDelegatedRetry: Bool) async throws -> ClaudeUsageSnapshot {
             guard allowDelegatedRetry else {
                 throw ClaudeUsageError.oauthFailed(
-                    "Claude OAuth token expired. CodexBar CLI does not launch Claude to refresh credentials. "
+                    "Claude OAuth token expired. This noninteractive refresh does not launch Claude. "
                         + "Run `claude login`, then retry.")
             }
 

@@ -80,9 +80,3 @@ window has elapsed.
 - If no providers are selected for Overview, the Overview tab is hidden.
 - Providers → Claude: “Avoid Keychain prompts” selects the Security.framework reader's `Never prompt` policy.
 - The lower-level “Keychain prompt policy” picker remains visible as the source of truth for Claude OAuth prompts.
-
-## Widgets (high level)
-- Widgets render shared usage snapshots for the supported widget families and
-  provider picker; detailed pipeline in `docs/widgets.md`.
-
-See also: `docs/widgets.md`.

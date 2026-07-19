@@ -517,7 +517,6 @@ extension UsageStore {
             guard !Task.isCancelled else { return }
             await self.refreshOpenAIDashboardIfNeeded(force: false, expectedGuard: expectedGuard)
             guard !Task.isCancelled else { return }
-            self.persistWidgetSnapshot(reason: "dashboard")
         }
     }
 

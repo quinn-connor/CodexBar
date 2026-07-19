@@ -18,8 +18,8 @@ AgentBar is Quinn's personal CodexBar fork at <https://github.com/quinn-connor/C
 - In-app updates: none
 - Release feed: none
 
-AgentBar does not reuse the upstream bundle ID, app group, Keychain service namespace, signing identity, or
-update key. Xcode manages signing automatically for the configured team. Never commit exported certificates,
+AgentBar does not reuse the upstream bundle ID, Keychain service namespace, signing identity, or update key. Xcode
+manages signing automatically for the configured team. Never commit exported certificates,
 provisioning profiles, or App Store Connect credentials.
 
 ## Commands

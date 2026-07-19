@@ -4,6 +4,7 @@
 
 ### Removed
 - Fork hardening: remove the bundled command-line app and its SSH/Tailscale Agent Sessions integration; local Agent Sessions remain available.
+- Fork hardening: remove the WidgetKit extension, widget snapshot pipeline, and App Group entitlement.
 
 ### Fixed
 - Menu Bar settings: remove the Layout editor's container-wide focus ring while preserving keyboard access to its tokens and controls.

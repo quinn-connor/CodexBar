@@ -218,7 +218,7 @@ APP_STAGE="$ROOT/.build/package/AgentBar.app"
 rm -rf "$APP_STAGE"
 APP="$APP_STAGE"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources" "$APP/Contents/Frameworks"
-mkdir -p "$APP/Contents/Helpers" "$APP/Contents/PlugIns"
+mkdir -p "$APP/Contents/Helpers"
 
 # Convert new .icon bundle to .icns if present (macOS 14+/IconStudio export)
 ICON_SOURCE="$ROOT/Icon.icon"
@@ -231,15 +231,9 @@ BUNDLE_ID="com.yoyodyne.AgentBar"
 if [[ "$LOWER_CONF" == "debug" ]]; then
   BUNDLE_ID="com.yoyodyne.AgentBar.debug"
 fi
-WIDGET_BUNDLE_ID="${BUNDLE_ID}.widget"
 APP_TEAM_ID="${APP_TEAM_ID:-FSJ87X623Z}"
-APP_GROUP_ID="${APP_TEAM_ID}.com.yoyodyne.AgentBar"
-if [[ "$BUNDLE_ID" == *".debug"* ]]; then
-  APP_GROUP_ID="${APP_TEAM_ID}.com.yoyodyne.AgentBar.debug"
-fi
 ENTITLEMENTS_DIR="$ROOT/.build/entitlements"
 APP_ENTITLEMENTS="${ENTITLEMENTS_DIR}/CodexBar.entitlements"
-WIDGET_ENTITLEMENTS="${ENTITLEMENTS_DIR}/CodexBarWidget.entitlements"
 mkdir -p "$ENTITLEMENTS_DIR"
 if [[ "$ALLOW_LLDB" == "1" && "$LOWER_CONF" != "debug" ]]; then
   echo "ERROR: CODEXBAR_ALLOW_LLDB requires debug configuration" >&2
@@ -250,25 +244,7 @@ cat > "$APP_ENTITLEMENTS" <<PLIST
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>com.apple.security.application-groups</key>
-    <array>
-        <string>${APP_GROUP_ID}</string>
-    </array>
     $(if [[ "$ALLOW_LLDB" == "1" ]]; then echo "    <key>com.apple.security.get-task-allow</key><true/>"; fi)
-</dict>
-</plist>
-PLIST
-cat > "$WIDGET_ENTITLEMENTS" <<PLIST
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>com.apple.security.app-sandbox</key>
-    <true/>
-    <key>com.apple.security.application-groups</key>
-    <array>
-        <string>${APP_GROUP_ID}</string>
-    </array>
 </dict>
 </plist>
 PLIST
@@ -293,7 +269,6 @@ cat > "$APP/Contents/Info.plist" <<PLIST
     <key>NSHumanReadableCopyright</key><string>CodexBar contributors. MIT License.</string>
     <key>CodexBuildTimestamp</key><string>${BUILD_TIMESTAMP}</string>
     <key>CodexGitCommit</key><string>${GIT_COMMIT}</string>
-    <key>CodexBarTeamID</key><string>${APP_TEAM_ID}</string>
     <key>UTExportedTypeDeclarations</key>
     <array>
         <dict>
@@ -379,110 +354,11 @@ strip_release_binary() {
   xcrun strip -x "$binary"
 }
 
-ensure_widget_extension_project() {
-  local spec="$ROOT/WidgetExtension/project.yml"
-  local project_dir="$ROOT/WidgetExtension/CodexBarWidgetExtension.xcodeproj"
-  if [[ -f "$project_dir/project.pbxproj" ]]; then
-    return
-  fi
-  if ! command -v xcodegen >/dev/null 2>&1; then
-    echo "ERROR: Missing ${project_dir}; install xcodegen or restore the generated project." >&2
-    exit 1
-  fi
-
-  # The tracked project is authoritative. Regenerating it during packaging records the checkout
-  # directory's spelling in a package file reference and leaves release worktrees dirty.
-  xcodegen generate --spec "$spec" --project "$ROOT/WidgetExtension" --quiet
-}
-
-build_widget_extension() {
-  local xcode_conf="Release"
-  if [[ "$LOWER_CONF" == "debug" ]]; then
-    xcode_conf="Debug"
-  fi
-
-  ensure_widget_extension_project
-
-  local derived_dir="$ROOT/.build/xcode-widget-extension-${LOWER_CONF}"
-  local project_dir="$ROOT/WidgetExtension/CodexBarWidgetExtension.xcodeproj"
-  local build_log="$derived_dir/xcodebuild.log"
-  local timeout_seconds="${CODEXBAR_WIDGET_EXTENSION_TIMEOUT_SECONDS:-900}"
-  local archs="${ARCH_LIST[*]}"
-  local signing_allowed="NO"
-  if [[ "$SIGNING_MODE" == "identity" ]]; then
-    signing_allowed="YES"
-  fi
-
-  mkdir -p "$derived_dir"
-  echo "Building CodexBarWidget Xcode extension (${xcode_conf}, ${archs})." >&2
-  xcodebuild \
-    -project "$project_dir" \
-    -scheme CodexBarWidgetExtension \
-    -configuration "$xcode_conf" \
-    -destination "generic/platform=macOS" \
-    -derivedDataPath "$derived_dir" \
-    -skipPackageUpdates \
-    -disableAutomaticPackageResolution \
-    -skipMacroValidation \
-    -skipPackagePluginValidation \
-    CODEXBAR_WIDGET_BUNDLE_ID="$WIDGET_BUNDLE_ID" \
-    CODEXBAR_TEAM_ID="$APP_TEAM_ID" \
-    DEVELOPMENT_TEAM="$APP_TEAM_ID" \
-    CODE_SIGN_STYLE=Automatic \
-    MARKETING_VERSION="$MARKETING_VERSION" \
-    CURRENT_PROJECT_VERSION="$BUILD_NUMBER" \
-    CODE_SIGNING_ALLOWED="$signing_allowed" \
-    ARCHS="$archs" \
-    ONLY_ACTIVE_ARCH=NO \
-    build >"$build_log" 2>&1 &
-
-  local xcodebuild_pid=$!
-  local elapsed=0
-  while kill -0 "$xcodebuild_pid" 2>/dev/null; do
-    if [[ "$elapsed" -ge "$timeout_seconds" ]]; then
-      kill "$xcodebuild_pid" 2>/dev/null || true
-      wait "$xcodebuild_pid" 2>/dev/null || true
-      tail -80 "$build_log" >&2 || true
-      echo "ERROR: Timed out building CodexBarWidget extension after ${timeout_seconds}s" >&2
-      exit 1
-    fi
-    sleep 5
-    elapsed=$((elapsed + 5))
-    if (( elapsed > 0 && elapsed % 60 == 0 )); then
-      echo "Still building CodexBarWidget extension (${elapsed}s)..." >&2
-    fi
-  done
-  if ! wait "$xcodebuild_pid"; then
-    tail -120 "$build_log" >&2 || true
-    echo "ERROR: Failed to build CodexBarWidget extension" >&2
-    exit 1
-  fi
-
-  local appex="$derived_dir/Build/Products/${xcode_conf}/CodexBarWidget.appex"
-  if [[ ! -f "$appex/Contents/MacOS/CodexBarWidget" ]]; then
-    echo "ERROR: Missing Xcode-built CodexBarWidget.appex at ${appex}" >&2
-    exit 1
-  fi
-  echo "$appex"
-}
-
-install_widget_extension() {
-  local src_appex
-  src_appex="$(build_widget_extension)"
-  local widget_app="$APP/Contents/PlugIns/CodexBarWidget.appex"
-  rm -rf "$widget_app"
-  mkdir -p "$APP/Contents/PlugIns"
-  cp -R "$src_appex" "$widget_app"
-  verify_binary_arches "$widget_app/Contents/MacOS/CodexBarWidget" "${ARCH_LIST[@]}"
-}
-
 install_binary "CodexBar" "$APP/Contents/MacOS/CodexBar"
 strip_release_binary "$APP/Contents/MacOS/CodexBar"
 # Watchdog helper: ensures `claude` probes die when CodexBar crashes/gets killed.
 install_binary "CodexBarClaudeWatchdog" "$APP/Contents/Helpers/CodexBarClaudeWatchdog"
 strip_release_binary "$APP/Contents/Helpers/CodexBarClaudeWatchdog"
-install_widget_extension
-strip_release_binary "$APP/Contents/PlugIns/CodexBarWidget.appex/Contents/MacOS/CodexBarWidget"
 
 swiftpm_bin_path "${ARCH_LIST[0]}" PREFERRED_BUILD_DIR
 
@@ -545,16 +421,6 @@ find "$APP" -name '._*' -delete
 # Sign helper binaries if present
 if [[ -f "${APP}/Contents/Helpers/CodexBarClaudeWatchdog" ]]; then
   codesign "${CODESIGN_ARGS[@]}" "${APP}/Contents/Helpers/CodexBarClaudeWatchdog"
-fi
-
-# Sign widget extension if present
-if [[ -d "${APP}/Contents/PlugIns/CodexBarWidget.appex" ]]; then
-  codesign "${CODESIGN_ARGS[@]}" \
-    --entitlements "$WIDGET_ENTITLEMENTS" \
-    "$APP/Contents/PlugIns/CodexBarWidget.appex/Contents/MacOS/CodexBarWidget"
-  codesign "${CODESIGN_ARGS[@]}" \
-    --entitlements "$WIDGET_ENTITLEMENTS" \
-    "$APP/Contents/PlugIns/CodexBarWidget.appex"
 fi
 
 # Finally sign the app bundle itself

@@ -226,7 +226,7 @@ struct CodexConsumerProjectionTests {
                 resetsAt: nil,
                 updatedAt: now))
 
-        let projection = store.codexConsumerProjection(surface: .widget, now: now)
+        let projection = store.codexConsumerProjection(surface: .menuBar, now: now)
 
         #expect(projection.credits?.remaining == 92239)
     }

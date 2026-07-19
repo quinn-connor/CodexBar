@@ -283,8 +283,6 @@ extension UsageStore {
                 guard !Task.isCancelled else { return }
             }
         }
-
-        self.persistWidgetSnapshot(reason: "forced-refresh-enrichment")
     }
 
     func refreshOpenAIWebAfterProviderRefresh(

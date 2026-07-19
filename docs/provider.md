@@ -26,11 +26,11 @@ This doc describes the **current provider architecture** and the exact steps to 
 ## Architecture overview (now)
 - `Sources/CodexBarCore`: provider descriptors + fetch strategies + probes + parsing + shared utilities.
 - `Sources/CodexBar`: UI/state + provider implementations (settings/login/menu hooks only).
-- Provider IDs are compile-time: `UsageProvider` enum (used for persistence + widgets).
+- Provider IDs are compile-time: `UsageProvider` enum (used for persistence and runtime state).
 - Provider wiring is descriptor-driven:
   - `ProviderDescriptor` owns labels, URLs, default enablement, and fetch pipeline.
   - `ProviderFetchStrategy` objects implement concrete fetch paths.
-  - CLI + app both call the same descriptor/fetch pipeline.
+  - The app calls the descriptor/fetch pipeline directly.
 
 Common building blocks already exist:
 - PTY: `TTYCommandRunner`

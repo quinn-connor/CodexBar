@@ -41,7 +41,6 @@ provide the Command Code `Cookie` header in `cookieHeader`; both `auto` and
 
 - The menu bar item and provider card use the Command Code icon and label.
 - The primary row shows monthly credits used/remaining.
-- Widgets do not expose Command Code in the provider picker yet.
 
 ## Related files
 

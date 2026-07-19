@@ -245,7 +245,6 @@ final class UsageStore {
         TimeInterval) async throws -> OpenAIDashboardSnapshot)?
     @ObservationIgnored var _test_codexCreditsLoaderOverride: (@MainActor () async throws -> CreditsSnapshot)?
     @ObservationIgnored var _test_codexResetCreditsFetcherOverride: CodexResetCreditsFetcher?
-    @ObservationIgnored var _test_widgetSnapshotSaveOverride: (@MainActor (WidgetSnapshot) async -> Void)?
     @ObservationIgnored var _test_providerRefreshOverride: (@MainActor (UsageProvider) async -> Void)?
     @ObservationIgnored var _test_providerFetchOutcomeOverride: (@MainActor (
         UsageProvider) async -> ProviderFetchOutcome)?
@@ -266,7 +265,6 @@ final class UsageStore {
     @ObservationIgnored var _test_startupConnectivityRetryScheduled: (@MainActor (Int, TimeInterval) -> Void)?
     @ObservationIgnored var _test_startupConnectivityRetrySleepOverride: (@MainActor (
         TimeInterval) async throws -> Void)?
-    @ObservationIgnored var widgetSnapshotPersistTask: Task<Void, Never>?
 
     @ObservationIgnored let codexFetcher: UsageFetcher
     @ObservationIgnored let claudeFetcher: any ClaudeUsageFetching
@@ -370,9 +368,8 @@ final class UsageStore {
     @ObservationIgnored private var hasCompletedInitialRefresh: Bool = false
     @ObservationIgnored private let providerAvailabilityCacheTTL: TimeInterval = 1
     @ObservationIgnored let accountInfoCacheTTL: TimeInterval = 30
-    /// Token scans can cause an additional widget snapshot publication. Keep the shortest automatic
-    /// cadence at five minutes so one- and two-minute provider refreshes do not exhaust WidgetKit's
-    /// reload budget or repeatedly traverse large local histories.
+    /// Keep automatic token scans at a five-minute minimum so one- and two-minute provider
+    /// refreshes do not repeatedly traverse large local histories.
     static let minimumTokenFetchTTL: TimeInterval = 5 * 60
 
     var tokenFetchTTL: TimeInterval? {
@@ -731,7 +728,6 @@ final class UsageStore {
                 await self.refreshCreditsNow(minimumSnapshotUpdatedAt: refreshStartedAt)
             }
 
-            self.persistWidgetSnapshot(reason: "refresh")
             if let forcedBackgroundGeneration {
                 self.enqueueForcedRefreshEnrichment(
                     generation: forcedBackgroundGeneration,
@@ -1360,7 +1356,6 @@ extension UsageStore {
             if self.tokenSnapshotPublicationForCurrentProviderConfig(for: provider) != nil {
                 self.tokenErrors[provider] = nil
                 self.tokenFailureGates[provider]?.recordSuccess()
-                self.persistWidgetSnapshot(reason: "token-usage")
             } else {
                 self.clearTokenSnapshot(for: provider)
                 self.tokenErrors[provider] = nil
@@ -1471,7 +1466,6 @@ extension UsageStore {
             self.publishTokenSnapshot(snapshot, for: provider)
             self.tokenErrors[provider] = nil
             self.tokenFailureGates[provider]?.recordSuccess()
-            self.persistWidgetSnapshot(reason: "token-usage")
         } catch {
             guard self.tokenRefreshPublicationIsCurrent(
                 provider: provider,

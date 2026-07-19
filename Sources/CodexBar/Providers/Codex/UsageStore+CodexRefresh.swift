@@ -35,7 +35,6 @@ extension UsageStore {
             }
             await self.refreshCreditsIfNeeded(minimumSnapshotUpdatedAt: minimumSnapshotUpdatedAt)
             guard !Task.isCancelled else { return }
-            self.persistWidgetSnapshot(reason: "credits")
         }
     }
 

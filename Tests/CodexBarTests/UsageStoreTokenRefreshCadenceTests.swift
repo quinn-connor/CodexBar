@@ -11,7 +11,7 @@ struct UsageStoreTokenRefreshCadenceTests {
         (.fifteenMinutes, 900.0),
         (.thirtyMinutes, 1800.0),
     ])
-    func `fixed refresh frequencies derive a widget-safe token TTL`(
+    func `fixed refresh frequencies derive a bounded token TTL`(
         frequency: RefreshFrequency,
         expectedSeconds: TimeInterval)
     {

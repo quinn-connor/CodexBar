@@ -187,7 +187,6 @@ enum CodexAccountMenuProjectionRevalidationResult: Equatable {
 @MainActor
 @Observable
 final class SettingsStore {
-    static let sharedDefaults = AppGroupSupport.sharedDefaults()
     static let mergedOverviewProviderLimit = 3
     static let productionCodexAccountReconciliationSnapshotCacheInterval: TimeInterval = 2
     static let isRunningTests: Bool = {
@@ -236,19 +235,6 @@ final class SettingsStore {
     @ObservationIgnored var providerConfigRevisions: [UsageProvider: UInt64] = [:]
     @ObservationIgnored var providerConfigFingerprints: [UsageProvider: Data] = [:]
 
-    static func shouldBridgeSharedDefaults(for userDefaults: UserDefaults) -> Bool {
-        if !self.isRunningTests {
-            return true
-        }
-        if userDefaults === UserDefaults.standard {
-            return true
-        }
-        if let shared = sharedDefaults, userDefaults === shared {
-            return true
-        }
-        return false
-    }
-
     static func defaultConfigStore() -> CodexBarConfigStore {
         guard !self.isRunningTests else { return CodexBarConfigStore() }
         return CodexBarConfigStore(secretStore: MacOSKeychainConfigSecretStore())
@@ -288,29 +274,8 @@ final class SettingsStore {
         antigravityOAuthCredentialsStore: AntigravityOAuthCredentialsStore = AntigravityOAuthCredentialsStore(),
         performInitialProviderDetection: Bool = !SettingsStore.isRunningTests)
     {
-        // Capture this before app-group/config migrations can create prior-installation state.
         let hadExistingConfig = (try? configStore.load()) != nil
         let hadPreviousInstallationState = hadExistingConfig || Self.hadPreviousAppLaunch(userDefaults: userDefaults)
-        let appGroupID = AppGroupSupport.currentGroupID()
-        let appGroupMigration: AppGroupSupport.MigrationResult
-        if Self.isRunningTests {
-            appGroupMigration = AppGroupSupport.migrateLegacyDataIfNeeded(standardDefaults: userDefaults)
-        } else {
-            Self.scheduleAppGroupMigration()
-            appGroupMigration = AppGroupSupport.MigrationResult(status: .targetUnavailable)
-        }
-        let sharedDefaultsAvailable = Self.sharedDefaults != nil
-        if !Self.isRunningTests {
-            CodexBarLog.logger(LogCategories.settings).info(
-                "App group resolved",
-                metadata: [
-                    "groupID": appGroupID,
-                    "sharedDefaultsAvailable": sharedDefaultsAvailable ? "1" : "0",
-                    "migrationStatus": appGroupMigration.status.rawValue,
-                    "migratedSnapshot": appGroupMigration.copiedSnapshot ? "1" : "0",
-                    "migratedDefaults": "\(appGroupMigration.copiedDefaults)",
-                ])
-        }
 
         if userDefaults.object(forKey: "openAIWebAccessEnabled") == nil,
            let legacyOpenAIWebAccess = userDefaults.object(forKey: "openAIWebAccess") as? Bool
@@ -387,19 +352,6 @@ extension SettingsStore {
         let statusChecksEnabled: Bool
         let sessionQuotaNotificationsEnabled: Bool
         let predictivePaceWarningNotificationsEnabled: Bool
-    }
-
-    private static func scheduleAppGroupMigration() {
-        Task.detached(priority: .utility) {
-            let result = AppGroupSupport.migrateLegacyDataIfNeeded()
-            CodexBarLog.logger(LogCategories.settings).info(
-                "App group migration completed",
-                metadata: [
-                    "migrationStatus": result.status.rawValue,
-                    "migratedSnapshot": result.copiedSnapshot ? "1" : "0",
-                    "migratedDefaults": "\(result.copiedDefaults)",
-                ])
-        }
     }
 
     private static func inferredInitialOpenAIWebAccessEnabled(
@@ -600,8 +552,7 @@ extension SettingsStore {
     }
 
     private static func hadPreviousAppLaunch(userDefaults: UserDefaults) -> Bool {
-        userDefaults.object(forKey: "providerDetectionCompleted") != nil ||
-            userDefaults.object(forKey: AppGroupSupport.migrationVersionKey) != nil
+        userDefaults.object(forKey: "providerDetectionCompleted") != nil
     }
 
     private static func loadRefreshFrequency(
@@ -737,18 +688,7 @@ extension SettingsStore {
     }
 
     private static func loadDebugDisableKeychainAccess(userDefaults: UserDefaults) -> Bool {
-        if let stored = userDefaults.object(forKey: "debugDisableKeychainAccess") as? Bool {
-            return stored
-        }
-        if Self.shouldBridgeSharedDefaults(for: userDefaults),
-           let shared = Self.sharedDefaults?.object(forKey: "debugDisableKeychainAccess") as? Bool
-        {
-            if Self.isRunningTests {
-                userDefaults.set(shared, forKey: "debugDisableKeychainAccess")
-            }
-            return shared
-        }
-        return false
+        userDefaults.object(forKey: "debugDisableKeychainAccess") as? Bool ?? false
     }
 
     private struct LoadedQuotaWarningDefaults {

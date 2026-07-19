@@ -67,10 +67,9 @@ Avoid using `question` as a generic fallback when the issue is actually a bug or
 - `area:usage-accuracy` — usage %, reset windows, plan parsing, cost/token math
 - `area:performance` — CPU, battery, memory, background sessions/process churn
 - `area:ui-ux` — menu bar behavior, settings, copy, visual layout, interaction polish
-- `area:widget` — widget registration, app groups, widget gallery visibility
 - `area:docs-onboarding` — setup docs, onboarding docs, missing instructions
 - `area:notifications` — threshold alerts, prompt waiting, quota notifications
-- `area:export-integration` — Prometheus, HTTP server mode, external integrations
+- `area:export-integration` — Prometheus and external integrations
 - `area:accounts` — multiple accounts, account discovery, account switching UX
 
 ## Provider labels
@@ -121,7 +120,6 @@ If starting from a sparse tracker, add these first:
 - `area:usage-accuracy`
 - `area:performance`
 - `area:ui-ux`
-- `area:widget`
 - `area:docs-onboarding`
 
 ### Provider

@@ -74,7 +74,7 @@ Fixture-driven, no live processes, no Keychain/AX:
 
 ## Non-goals (prototype)
 
-Claude.ai chat sessions; Codex cloud tasks; historical session browsing/analytics; "waiting on permission" state; tmux pane/tab focus; remote discovery or SSH; Bonjour/mDNS; persistent remote daemon or push transport; widget changes. No new SPM dependencies.
+Claude.ai chat sessions; Codex cloud tasks; historical session browsing/analytics; "waiting on permission" state; tmux pane/tab focus; remote discovery or SSH; Bonjour/mDNS; or persistent remote daemon or push transport. No new SPM dependencies.
 
 ## Proof
 

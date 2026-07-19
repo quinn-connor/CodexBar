@@ -63,7 +63,6 @@ extension UsageStore {
             phaseDidChange?(.credits)
         }
 
-        self.persistWidgetSnapshot(reason: "codex-account-refresh")
         phaseDidChange?(.completed)
     }
 
@@ -97,7 +96,6 @@ extension UsageStore {
 
         self.clearCodexOpenAIWebStateForAccountTransition(targetEmail: self.codexAccountEmailForOpenAIDashboard())
 
-        self.persistWidgetSnapshot(reason: "codex-account-invalidate")
         return true
     }
 
@@ -119,8 +117,7 @@ extension UsageStore {
 
     @discardableResult
     func reconcileCodexPublishedUsageOwner(
-        with currentGuard: CodexAccountScopedRefreshGuard,
-        persistWidgetSnapshot: Bool = true) -> Bool
+        with currentGuard: CodexAccountScopedRefreshGuard) -> Bool
     {
         let hasPublishedUsageState = self.snapshots[.codex] != nil ||
             self.lastKnownResetSnapshots[.codex] != nil ||
@@ -137,23 +134,14 @@ extension UsageStore {
                 currentGuard)
             self.clearCodexPublishedUsageState(
                 preserveSessionQuotaTransitionState: preserveSessionQuotaTransitionState)
-            if persistWidgetSnapshot {
-                self.persistWidgetSnapshot(reason: "codex-account-invalidate")
-            }
             return true
         }
         return false
     }
 
     func reconcileCodexAccountStateForUsageOwner(_ currentGuard: CodexAccountScopedRefreshGuard) {
-        let clearedUsage = self.reconcileCodexPublishedUsageOwner(
-            with: currentGuard,
-            persistWidgetSnapshot: false)
-        let invalidatedAccountState = self.prepareCodexAccountScopedRefreshIfNeeded(
-            currentGuardOverride: currentGuard)
-        if clearedUsage, !invalidatedAccountState {
-            self.persistWidgetSnapshot(reason: "codex-account-invalidate")
-        }
+        self.reconcileCodexPublishedUsageOwner(with: currentGuard)
+        self.prepareCodexAccountScopedRefreshIfNeeded(currentGuardOverride: currentGuard)
     }
 
     func seedCodexAccountScopedRefreshGuard(

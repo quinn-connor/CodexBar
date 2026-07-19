@@ -1,14 +1,14 @@
 ---
-summary: "CodexBar config file layout for CLI + app settings."
+summary: "CodexBar config file layout for app settings."
 read_when:
   - "Editing the CodexBar config file or changing Keychain-backed settings."
   - "Adding new provider settings fields or defaults."
-  - "Explaining CLI/app configuration and security."
+  - "Explaining app configuration and security."
 ---
 
 # Configuration
 
-CodexBar reads a single JSON config file for CLI and app provider settings. On macOS, the app stores provider API
+CodexBar reads a single JSON config file for app provider settings. On macOS, the app stores provider API
 keys, secret keys, manual cookie headers, StepFun tokens, and token-account tokens in its Data Protection Keychain;
 the JSON file keeps the corresponding provider metadata and a `<keychain>` reference. Existing plaintext values are
 migrated after every Keychain write has been read back successfully. If migration fails, the original file is left

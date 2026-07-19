@@ -24,7 +24,7 @@ decoders. A custom provider adds two new trust boundaries:
 
 Accepted direction: pursue a config-only, GET-only, HTTP JSON MVP after separating runtime provider instance identity
 from the closed `UsageProvider` enum. Do not add a single `.custom` enum case: multiple configured providers would then
-collide in caches, status items, history, widgets, and settings.
+collide in caches, status items, history, and settings.
 
 ## Current constraints
 
@@ -199,14 +199,14 @@ credentials.
 - POST/PUT/PATCH/DELETE, request bodies, refresh mutations, or multiple endpoints.
 - Arbitrary headers, cookies, OAuth, browser sessions, Keychain discovery, file-secret references, or inline secrets.
 - Custom SVG/file icons, downloaded assets, or remote provider manifests.
-- Status-page discovery, incident notifications, chat/model APIs, cost-log scanning, widgets, or token accounts.
+- Status-page discovery, incident notifications, chat/model APIs, cost-log scanning, or token accounts.
 - Arrays of rate windows, cross-response joins, pagination, aggregation, or provider-specific special cases.
 - Compatibility shims that reinterpret an unknown first-party provider ID as a custom provider.
 
 ## Implementation slices
 
 1. **Identity seam:** add `ProviderInstanceID`; migrate config/runtime/persistence keys without behavior changes; add
-   decode, history, enablement, menu, CLI, and widget characterization tests.
+   decode, history, enablement, and menu characterization tests.
 2. **Pure evaluator:** add config types, validator, dot-path parser, typed coercion, and `UsageSnapshot` mapping using only
    fixture data.
 3. **Bounded transport:** add URL/auth policy and an injected HTTP transport; prove redirect, timeout, size, content-type,

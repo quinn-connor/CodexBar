@@ -946,7 +946,7 @@ extension StatusMenuPersistentRefreshTests {
     }
 
     @Test
-    func `provider scoped refresh updates status and widget snapshot`() async {
+    func `provider scoped refresh updates status`() async {
         let settings = self.makeSettings()
         settings.refreshFrequency = .manual
         settings.statusChecksEnabled = true
@@ -958,19 +958,11 @@ extension StatusMenuPersistentRefreshTests {
             #expect(provider == .synthetic)
             return ProviderStatus(indicator: .none, description: "Operational", updatedAt: Date())
         }
-        var savedSnapshots = 0
-        controller.store._test_widgetSnapshotSaveOverride = { _ in
-            savedSnapshots += 1
-        }
-
         await controller.performStoreRefresh(
             for: .synthetic,
             refreshOpenMenusWhenComplete: false,
             interaction: .userInitiated)
-        _ = await controller.store.widgetSnapshotPersistTask?.result
-
         #expect(controller.store.statuses[.synthetic]?.description == "Operational")
-        #expect(savedSnapshots == 1)
     }
 
     @Test

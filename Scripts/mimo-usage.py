@@ -11,7 +11,7 @@ Usage:
   mimo-usage              # show summary (also refreshes cache)
   mimo-usage --update     # refresh cache only, no output (for LaunchAgent/wrapper)
   mimo-usage --json       # JSON output
-  mimo-usage --short      # 1-line status (for status line / widget)
+  mimo-usage --short      # 1-line status (for status line / menu bar)
 """
 import json
 import os

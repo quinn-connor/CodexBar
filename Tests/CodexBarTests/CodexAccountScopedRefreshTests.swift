@@ -7,7 +7,7 @@ import Testing
 @MainActor
 struct CodexAccountScopedRefreshTests {
     @Test
-    func `account transition invalidates codex scoped state and preserves token usage`() async {
+    func `account transition invalidates codex scoped state and preserves token usage`() {
         let settings = self.makeSettingsStore(suite: "CodexAccountScopedRefreshTests-invalidate")
         settings.refreshFrequency = .manual
         settings.codexCookieSource = .auto
@@ -24,8 +24,6 @@ struct CodexAccountScopedRefreshTests {
             last30DaysCostUSD: 9.0,
             daily: [],
             updatedAt: Date())
-        var widgetSnapshots: [WidgetSnapshot] = []
-
         store._setSnapshotForTesting(staleSnapshot, provider: .codex)
         store.credits = staleCredits
         store.lastCreditsSnapshot = staleCredits
@@ -37,14 +35,9 @@ struct CodexAccountScopedRefreshTests {
         store._setTokenSnapshotForTesting(tokenSnapshot, provider: .codex)
         store.lastCodexAccountScopedRefreshGuard = store
             .currentCodexAccountScopedRefreshGuard(preferCurrentSnapshot: false)
-        store._test_widgetSnapshotSaveOverride = { widgetSnapshots.append($0) }
-        defer { store._test_widgetSnapshotSaveOverride = nil }
-
         settings._test_liveSystemCodexAccount = self.liveAccount(email: "beta@example.com")
 
         let didInvalidate = store.prepareCodexAccountScopedRefreshIfNeeded()
-        await store.widgetSnapshotPersistTask?.value
-
         #expect(didInvalidate)
         #expect(store.snapshots[.codex] == nil)
         #expect(store.credits == nil)
@@ -54,8 +47,6 @@ struct CodexAccountScopedRefreshTests {
         #expect(store.openAIDashboard == nil)
         #expect(store.lastOpenAIDashboardSnapshot == nil)
         #expect(store.tokenSnapshots[.codex] == tokenSnapshot)
-        #expect(widgetSnapshots.count == 1)
-        #expect(widgetSnapshots[0].entries.contains(where: { $0.provider == .codex }) == false)
     }
 
     @Test
@@ -676,7 +667,7 @@ struct CodexAccountScopedRefreshTests {
     }
 
     @Test
-    func `live switch invalidates stale codex state even when only last known live email remains`() async {
+    func `live switch invalidates stale codex state even when only last known live email remains`() {
         let settings = self.makeSettingsStore(suite: "CodexAccountScopedRefreshTests-invalidate-with-stale-last-known")
         let isolatedHome = FileManager.default.temporaryDirectory
             .appendingPathComponent("codex-invalidate-stale-last-known-\(UUID().uuidString)", isDirectory: true)
@@ -706,130 +697,11 @@ struct CodexAccountScopedRefreshTests {
         store.snapshots.removeValue(forKey: .codex)
 
         let didInvalidate = store.prepareCodexAccountScopedRefreshIfNeeded()
-        await store.widgetSnapshotPersistTask?.value
-
         #expect(didInvalidate)
         #expect(store.snapshots[.codex] == nil)
         #expect(store.credits == nil)
         #expect(store.openAIDashboard == nil)
         #expect(store.lastCodexAccountScopedRefreshGuard?.accountKey == nil)
-    }
-
-    @Test
-    func `codex account refresh persists widget snapshots on invalidation and completion`() async {
-        let settings = self.makeSettingsStore(suite: "CodexAccountScopedRefreshTests-widgets")
-        settings.refreshFrequency = .manual
-        settings.codexCookieSource = .off
-        settings._test_liveSystemCodexAccount = self.liveAccount(email: "alpha@example.com")
-
-        let store = self.makeUsageStore(settings: settings)
-        store._setSnapshotForTesting(self.codexSnapshot(email: "alpha@example.com", usedPercent: 18), provider: .codex)
-        store.lastCodexAccountScopedRefreshGuard = store
-            .currentCodexAccountScopedRefreshGuard(preferCurrentSnapshot: false)
-
-        let blocker = BlockingCodexFetchStrategy()
-        self.installBlockingCodexProvider(on: store, blocker: blocker)
-        store._test_codexCreditsLoaderOverride = { self.credits(remaining: 77) }
-        defer { store._test_codexCreditsLoaderOverride = nil }
-
-        var widgetSnapshots: [WidgetSnapshot] = []
-        store._test_widgetSnapshotSaveOverride = { widgetSnapshots.append($0) }
-        defer { store._test_widgetSnapshotSaveOverride = nil }
-
-        settings._test_liveSystemCodexAccount = self.liveAccount(email: "beta@example.com")
-        let refreshTask = Task { await store.refreshCodexAccountScopedState(allowDisabled: true) }
-        await blocker.waitUntilStarted()
-        await blocker.resume(with: .success(self.codexSnapshot(email: "beta@example.com", usedPercent: 8)))
-        await refreshTask.value
-        await store.widgetSnapshotPersistTask?.value
-
-        #expect(widgetSnapshots.count == 2)
-        #expect(widgetSnapshots[0].entries.contains(where: { $0.provider == .codex }) == false)
-        #expect(widgetSnapshots[1].entries.first { $0.provider == .codex }?.creditsRemaining == 77)
-    }
-
-    @Test
-    func `widget snapshot saves stay ordered across codex account invalidation and completion`() async {
-        let settings = self.makeSettingsStore(suite: "CodexAccountScopedRefreshTests-widget-order")
-        settings.refreshFrequency = .manual
-
-        let store = self.makeUsageStore(settings: settings)
-        let saver = BlockingWidgetSnapshotSaver()
-        store._test_widgetSnapshotSaveOverride = { snapshot in
-            await saver.save(snapshot)
-        }
-        defer { store._test_widgetSnapshotSaveOverride = nil }
-
-        store.persistWidgetSnapshot(reason: "codex-account-invalidate")
-        await saver.waitUntilStarted(count: 1)
-        #expect(await saver.startedCount() == 1)
-
-        store._setSnapshotForTesting(self.codexSnapshot(email: "beta@example.com", usedPercent: 8), provider: .codex)
-        store.credits = self.credits(remaining: 77)
-        store.persistWidgetSnapshot(reason: "codex-account-refresh")
-
-        try? await Task.sleep(nanoseconds: 50_000_000)
-        #expect(await saver.startedCount() == 1)
-
-        await saver.resumeNext()
-        await saver.waitUntilStarted(count: 2)
-        await saver.resumeNext()
-        await store.widgetSnapshotPersistTask?.value
-
-        let snapshots = await saver.savedSnapshots()
-        #expect(snapshots.count == 2)
-        #expect(snapshots[0].entries.contains(where: { $0.provider == .codex }) == false)
-        #expect(snapshots[1].entries.first { $0.provider == .codex }?.creditsRemaining == 77)
-    }
-
-    @Test
-    func `widget snapshot excludes display only dashboard code review`() async throws {
-        let settings = self.makeSettingsStore(suite: "CodexAccountScopedRefreshTests-widget-display-only-dashboard")
-        settings.refreshFrequency = .manual
-
-        let store = self.makeUsageStore(settings: settings)
-        store._setSnapshotForTesting(self.codexSnapshot(email: "alpha@example.com", usedPercent: 18), provider: .codex)
-        store.credits = CreditsSnapshot(remaining: 12, events: [], updatedAt: Date())
-        store.openAIDashboard = self.dashboard(
-            email: "alpha@example.com",
-            creditsRemaining: 12,
-            usedPercent: 20)
-        store.openAIDashboardAttachmentAuthorized = false
-
-        var widgetSnapshots: [WidgetSnapshot] = []
-        store._test_widgetSnapshotSaveOverride = { widgetSnapshots.append($0) }
-        defer { store._test_widgetSnapshotSaveOverride = nil }
-
-        store.persistWidgetSnapshot(reason: "display-only-dashboard")
-        await store.widgetSnapshotPersistTask?.value
-
-        let codexEntry = try #require(widgetSnapshots.last?.entries.first { $0.provider == .codex })
-        #expect(codexEntry.creditsRemaining == nil)
-        #expect(codexEntry.codeReviewRemainingPercent == nil)
-    }
-
-    @Test
-    func `widget snapshot includes attached dashboard code review`() async throws {
-        let settings = self.makeSettingsStore(suite: "CodexAccountScopedRefreshTests-widget-attached-dashboard")
-        settings.refreshFrequency = .manual
-
-        let store = self.makeUsageStore(settings: settings)
-        store._setSnapshotForTesting(self.codexSnapshot(email: "alpha@example.com", usedPercent: 18), provider: .codex)
-        store.openAIDashboard = self.dashboard(
-            email: "alpha@example.com",
-            creditsRemaining: 12,
-            usedPercent: 20)
-        store.openAIDashboardAttachmentAuthorized = true
-
-        var widgetSnapshots: [WidgetSnapshot] = []
-        store._test_widgetSnapshotSaveOverride = { widgetSnapshots.append($0) }
-        defer { store._test_widgetSnapshotSaveOverride = nil }
-
-        store.persistWidgetSnapshot(reason: "attached-dashboard")
-        await store.widgetSnapshotPersistTask?.value
-
-        let codexEntry = try #require(widgetSnapshots.last?.entries.first { $0.provider == .codex })
-        #expect(codexEntry.codeReviewRemainingPercent == 88)
     }
 
     @Test

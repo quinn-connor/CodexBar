@@ -21,8 +21,7 @@ including Manual and each fixed interval, remains unchanged. Both adaptive modes
 timer between 2 and 30 minutes. Only the separately selected `Adaptive (agent-aware)` mode may use recent local Codex
 or Claude transcript activity to cap otherwise slower unconstrained decisions at 5 minutes.
 
-The rollout boundary uses an existing config or launch markers that predate this change (`providerDetectionCompleted`
-and the app-group migration version), captured before startup migrations can create them. This covers installations from
+The rollout boundary uses an existing config or the `providerDetectionCompleted` launch marker. This covers installations from
 v0.4 onward plus any installation with a config. A completely untouched, configless v0.1-v0.3 installation leaves no
 durable signal that can distinguish it from a new install; that historical cohort follows the fresh-install default.
 Selecting a fixed cadence or Manual remains authoritative.

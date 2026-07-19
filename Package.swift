@@ -35,7 +35,6 @@ let package = Package(
         products.append(contentsOf: [
             .executable(name: "CodexBar", targets: ["CodexBar"]),
             .executable(name: "CodexBarClaudeWatchdog", targets: ["CodexBarClaudeWatchdog"]),
-            .executable(name: "CodexBarWidget", targets: ["CodexBarWidget"]),
             .executable(name: "CodexBarClaudeWebProbe", targets: ["CodexBarClaudeWebProbe"]),
         ])
         #endif
@@ -151,13 +150,6 @@ let package = Package(
                     .enableUpcomingFeature("StrictConcurrency"),
                 ]),
             .executableTarget(
-                name: "CodexBarWidget",
-                dependencies: ["CodexBarCore"],
-                path: "Sources/CodexBarWidget",
-                swiftSettings: [
-                    .enableUpcomingFeature("StrictConcurrency"),
-                ]),
-            .executableTarget(
                 name: "CodexBarClaudeWebProbe",
                 dependencies: ["CodexBarCore"],
                 path: "Sources/CodexBarClaudeWebProbe",
@@ -168,7 +160,7 @@ let package = Package(
 
         targets.append(.testTarget(
             name: "CodexBarTests",
-            dependencies: ["CodexBar", "CodexBarCore", "CodexBarWidget"],
+            dependencies: ["CodexBar", "CodexBarCore"],
             path: "Tests",
             exclude: ["AdaptiveReplayCLITests", "AdaptiveReplayKitTests"],
             resources: [

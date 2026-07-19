@@ -10,7 +10,6 @@ read_when:
 ## Modules
 - `Sources/CodexBarCore`: fetch + parse (Codex RPC, PTY runner, Claude probes, OpenAI web scraping, status polling).
 - `Sources/CodexBar`: state + UI (UsageStore, SettingsStore, StatusItemController, menus, icon rendering).
-- `Sources/CodexBarWidget`: WidgetKit extension wired to the shared snapshot.
 - `Sources/CodexBarClaudeWatchdog`: helper process for stable Claude CLI PTY sessions.
 - `Sources/CodexBarClaudeWebProbe`: developer helper to diagnose Claude web fetches.
 
@@ -19,7 +18,7 @@ read_when:
 - `AppDelegate`: wires the status controller and notifications.
 
 ## Data flow
-- Background refresh → `UsageFetcher`/provider probes → `UsageStore` → menu/icon/widgets.
+- Background refresh → `UsageFetcher`/provider probes → `UsageStore` → menu/icon.
 - Settings toggles feed `SettingsStore` → `UsageStore` refresh cadence + feature flags.
 
 ## Concurrency & platform

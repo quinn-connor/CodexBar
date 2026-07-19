@@ -50,7 +50,6 @@ Alternatively, set the environment variable `SAKANA_COOKIE` to the raw cookie he
 - Credits row (`supportsCredits: false`): not shown. The shared credits-card UI path (`MenuCardView+Costs.swift`)
   has no Sakana branch and would just render the static `creditsHint` string instead of the fetched balance, so
   `supportsCredits` stays off; the balance is surfaced explicitly instead (see below).
-- Widget support: not currently available for Sakana AI.
 
 ## Pay-as-you-go credits
 

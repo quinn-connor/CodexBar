@@ -168,7 +168,6 @@ struct CodexConsumerProjection {
     enum Surface {
         case liveCard
         case overrideCard
-        case widget
         case menuBar
     }
 

@@ -90,14 +90,12 @@ CodexBar/
 │   ├── SettingsStore*.swift   # User preferences and config persistence
 │   ├── Providers/             # App-side provider settings/runtime glue
 │   └── Resources/             # Assets and localized strings
-├── Sources/CodexBarCore/      # Shared business logic used by the app and widget
+├── Sources/CodexBarCore/      # Shared business logic used by the app
 │   ├── Config/                # Config file model, reader, writer, and validation
 │   ├── Providers/             # Provider descriptors, fetchers, parsers, and status probes
 │   ├── OpenAIWeb/             # OpenAI dashboard integration helpers
 │   ├── WebKit/                # Web session helpers
 │   └── Vendored/              # Embedded support code
-├── Sources/CodexBarWidget/    # WidgetKit support
-├── WidgetExtension/           # Xcode wrapper for the packaged widget extension
 ├── Tests/CodexBarTests/       # macOS app/core test suite (XCTest + Swift Testing)
 ├── TestsLinux/                # Linux-specific core test coverage
 └── Scripts/                   # Build and packaging scripts
@@ -215,4 +213,3 @@ defaults delete com.steipete.codexbar debugMainThreadHangWatchdog
 - Background timer (configurable frequency)
 - Parallel provider fetches
 - First failure can be suppressed when prior data exists
-- WidgetKit snapshot for macOS widgets
