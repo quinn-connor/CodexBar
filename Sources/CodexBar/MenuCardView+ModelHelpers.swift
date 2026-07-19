@@ -652,10 +652,10 @@ extension UsageMenuCardView.Model {
         if input.provider == .copilot, !input.copilotBudgetExtrasEnabled {
             return []
         }
-        let visibleRateWindows = if input.provider == .codex, !input.codexSparkUsageVisible {
-            extraRateWindows.filter { !Self.isCodexSparkRateWindow($0) }
-        } else {
-            extraRateWindows
+        let visibleRateWindows = extraRateWindows.filter { namedWindow in
+            guard input.provider == .codex, Self.isCodexSparkRateWindow(namedWindow) else { return true }
+            // A fully available Spark quota adds noise without conveying active usage.
+            return input.codexSparkUsageVisible && namedWindow.window.remainingPercent < 100
         }
         return visibleRateWindows.map { namedWindow in
             let paceDetail = Self.extraRateWindowPaceDetail(

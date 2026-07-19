@@ -761,7 +761,7 @@ struct MenuCardModelCodexProjectionTests {
 
 struct MenuCardModelCodexSparkVisibilityTests {
     @Test
-    func `codex spark visibility hides only spark metrics`() throws {
+    func `codex spark visibility hides full and disabled spark metrics only`() throws {
         let now = Date(timeIntervalSince1970: 1_800_000_000)
         let metadata = try #require(ProviderDefaults.metadata[.codex])
         let identity = ProviderIdentitySnapshot(
@@ -794,7 +794,7 @@ struct MenuCardModelCodexSparkVisibilityTests {
                     id: "codex-spark-weekly",
                     title: "Codex Spark Weekly",
                     window: RateWindow(
-                        usedPercent: 100,
+                        usedPercent: 0,
                         windowMinutes: 10080,
                         resetsAt: now.addingTimeInterval(6 * 24 * 60 * 60),
                         resetDescription: nil)),
@@ -802,7 +802,7 @@ struct MenuCardModelCodexSparkVisibilityTests {
                     id: "codex-other-limit",
                     title: "Other Codex limit",
                     window: RateWindow(
-                        usedPercent: 25,
+                        usedPercent: 0,
                         windowMinutes: 1440,
                         resetsAt: now.addingTimeInterval(12 * 60 * 60),
                         resetDescription: nil)),
@@ -822,27 +822,51 @@ struct MenuCardModelCodexSparkVisibilityTests {
                 dashboardRequiresLogin: false,
                 now: now))
 
-        let model = UsageMenuCardView.Model.make(.init(
-            provider: .codex,
-            metadata: metadata,
-            snapshot: snapshot,
-            codexProjection: projection,
-            credits: CreditsSnapshot(remaining: 12, events: [], updatedAt: now),
-            creditsError: nil,
-            dashboard: nil,
-            dashboardError: nil,
-            tokenSnapshot: nil,
-            tokenError: nil,
-            account: AccountInfo(email: "user@example.com", plan: "Pro"),
-            isRefreshing: false,
-            lastError: nil,
-            usageBarsShowUsed: false,
-            resetTimeDisplayStyle: .countdown,
-            tokenCostUsageEnabled: false,
+        func makeModel(
+            showOptionalCreditsAndExtraUsage: Bool,
+            codexSparkUsageVisible: Bool,
+            usageBarsShowUsed: Bool = false) -> UsageMenuCardView.Model
+        {
+            UsageMenuCardView.Model.make(.init(
+                provider: .codex,
+                metadata: metadata,
+                snapshot: snapshot,
+                codexProjection: projection,
+                credits: CreditsSnapshot(remaining: 12, events: [], updatedAt: now),
+                creditsError: nil,
+                dashboard: nil,
+                dashboardError: nil,
+                tokenSnapshot: nil,
+                tokenError: nil,
+                account: AccountInfo(email: "user@example.com", plan: "Pro"),
+                isRefreshing: false,
+                lastError: nil,
+                usageBarsShowUsed: usageBarsShowUsed,
+                resetTimeDisplayStyle: .countdown,
+                tokenCostUsageEnabled: false,
+                showOptionalCreditsAndExtraUsage: showOptionalCreditsAndExtraUsage,
+                codexSparkUsageVisible: codexSparkUsageVisible,
+                hidePersonalInfo: false,
+                now: now))
+        }
+
+        let visibleModel = makeModel(
             showOptionalCreditsAndExtraUsage: true,
-            codexSparkUsageVisible: false,
-            hidePersonalInfo: false,
-            now: now))
+            codexSparkUsageVisible: true)
+        #expect(visibleModel.metrics.first { $0.id == "codex-spark" }?.percent == 70)
+        #expect(!visibleModel.metrics.contains { $0.id == "codex-spark-weekly" })
+        #expect(visibleModel.metrics.first { $0.id == "codex-other-limit" }?.percent == 100)
+
+        let usedDisplayModel = makeModel(
+            showOptionalCreditsAndExtraUsage: true,
+            codexSparkUsageVisible: true,
+            usageBarsShowUsed: true)
+        #expect(usedDisplayModel.metrics.first { $0.id == "codex-spark" }?.percent == 30)
+        #expect(!usedDisplayModel.metrics.contains { $0.id == "codex-spark-weekly" })
+
+        let model = makeModel(
+            showOptionalCreditsAndExtraUsage: true,
+            codexSparkUsageVisible: false)
 
         #expect(!model.metrics.contains { $0.id == "codex-spark" })
         #expect(!model.metrics.contains { $0.id == "codex-spark-weekly" })
@@ -851,27 +875,9 @@ struct MenuCardModelCodexSparkVisibilityTests {
         #expect(model.metrics.contains { $0.id == "codex-other-limit" })
         #expect(model.creditsText != nil)
 
-        let globalOffModel = UsageMenuCardView.Model.make(.init(
-            provider: .codex,
-            metadata: metadata,
-            snapshot: snapshot,
-            codexProjection: projection,
-            credits: CreditsSnapshot(remaining: 12, events: [], updatedAt: now),
-            creditsError: nil,
-            dashboard: nil,
-            dashboardError: nil,
-            tokenSnapshot: nil,
-            tokenError: nil,
-            account: AccountInfo(email: "user@example.com", plan: "Pro"),
-            isRefreshing: false,
-            lastError: nil,
-            usageBarsShowUsed: false,
-            resetTimeDisplayStyle: .countdown,
-            tokenCostUsageEnabled: false,
+        let globalOffModel = makeModel(
             showOptionalCreditsAndExtraUsage: false,
-            codexSparkUsageVisible: true,
-            hidePersonalInfo: false,
-            now: now))
+            codexSparkUsageVisible: true)
 
         #expect(!globalOffModel.metrics.contains { $0.id == "codex-spark" })
         #expect(!globalOffModel.metrics.contains { $0.id == "codex-spark-weekly" })
