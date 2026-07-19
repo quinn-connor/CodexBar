@@ -77,6 +77,8 @@ public struct ClaudeStatusProbe: Sendable {
     public static let subscriptionQuotaUnavailableDescription =
         "Claude CLI /usage returned a subscription notice without session quota data. " +
         "Local cost and token history remain available."
+    static let incompleteAllModelsWeeklyLabelRedrawDescription =
+        "Claude CLI /usage returned an incomplete all-models weekly-label redraw."
 
     public var claudeBinary: String = "claude"
     public var timeout: TimeInterval = 20.0
@@ -235,6 +237,10 @@ extension ClaudeStatusProbe {
         // may omit the weekly panel entirely, and we should treat that as "unavailable" rather than guessing.
         let weeklyModels = Set(labelContext.lines.compactMap(self.weeklyModelName).map(self.normalizedForLabelSearch))
         let hasAllModelsWeeklyLabel = weeklyModels.contains("allmodels")
+        let hasDamagedAllModelsWeeklyLabel = weeklyModels.contains(where: self.isDamagedAllModelsWeeklyLabel)
+        if hasDamagedAllModelsWeeklyLabel, !hasAllModelsWeeklyLabel {
+            throw ClaudeStatusProbeError.parseFailed(self.incompleteAllModelsWeeklyLabelRedrawDescription)
+        }
         let opusModels = Set(opusLabels.compactMap(self.weeklyModelName).map(self.normalizedForLabelSearch))
         let hasOpusLabel = !weeklyModels.isDisjoint(with: opusModels)
 
@@ -413,7 +419,7 @@ extension ClaudeStatusProbe {
         for (index, line) in context.lines.enumerated() {
             guard let modelName = self.weeklyModelName(from: line) else { continue }
             let normalizedModel = self.normalizedForLabelSearch(modelName)
-            guard normalizedModel != "allmodels", !normalizedModel.isEmpty else { continue }
+            guard !self.isAllModelsWeeklyLabel(normalizedModel), !normalizedModel.isEmpty else { continue }
 
             let window = context.lines.dropFirst(index).prefix(14)
             var percentLeft: Int?
@@ -833,6 +839,36 @@ extension ClaudeStatusProbe {
 
     private static func normalizedForLabelSearch(_ text: String) -> String {
         String(text.lowercased().unicodeScalars.filter(CharacterSet.alphanumerics.contains))
+    }
+
+    private static func isAllModelsWeeklyLabel(_ normalizedModel: String) -> Bool {
+        normalizedModel == "allmodels" || self.isDamagedAllModelsWeeklyLabel(normalizedModel)
+    }
+
+    private static func isDamagedAllModelsWeeklyLabel(_ normalizedModel: String) -> Bool {
+        normalizedModel != "allmodels"
+            && self.isSingleCharacterDeletion(normalizedModel, from: "allmodels")
+    }
+
+    private static func isSingleCharacterDeletion(_ candidate: String, from expected: String) -> Bool {
+        let candidateCharacters = Array(candidate)
+        let expectedCharacters = Array(expected)
+        guard candidateCharacters.count + 1 == expectedCharacters.count else { return false }
+
+        var candidateIndex = 0
+        var skippedExpectedCharacter = false
+        for expectedCharacter in expectedCharacters {
+            if candidateIndex < candidateCharacters.count,
+               candidateCharacters[candidateIndex] == expectedCharacter
+            {
+                candidateIndex += 1
+            } else if skippedExpectedCharacter {
+                return false
+            } else {
+                skippedExpectedCharacter = true
+            }
+        }
+        return candidateIndex == candidateCharacters.count
     }
 
     /// Capture all "Reset"/"Resets" strings to surface in the menu.

@@ -78,6 +78,46 @@ struct ClaudeCLITimeoutRetryTests {
     }
 
     @Test
+    func `cli usage retries an incomplete all models redraw`() async throws {
+        let attempts = AttemptRecorder()
+        let fetcher = ClaudeUsageFetcher(
+            browserDetection: BrowserDetection(cacheTTL: 0),
+            environment: [:],
+            dataSource: .cli)
+
+        let fetchOverride: ClaudeStatusProbe.FetchOverride = { _, timeout, _ in
+            let attempt = await attempts.record(timeout: timeout)
+            if attempt == 1 {
+                throw ClaudeStatusProbeError.parseFailed(
+                    "Claude CLI /usage returned an incomplete all-models weekly-label redraw.")
+            }
+            return ClaudeStatusSnapshot(
+                sessionPercentLeft: 91,
+                weeklyPercentLeft: 81,
+                opusPercentLeft: nil,
+                accountEmail: "cli@example.com",
+                accountOrganization: "CLI Org",
+                loginMethod: "cli",
+                primaryResetDescription: nil,
+                secondaryResetDescription: nil,
+                opusResetDescription: nil,
+                rawText: "probe raw")
+        }
+
+        let snapshot = try await ClaudeCLIResolver.withResolvedBinaryPathOverrideForTesting("/usr/bin/true") {
+            try await ClaudeStatusProbe.withFetchOverrideForTesting(fetchOverride) {
+                try await fetcher.loadLatestUsage(model: "sonnet")
+            }
+        }
+
+        let recorded = await attempts.snapshot()
+        #expect(recorded.count == 2)
+        #expect(recorded.timeouts == [24, 60])
+        #expect(snapshot.primary.usedPercent == 9)
+        #expect(snapshot.secondary?.usedPercent == 19)
+    }
+
+    @Test
     func `auto cli usage does not retry unrecoverable parse failure`() async throws {
         let attempts = AttemptRecorder()
         let fetcher = ClaudeUsageFetcher(

@@ -67,6 +67,73 @@ struct ClaudeCLIScopedWeeklyUsageTests {
     }
 
     @Test
+    func `damaged all models redraw does not become a scoped weekly limit`() throws {
+        let cliUsage = """
+        Current session
+        9% used
+
+        Current week (all models)
+        19% used
+        Resets Jul 25 at 2:59am
+
+        Current week (ll models)
+        19% used
+        Resets Jul 25 at 2:59am
+        """
+
+        let snapshot = try ClaudeStatusProbe.parse(text: cliUsage)
+
+        #expect(snapshot.weeklyPercentLeft == 81)
+        #expect(snapshot.secondaryResetDescription == "Resets Jul 25 at 2:59am")
+        #expect(snapshot.extraRateWindows.isEmpty)
+    }
+
+    @Test
+    func `damaged all models redraw without the complete label is rejected`() {
+        let cliUsage = """
+        Current session
+        9% used
+
+        Current week (ll models)
+        19% used
+        Resets Jul 25 at 2:59am
+        """
+
+        do {
+            _ = try ClaudeStatusProbe.parse(text: cliUsage)
+            Issue.record("Expected the incomplete redraw to be rejected")
+        } catch let ClaudeStatusProbeError.parseFailed(message) {
+            #expect(message.contains("incomplete all-models weekly-label redraw"))
+        } catch {
+            Issue.record("Expected a parse failure, got \(error)")
+        }
+    }
+
+    @Test
+    func `legitimate scoped limit survives matching all models values`() throws {
+        let cliUsage = """
+        Current session
+        9% used
+
+        Current week (all models)
+        19% used
+        Resets Jul 25 at 2:59am
+
+        Current week (Example Model)
+        19% used
+        Resets Jul 25 at 2:59am
+        """
+
+        let snapshot = try ClaudeStatusProbe.parse(text: cliUsage)
+        let scoped = try #require(snapshot.extraRateWindows.first)
+
+        #expect(snapshot.extraRateWindows.count == 1)
+        #expect(scoped.title == "Example Model only")
+        #expect(scoped.window.usedPercent == 19)
+        #expect(scoped.window.resetDescription == "Resets Jul 25 at 2:59am")
+    }
+
+    @Test
     func `compact scoped weekly label is parsed`() throws {
         let snapshot = try ClaudeStatusProbe.parse(text: """
         Current session

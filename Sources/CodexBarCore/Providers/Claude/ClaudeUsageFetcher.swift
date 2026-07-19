@@ -686,6 +686,7 @@ public struct ClaudeUsageFetcher: ClaudeUsageFetching, Sendable {
             }
             if case let ClaudeStatusProbeError.parseFailed(message) = error {
                 return message.lowercased().contains("still loading usage")
+                    || message == ClaudeStatusProbe.incompleteAllModelsWeeklyLabelRedrawDescription
             }
             let message = error.localizedDescription.lowercased()
             return message.contains("timed out") || message.contains("timeout")
