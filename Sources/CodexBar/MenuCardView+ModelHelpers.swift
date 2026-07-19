@@ -660,7 +660,7 @@ extension UsageMenuCardView.Model {
         return visibleRateWindows.map { namedWindow in
             let paceDetail = Self.extraRateWindowPaceDetail(
                 provider: input.provider,
-                window: namedWindow.window,
+                namedWindow: namedWindow,
                 input: input)
             let usageKnown = namedWindow.usageKnown
             let resolvedResetText = Self.extraRateWindowResetText(
@@ -712,6 +712,7 @@ extension UsageMenuCardView.Model {
     }
 
     private static let antigravityQuotaSummaryWindowIDPrefix = "antigravity-quota-summary-"
+    private static let claudeScopedWeeklyWindowIDPrefix = "claude-weekly-scoped-"
 
     private static func hasAntigravityQuotaSummaryWindows(_ snapshot: UsageSnapshot) -> Bool {
         snapshot.extraRateWindows?.contains(where: self.isAntigravityQuotaSummaryWindow) == true
@@ -762,10 +763,20 @@ extension UsageMenuCardView.Model {
 
     private static func extraRateWindowPaceDetail(
         provider: UsageProvider,
-        window: RateWindow,
+        namedWindow: NamedRateWindow,
         input: Input) -> PaceDetail?
     {
-        guard provider == .codex || provider == .antigravity else { return nil }
+        let window = namedWindow.window
+        switch provider {
+        case .codex, .antigravity:
+            break
+        case .claude:
+            guard namedWindow.id.hasPrefix(Self.claudeScopedWeeklyWindowIDPrefix),
+                  window.windowMinutes == Self.weeklyWindowMinutes
+            else { return nil }
+        default:
+            return nil
+        }
         switch window.windowMinutes {
         case 300:
             return self.sessionPaceDetail(

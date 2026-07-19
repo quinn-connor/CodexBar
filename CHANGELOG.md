@@ -8,6 +8,7 @@
 
 ### Fixed
 - Menu Bar settings: remove the Layout editor's container-wide focus ring while preserving keyboard access to its tokens and controls.
+- Claude: show pace reserve, deficit, and run-out estimates for model-scoped weekly quotas such as Fable.
 
 ## 0.44.0 — 2026-07-17
 
