@@ -276,7 +276,6 @@
 "Providers" = "提供商";
 "Quit CodexBar" = "退出 CodexBar";
 "Random (default)" = "随机（默认）";
-"Reads local usage logs. Shows today + last 30 days cost in the menu." = "读取本地用量日志。在菜单中显示今天及所选历史窗口的费用。";
 "Refresh" = "刷新";
 "Refreshing" = "正在刷新";
 "Refresh cadence" = "刷新频率";
@@ -452,7 +451,6 @@
 "language_polish" = "Polski";
 "start_at_login_title" = "开机启动";
 "start_at_login_subtitle" = "启动 Mac 时自动打开 CodexBar。";
-"show_cost_summary_subtitle" = "读取本地用量日志。在菜单中显示今天及所选历史窗口的费用。";
 "cost_summary_style_title" = "显示样式";
 "cost_summary_style_inline" = "仅内联";
 "cost_summary_style_submenu" = "仅子菜单";
@@ -461,7 +459,6 @@
 "cost_summary_style_submenu_help" = "改为显示详细的费用子菜单。";
 "cost_summary_style_both_help" = "同时显示主菜单摘要和详细的费用子菜单。";
 "cost_history_window_title" = "历史窗口";
-"cost_history_window_help" = "设置菜单中显示多少天的本地使用日志。";
 "cost_history_days_title" = "历史窗口：%d 天";
 "cost_auto_refresh_info" = "自动刷新：全局间隔（最短 5 分钟）· 超时：10 分钟";
 "cost_comparison_periods_title" = "显示更短的对比周期";
@@ -694,12 +691,6 @@
 "Dismiss" = "关闭";
 "Open Menu Bar Settings" = "打开菜单栏设置";
 "macOS Tahoe can block menu bar apps in System Settings → Menu Bar → Allow in the Menu Bar. CodexBar is running, but macOS may be hiding its icon. Open Menu Bar settings and turn CodexBar on." = "macOS Tahoe 可能会在“系统设置”→“菜单栏”→“允许显示在菜单栏”中阻止菜单栏应用。CodexBar 正在运行，但 macOS 可能隐藏了它的图标。请打开菜单栏设置并启用 CodexBar。";
-"cost_header_estimated" = "费用（估算）";
-"cost_estimate_hint" = "根据本地日志估算 · 可能与账单不同";
-"codex_api_estimate_header" = "API 等价估算";
-"codex_api_estimate_hint" = "本地用量 × 公开 API 价格 · 不是订阅账单或套餐价值";
-"codex_api_estimate_not_billed" = "不是订阅账单或套餐价值";
-"Estimated from local Codex logs for the selected account." = "根据所选账户的本地 Codex 日志估算。";
 "No JetBrains IDE with AI Assistant detected. Install a JetBrains IDE and enable AI Assistant." = "未检测到启用 AI Assistant 的 JetBrains IDE。请安装 JetBrains IDE 并启用 AI Assistant。";
 "OpenRouter API token not configured. Set OPENROUTER_API_KEY environment variable or configure in Settings." = "未配置 OpenRouter API 令牌。请设置 OPENROUTER_API_KEY 环境变量，或在“设置”中配置。";
 "z.ai API token not found. Set apiKey in ~/.codexbar/config.json or Z_AI_API_KEY." = "未找到 z.ai API 令牌。请在 ~/.codexbar/config.json 中设置 apiKey，或设置 Z_AI_API_KEY。";
@@ -806,8 +797,6 @@
 "Today: %@ tokens" = "今日：%@ token";
 "Last 30 days: %@ · %@ tokens" = "近 30 天：%@ · %@ token";
 "Last 30 days: %@" = "近 30 天：%@";
-"Est. total (30d): %@" = "近 30 天估算总计：%@";
-"Est. total (%@): %@" = "估算总计（%@）：%@";
 "Hover a bar for details" = "悬停在柱形图上查看详情";
 "%@: %@ · %@ tokens" = "%@：%@ · %@ token";
 "No providers selected for Overview." = "概览中尚未选择提供商。";
@@ -1212,25 +1201,19 @@
 /* Spend dashboard */
 "tab_usage_spend" = "用量与支出";
 "Usage & Spend" = "用量与支出";
-"Local estimated cost history across supported providers." = "所有受支持提供商的本地估算费用历史。";
 "Time range" = "时间范围";
 "Track costs" = "跟踪费用";
 "Cost tracking is off" = "费用跟踪已关闭";
-"Turn on Track costs to build local estimates." = "启用“跟踪费用”以生成本地估算。";
-"No local cost history yet" = "暂无本地费用历史";
 "Turn on cost tracking or refresh after using a supported provider." = "启用费用跟踪，或在使用受支持的提供商后刷新。";
 "Refresh failures" = "刷新失败";
 "Native currencies stay separate; Codex account rows exclude Pi session history." = "各原始币种保持分开；Codex 帐户行不包含 Pi 会话历史。";
 "Spend unavailable" = "支出数据不可用";
 "Model breakdown unavailable" = "模型明细不可用";
-"Local estimated history" = "本地估算历史";
 "Coverage" = "覆盖范围";
-"Estimated spend" = "估算支出";
 "Tracked tokens" = "已跟踪 token";
 "Subscriptions" = "订阅";
 "By subscription" = "按订阅";
 "No model-level history" = "暂无模型级历史";
-"Daily estimated spend" = "每日估算支出";
 "≈%d full 5h windows of weekly left · %d windows until reset" = "每周额度约剩 %d 个完整 5 小时窗口 · 距重置还有 %d 个窗口";
 "Weekly cannot run out before reset at this pace" = "按此速度，每周额度无法在重置前用完";
 "Weekly can run out ≈%d windows early" = "每周额度可能提前约 %d 个窗口用完";

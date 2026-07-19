@@ -278,7 +278,6 @@
 "Providers" = "提供者";
 "Quit CodexBar" = "結束 CodexBar";
 "Random (default)" = "隨機（預設）";
-"Reads local usage logs. Shows today + last 30 days cost in the menu." = "讀取本機使用量記錄。在選單中顯示今天及所選歷史時段的費用。";
 "Refresh" = "重新整理";
 "Refreshing" = "正在重新整理";
 "Refresh cadence" = "重新整理頻率";
@@ -453,7 +452,6 @@
 "language_polish" = "Polski";
 "start_at_login_title" = "登入時啟動";
 "start_at_login_subtitle" = "登入 Mac 時自動開啟 CodexBar。";
-"show_cost_summary_subtitle" = "讀取本機使用量記錄。在選單中顯示今天及所選歷史時段的費用。";
 "cost_summary_style_title" = "顯示樣式";
 "cost_summary_style_inline" = "僅內嵌";
 "cost_summary_style_submenu" = "僅子選單";
@@ -462,7 +460,6 @@
 "cost_summary_style_submenu_help" = "改為顯示詳細的費用子選單。";
 "cost_summary_style_both_help" = "同時顯示主選單摘要和詳細的費用子選單。";
 "cost_history_window_title" = "歷史時段";
-"cost_history_window_help" = "設定選單中顯示多少天的本機使用記錄。";
 "cost_history_days_title" = "歷史時段：%d 天";
 "cost_auto_refresh_info" = "自動重新整理：全域間隔（最短 5 分鐘）· 逾時：10 分鐘";
 "cost_comparison_periods_title" = "顯示較短的比較期間";
@@ -718,11 +715,6 @@
 "Dismiss" = "關閉";
 "Open Menu Bar Settings" = "開啟選單列設定";
 "macOS Tahoe can block menu bar apps in System Settings → Menu Bar → Allow in the Menu Bar. CodexBar is running, but macOS may be hiding its icon. Open Menu Bar settings and turn CodexBar on." = "macOS Tahoe 可能會在「系統設定」→「選單列」→「允許顯示在選單列」中封鎖選單列 App。CodexBar 正在執行，但 macOS 可能隱藏了它的圖示。請開啟選單列設定並啟用 CodexBar。";
-"cost_header_estimated" = "費用（估算）";
-"cost_estimate_hint" = "根據本機記錄估算 · 可能與帳單不同";
-"codex_api_estimate_header" = "API 等值估算";
-"codex_api_estimate_hint" = "本機用量 × 公開 API 價格 · 不是訂閱帳單或方案價值";
-"codex_api_estimate_not_billed" = "不是訂閱帳單或方案價值";
 "copilot_device_code" = "裝置碼已複製到剪貼簿：%1$@\n\n請到以下網址驗證：%2$@";
 "copilot_waiting_text" = "請在瀏覽器中完成登入。\n登入完成後，此視窗會自動關閉。";
 "vertex_ai_login_instructions" = "要追蹤 Vertex AI 使用量，請透過 Google Cloud 進行認證。\n\n1. 開啟終端\n2. 執行：gcloud auth application-default login\n3. 依照瀏覽器提示登入\n4. 設定你的專案：gcloud config set project PROJECT_ID\n\n要現在開啟終端嗎？";
@@ -847,8 +839,6 @@
 "Today: %@ tokens" = "今天：%@ token";
 "Last 30 days: %@ · %@ tokens" = "近 30 天：%@ · %@ token";
 "Last 30 days: %@" = "近 30 天：%@";
-"Est. total (30d): %@" = "估計總計（30 天）：%@";
-"Est. total (%@): %@" = "估計總計（%@）：%@";
 "Hover a bar for details" = "停留在長條上查看詳細資料";
 "%@: %@ · %@ tokens" = "%@：%@ · %@ token";
 "%@: %@" = "%@：%@";
@@ -1079,7 +1069,6 @@
 "Projected empty in %@" = "預估 %@ 後用完";
 "Music Generation" = "音樂生成";
 "Clearing removes per-session environment metadata." = "會移除各工作階段的環境中繼資料。";
-"Estimated from local Codex logs for the selected account." = "根據所選帳號的本機 Codex 記錄估算。";
 "Manual cleanup: attachment cache" = "手動清理：附件快取";
 "No utilization data yet." = "尚無使用率資料。";
 "Stores each signed-in Google account for quick Antigravity switching. Uses Antigravity.app OAuth when available, or ANTIGRAVITY_OAUTH_CLIENT_ID and ANTIGRAVITY_OAUTH_CLIENT_SECRET as an override." = "儲存每個已登入的 Google 帳號，方便快速切換 Antigravity。可用時會使用 Antigravity.app OAuth，或以 ANTIGRAVITY_OAUTH_CLIENT_ID 和 ANTIGRAVITY_OAUTH_CLIENT_SECRET 覆寫。";
@@ -1267,25 +1256,19 @@
 /* Spend dashboard */
 "tab_usage_spend" = "使用量與支出";
 "Usage & Spend" = "使用量與支出";
-"Local estimated cost history across supported providers." = "所有支援提供者的本機預估費用歷史。";
 "Time range" = "時間範圍";
 "Track costs" = "追蹤費用";
 "Cost tracking is off" = "費用追蹤已關閉";
-"Turn on Track costs to build local estimates." = "開啟「追蹤費用」以建立本機預估。";
-"No local cost history yet" = "尚無本機費用歷史";
 "Turn on cost tracking or refresh after using a supported provider." = "開啟費用追蹤，或在使用支援的提供者後重新整理。";
 "Refresh failures" = "重新整理失敗";
 "Native currencies stay separate; Codex account rows exclude Pi session history." = "各原始幣別保持分開；Codex 帳號列不包含 Pi 工作階段歷史。";
 "Spend unavailable" = "無法取得支出資料";
 "Model breakdown unavailable" = "無法取得模型明細";
-"Local estimated history" = "本機預估歷史";
 "Coverage" = "涵蓋範圍";
-"Estimated spend" = "預估支出";
 "Tracked tokens" = "已追蹤 token";
 "Subscriptions" = "訂閱";
 "By subscription" = "依訂閱";
 "No model-level history" = "尚無模型層級歷史";
-"Daily estimated spend" = "每日預估支出";
 "≈%d full 5h windows of weekly left · %d windows until reset" = "每週額度約剩 %d 個完整 5 小時視窗 · 距重置還有 %d 個視窗";
 "Weekly cannot run out before reset at this pace" = "依此速度，每週額度無法在重置前用完";
 "Weekly can run out ≈%d windows early" = "每週額度可能提前約 %d 個視窗用完";

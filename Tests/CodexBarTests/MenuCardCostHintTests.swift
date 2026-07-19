@@ -5,7 +5,7 @@ import Testing
 
 struct MenuCardCostHintTests {
     @Test
-    func `claude cost hint explains cache tokens and status line drift`() throws {
+    func `claude cost omits estimate prose`() throws {
         let now = Date()
         let metadata = try #require(ProviderDefaults.metadata[.claude])
         let snapshot = CostUsageTokenSnapshot(
@@ -46,8 +46,7 @@ struct MenuCardCostHintTests {
             hidePersonalInfo: false,
             now: now))
 
-        #expect(model.tokenUsage?.hintLine?.contains("cache read/write tokens") == true)
-        #expect(model.tokenUsage?.hintLine?.contains("Claude Code /status") == true)
+        #expect(model.tokenUsage?.hintLine == nil)
     }
 
     @Test

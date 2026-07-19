@@ -221,7 +221,6 @@ struct UsageMenuCardView: View {
                     }
                     if let tokenUsage = liveModel.tokenUsage {
                         TokenUsageSectionContent(
-                            provider: liveModel.provider,
                             tokenUsage: tokenUsage,
                             lineFont: .footnote)
                     }
@@ -410,14 +409,13 @@ private struct CopyIconButton: View {
 /// Shared token-cost block (header, Today/window/metered/comparison lines, hint, error) used by
 /// both the inline card body and the standalone cost section; only the value-line font differs.
 private struct TokenUsageSectionContent: View {
-    let provider: UsageProvider
     let tokenUsage: UsageMenuCardView.Model.TokenUsageSection
     let lineFont: Font
     @Environment(\.menuItemHighlighted) private var isHighlighted
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text(UsageMenuCardView.Model.tokenUsageHeader(provider: self.provider))
+            Text(L("Cost"))
                 .font(.body)
                 .fontWeight(.medium)
             Text(self.tokenUsage.sessionLine)
@@ -836,7 +834,6 @@ struct UsageMenuCardCostSectionView: View {
                 VStack(alignment: .leading, spacing: 10) {
                     if let tokenUsage = liveModel.tokenUsage {
                         TokenUsageSectionContent(
-                            provider: liveModel.provider,
                             tokenUsage: tokenUsage,
                             lineFont: .caption)
                     }

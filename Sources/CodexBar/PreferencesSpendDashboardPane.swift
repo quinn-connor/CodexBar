@@ -79,13 +79,8 @@ struct SpendDashboardPane: View {
 
     private var header: some View {
         HStack(alignment: .top, spacing: 16) {
-            VStack(alignment: .leading, spacing: 4) {
-                Text(L("Usage & Spend"))
-                    .font(.title2.weight(.semibold))
-                Text(L("Local estimated cost history across supported providers."))
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-            }
+            Text(L("Usage & Spend"))
+                .font(.title2.weight(.semibold))
             Spacer()
             Picker(L("Time range"), selection: self.daysBinding) {
                 Text(spendDashboardDayRangeText(7)).tag(7)
@@ -114,15 +109,13 @@ struct SpendDashboardPane: View {
             SpendDashboardPanel {
                 ContentUnavailableView {
                     Label(L("Cost tracking is off"), systemImage: "chart.bar.xaxis")
-                } description: {
-                    Text(L("Turn on Track costs to build local estimates."))
                 }
                 .frame(maxWidth: .infinity, minHeight: 220)
             }
         } else if self.controller.model.groups.isEmpty {
             SpendDashboardPanel {
                 ContentUnavailableView {
-                    Label(L("No local cost history yet"), systemImage: "chart.bar.xaxis")
+                    Label(L("No cost history data."), systemImage: "chart.bar.xaxis")
                 } description: {
                     Text(L("Turn on cost tracking or refresh after using a supported provider."))
                 }
@@ -227,18 +220,16 @@ private struct SpendCurrencySection: View {
                     .monospacedDigit()
             }
 
-            Text(
-                "\(L("Local estimated history")) · " +
-                    spendDashboardCoverageText(
-                        covered: self.group.coveredDayCount,
-                        requested: self.requestedDays))
+            Text(spendDashboardCoverageText(
+                covered: self.group.coveredDayCount,
+                requested: self.requestedDays))
                 .font(.caption)
                 .foregroundStyle(.secondary)
 
             SpendDashboardPanel {
                 HStack(spacing: 24) {
                     SpendSummaryValue(
-                        title: L("Estimated spend"),
+                        title: L("Total"),
                         value: self.group.totalCost.map {
                             UsageFormatter.currencyString($0, currencyCode: self.group.currencyCode)
                         } ?? "—")
@@ -391,7 +382,7 @@ private struct SpendDailyChart: View {
             aggregateTotal: self.group.totalCost)
         SpendDashboardPanel {
             VStack(alignment: .leading, spacing: 12) {
-                Text(L("Daily estimated spend")).font(.headline)
+                Text(L("Cost")).font(.headline)
                 if presentation.content == .unavailable {
                     ContentUnavailableView(L("Spend unavailable"), systemImage: "chart.bar.xaxis")
                         .frame(maxWidth: .infinity, minHeight: 170)
@@ -399,8 +390,8 @@ private struct SpendDailyChart: View {
                     Chart(self.group.dailyPoints) { point in
                         BarMark(
                             x: .value(L("Day"), point.day, unit: .day),
-                            yStart: .value(L("Estimated spend"), point.stackStart),
-                            yEnd: .value(L("Estimated spend"), point.stackEnd),
+                            yStart: .value(L("Cost"), point.stackStart),
+                            yEnd: .value(L("Cost"), point.stackEnd),
                             width: .ratio(0.72))
                             .foregroundStyle(by: .value(L("Provider"), point.providerName))
                             .accessibilityLabel(Text(self.pointAccessibilityLabel(point)))
@@ -426,7 +417,7 @@ private struct SpendDailyChart: View {
                         }
                     }
                     .frame(height: 170)
-                    .accessibilityLabel(L("Daily estimated spend"))
+                    .accessibilityLabel(L("Cost"))
                     .accessibilityValue(presentation.accessibilityValue)
                 }
             }

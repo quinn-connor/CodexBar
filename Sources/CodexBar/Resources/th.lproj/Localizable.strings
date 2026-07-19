@@ -256,7 +256,6 @@
 "Providers" = "ผู้ให้บริการ";
 "Quit CodexBar" = "ออกจาก CodexBar";
 "Random (default)" = "สุ่ม (ค่าเริ่มต้น)";
-"Reads local usage logs. Shows today + last 30 days cost in the menu." = "อ่านบันทึกการใช้งานในเครื่อง แสดงวันนี้ + หน้าต่างประวัติที่เลือกในเมนู";
 "Refresh" = "รีเฟรช";
 "Refresh cadence" = "จังหวะการรีเฟรช";
 "Remote" = "ระยะไกล";
@@ -433,7 +432,6 @@
 "language_polish" = "Polski";
 "start_at_login_title" = "เริ่มต้นที่เข้าสู่ระบบ";
 "start_at_login_subtitle" = "เปิด CodexBar โดยอัตโนมัติเมื่อคุณเริ่มต้นระบบ Mac";
-"show_cost_summary_subtitle" = "อ่านบันทึกการใช้งานในเครื่อง แสดงวันนี้ + หน้าต่างประวัติที่เลือกในเมนู";
 "cost_summary_style_title" = "รูปแบบการแสดงผล";
 "cost_summary_style_inline" = "อินไลน์เท่านั้น";
 "cost_summary_style_submenu" = "เมนูย่อยเท่านั้น";
@@ -442,7 +440,6 @@
 "cost_summary_style_submenu_help" = "แสดงเมนูย่อยค่าใช้จ่ายแบบละเอียดแทน";
 "cost_summary_style_both_help" = "แสดงทั้งสรุปในเมนูหลักและเมนูย่อยค่าใช้จ่ายแบบละเอียด";
 "cost_history_window_title" = "กรอบเวลาประวัติ";
-"cost_history_window_help" = "กำหนดจำนวนวันของบันทึกการใช้งานในเครื่องที่จะแสดงในเมนู";
 "cost_history_days_title" = "กรอบเวลาประวัติ: %d วัน";
 "cost_comparison_periods_title" = "แสดงช่วงเปรียบเทียบที่สั้นกว่า";
 "cost_comparison_periods_subtitle" = "เพิ่มยอดรวม 7, 30 และ 90 วันเมื่ออยู่ภายในกรอบเวลาประวัติที่เลือก โดยใช้การสแกนในเครื่องเดียวกัน";
@@ -739,11 +736,6 @@
 "not_found" = "ไม่พบ";
 
 /* Cost estimation */
-"cost_header_estimated" = "ต้นทุน (โดยประมาณ)";
-"cost_estimate_hint" = "ประมาณการจากบันทึกท้องถิ่น · อาจแตกต่างจากใบเรียกเก็บเงินของคุณ";
-"codex_api_estimate_header" = "ค่าประมาณเทียบเท่า API";
-"codex_api_estimate_hint" = "การใช้งานในเครื่อง × ราคา API สาธารณะ · ไม่ใช่ใบเรียกเก็บเงินค่าสมาชิกหรือมูลค่าแพ็กเกจ";
-"codex_api_estimate_not_billed" = "ไม่ใช่ใบเรียกเก็บเงินค่าสมาชิกหรือมูลค่าแพ็กเกจ";
 "No JetBrains IDE with AI Assistant detected. Install a JetBrains IDE and enable AI Assistant." = "ตรวจไม่พบ JetBrains IDE ที่มี AI Assistant ติดตั้ง JetBrains IDE และเปิดใช้งาน AI Assistant";
 "OpenRouter API token not configured. Set OPENROUTER_API_KEY environment variable or configure in Settings." = "โทเค็น OpenRouter API ไม่ได้กําหนดค่า ตั้งค่าตัวแปรสภาพแวดล้อม OPENROUTER_API_KEY หรือกําหนดค่าในการตั้งค่า";
 "z.ai API token not found. Set apiKey in ~/.codexbar/config.json or Z_AI_API_KEY." = "ไม่พบโทเค็น z.ai API ตั้งค่า apiKey เป็น ~/.codexbar/config.json หรือ Z_AI_API_KEY";
@@ -850,8 +842,6 @@
 "Today: %@ tokens" = "วันนี้: โทเค็น %@";
 "Last 30 days: %@ · %@ tokens" = "30 วันที่ผ่านมา: %@ · 2 min · โทเค็น %@";
 "Last 30 days: %@" = "30 วันที่ผ่านมา: %@";
-"Est. total (30d): %@" = "รวมโดยประมาณ (30d): %@";
-"Est. total (%@): %@" = "รวมโดยประมาณ (%@): %@";
 "Hover a bar for details" = "วางเมาส์เหนือแถบเพื่อดูรายละเอียด";
 "%@: %@ · %@ tokens" = "%@: %@ · โทเค็น %@";
 "%@: %@" = "%@: %@";
@@ -995,7 +985,6 @@
 "Unavailable" = "ไม่พร้อมใช้งาน";
 "Weekly" = "รายสัปดาห์";
 "not detected" = "ตรวจไม่พบ";
-"Estimated from local Codex logs for the selected account." = "ประมาณการจากบันทึก Codex ท้องถิ่นสําหรับบัญชีที่เลือก";
 "minimax_usage_amount_format" = "การใช้งาน: %@ / %@";
 "minimax_used_percent_format" = "ใช้ไป %@";
 "minimax_service_text_generation" = "การสร้างข้อความ";
@@ -1240,25 +1229,19 @@
 /* Spend dashboard */
 "tab_usage_spend" = "การใช้งานและค่าใช้จ่าย";
 "Usage & Spend" = "การใช้งานและค่าใช้จ่าย";
-"Local estimated cost history across supported providers." = "ประวัติค่าใช้จ่ายโดยประมาณในเครื่องจากผู้ให้บริการที่รองรับ";
 "Time range" = "ช่วงเวลา";
 "Track costs" = "ติดตามค่าใช้จ่าย";
 "Cost tracking is off" = "ปิดการติดตามค่าใช้จ่ายอยู่";
-"Turn on Track costs to build local estimates." = "เปิด “ติดตามค่าใช้จ่าย” เพื่อสร้างการประมาณการในเครื่อง";
-"No local cost history yet" = "ยังไม่มีประวัติค่าใช้จ่ายในเครื่อง";
 "Turn on cost tracking or refresh after using a supported provider." = "เปิดการติดตามค่าใช้จ่ายหรือรีเฟรชหลังจากใช้ผู้ให้บริการที่รองรับ";
 "Refresh failures" = "การรีเฟรชที่ล้มเหลว";
 "Native currencies stay separate; Codex account rows exclude Pi session history." = "สกุลเงินต้นทางแยกจากกัน แถวบัญชี Codex ไม่รวมประวัติเซสชัน Pi";
 "Spend unavailable" = "ไม่มีข้อมูลค่าใช้จ่าย";
 "Model breakdown unavailable" = "ไม่มีรายละเอียดแยกตามโมเดล";
-"Local estimated history" = "ประวัติโดยประมาณในเครื่อง";
 "Coverage" = "ความครอบคลุม";
-"Estimated spend" = "ค่าใช้จ่ายโดยประมาณ";
 "Tracked tokens" = "โทเค็นที่ติดตาม";
 "Subscriptions" = "การสมัครสมาชิก";
 "By subscription" = "แยกตามการสมัครสมาชิก";
 "No model-level history" = "ไม่มีประวัติระดับโมเดล";
-"Daily estimated spend" = "ค่าใช้จ่ายรายวันโดยประมาณ";
 "≈%d full 5h windows of weekly left · %d windows until reset" = "เหลือโควตารายสัปดาห์ ≈%d ช่วงเต็ม 5 ชม. · อีก %d ช่วงจนรีเซ็ต";
 "Weekly cannot run out before reset at this pace" = "ด้วยอัตรานี้ โควตารายสัปดาห์จะไม่หมดก่อนรีเซ็ต";
 "Weekly can run out ≈%d windows early" = "โควตารายสัปดาห์อาจหมดเร็วขึ้น ≈%d ช่วง";

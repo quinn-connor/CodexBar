@@ -78,13 +78,8 @@ struct CodexProviderImplementation: ProviderImplementation {
         return [
             ProviderSettingsToggleDescriptor(
                 id: "codex-local-session-cost-ledger",
-                title: "Local session cost estimates",
-                subtitle: [
-                    "Uses this Mac's Codex sessions instead of the selected managed account's session history.",
-                    "Works with organization API keys and does not require OpenAI billing or administrator access.",
-                    "Uses locally cached or bundled model prices without making a network request.",
-                    "This provider-specific toggle does not enable cost summaries for other providers.",
-                ].joined(separator: " "),
+                title: "Session costs",
+                subtitle: "Tracks costs from Codex sessions on this Mac.",
                 binding: context.boolBinding(\.codexLocalSessionCostLedgerEnabled),
                 statusText: nil,
                 actions: [],
@@ -182,10 +177,7 @@ struct CodexProviderImplementation: ProviderImplementation {
             ProviderSettingsPickerDescriptor(
                 id: "codex-usage-source",
                 title: "Quota usage source",
-                subtitle: [
-                    "Controls live session and weekly quota fetching only.",
-                    "Local session cost estimates work independently.",
-                ].joined(separator: " "),
+                subtitle: "Controls live session and weekly quota fetching.",
                 binding: usageBinding,
                 options: usageOptions,
                 isVisible: nil,

@@ -8,7 +8,7 @@ import Testing
 @Suite(.serialized)
 struct StatusMenuCostMenuCardTests {
     @Test
-    func `cost menu keeps the estimate hint beside a history submenu`() {
+    func `cost menu hides details beside a history submenu`() {
         let tokenUsage = UsageMenuCardView.Model.TokenUsageSection(
             sessionLine: "Today: $74.83 - 87M tokens",
             monthLine: "Last 30 days: $4,279.64 - 5.7B tokens",
@@ -17,19 +17,14 @@ struct StatusMenuCostMenuCardTests {
             errorCopyText: nil)
 
         let visibleLines = StatusItemController.costMenuVisibleDetailLines(
-            provider: .codex,
             tokenUsage: tokenUsage,
             hasSubmenu: true)
-        #expect(visibleLines == ["Costs are estimated from local usage."])
-        #expect(StatusItemController.costMenuVisibleDetailLines(
-            provider: .claude,
-            tokenUsage: tokenUsage,
-            hasSubmenu: true) == [])
+        #expect(visibleLines == [])
 
         let fallbackTitle = StatusItemController.costMenuFallbackAttributedTitle(
-            title: "API-equivalent estimate",
+            title: "Cost",
             visibleDetailLines: visibleLines)
-        #expect(fallbackTitle.string == "API-equivalent estimate  Costs are estimated from local usage.")
+        #expect(fallbackTitle.string == "Cost")
     }
 
     @Test
@@ -42,7 +37,6 @@ struct StatusMenuCostMenuCardTests {
             errorCopyText: nil)
 
         let visibleLines = StatusItemController.costMenuVisibleDetailLines(
-            provider: .codex,
             tokenUsage: tokenUsage,
             hasSubmenu: false)
         #expect(visibleLines == [
@@ -52,7 +46,7 @@ struct StatusMenuCostMenuCardTests {
         ])
 
         let fallbackTitle = StatusItemController.costMenuFallbackAttributedTitle(
-            title: "API-equivalent estimate",
+            title: "Cost",
             visibleDetailLines: visibleLines)
         #expect(fallbackTitle.string.contains("Today: $74.83 - 87M tokens"))
         #expect(fallbackTitle.string.contains("Last 30 days: $4,279.64 - 5.7B tokens"))
@@ -147,15 +141,14 @@ struct StatusMenuCostMenuCardTests {
 
         #expect(view is any MenuCardMeasuring)
         #expect(abs(view.frame.width - width) <= 0.5)
-        #expect(item.title == "API-equivalent estimate")
+        #expect(item.title == "Cost")
         #expect(item.toolTip?.contains("$52,431.09") == true)
         #expect(item.submenu == nil)
     }
 
     @Test
-    func `cost menu title distinguishes Codex estimates from billing-backed cost`() {
-        #expect(StatusItemController.costMenuTitleForProvider(.codex) == "API-equivalent estimate")
-        #expect(StatusItemController.costMenuTitleForProvider(.mistral) == "Cost")
+    func `cost menu uses the concise cost title`() {
+        #expect(StatusItemController.costMenuTitle == "Cost")
     }
 
     private func makeSettings() -> SettingsStore {

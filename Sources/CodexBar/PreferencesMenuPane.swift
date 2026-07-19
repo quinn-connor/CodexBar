@@ -100,7 +100,7 @@ struct CostSummarySettingsSection: View {
                 selection: self.$settings.costSummaryOption,
                 options: MenuSettingsMenuOptions.costSummaries,
                 label: {
-                    SettingsRowLabel(L("cost_summary_title"), subtitle: L("show_cost_summary_subtitle"))
+                    SettingsRowLabel(L("cost_summary_title"))
                 },
                 optionLabel: { option in
                     Text(option.label)

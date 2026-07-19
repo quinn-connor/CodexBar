@@ -4,6 +4,41 @@ import Testing
 
 struct UserFacingLocalizationCoverageTests {
     @Test
+    func `cost surfaces avoid repeated estimate disclosure copy`() throws {
+        let root = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+        let sources = root.appendingPathComponent("Sources")
+        let forbiddenPhrases = [
+            "API-equivalent estimate",
+            "not a subscription bill",
+            "Estimated from local",
+            "Local usage ×",
+            "Cost (estimated)",
+            "Local estimated",
+            "estimated spend",
+            "Local session cost estimates",
+        ]
+        let files = try #require(FileManager.default.enumerator(
+            at: sources,
+            includingPropertiesForKeys: nil)?.allObjects as? [URL])
+        let userFacingFiles = files.filter { ["swift", "strings"].contains($0.pathExtension) }
+
+        var violations: [String] = []
+        for file in userFacingFiles {
+            let contents = try String(contentsOf: file, encoding: .utf8)
+            for phrase in forbiddenPhrases where contents.localizedCaseInsensitiveContains(phrase) {
+                violations.append("\(file.path): \(phrase)")
+            }
+        }
+
+        #expect(
+            violations.isEmpty,
+            "Repeated cost disclosure copy remains:\n\(violations.joined(separator: "\n"))")
+    }
+
+    @Test
     func `selected user-facing UI surfaces avoid raw English literals`() throws {
         let root = URL(fileURLWithPath: #filePath)
             .deletingLastPathComponent()

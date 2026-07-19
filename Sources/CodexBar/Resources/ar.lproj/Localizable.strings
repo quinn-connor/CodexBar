@@ -256,7 +256,6 @@
 "Providers" = "مقدمو الخدمات";
 "Quit CodexBar" = "اترك CodexBar";
 "Random (default)" = "عشوائي (افتراضي)";
-"Reads local usage logs. Shows today + last 30 days cost in the menu." = "يقرأ سجلات الاستخدام المحلية. يعرض اليوم + نافذة التاريخ المحددة في القائمة.";
 "Refresh" = "تحديث";
 "Refresh cadence" = "وتيرة التحديث";
 "Remote" = "البعيد";
@@ -433,7 +432,6 @@
 "language_polish" = "بولسكي";
 "start_at_login_title" = "ابدأ عند تسجيل الدخول";
 "start_at_login_subtitle" = "يفتح تلقائيا CodexBar عند تشغيل جهاز الماك.";
-"show_cost_summary_subtitle" = "يقرأ سجلات الاستخدام المحلية. يعرض اليوم + نافذة التاريخ المحددة في القائمة.";
 "cost_summary_style_title" = "نمط العرض";
 "cost_summary_style_inline" = "مضمن فقط";
 "cost_summary_style_submenu" = "قائمة فرعية فقط";
@@ -442,7 +440,6 @@
 "cost_summary_style_submenu_help" = "يعرض بدلاً من ذلك قائمة التكلفة الفرعية التفصيلية.";
 "cost_summary_style_both_help" = "يعرض ملخص القائمة الرئيسية وقائمة التكلفة الفرعية التفصيلية.";
 "cost_history_window_title" = "نافذة التاريخ";
-"cost_history_window_help" = "يحدد عدد أيام سجلات الاستخدام المحلية التي تظهر في القائمة.";
 "cost_history_days_title" = "نافذة التاريخ: %d أيام";
 "cost_comparison_periods_title" = "إظهار فترات مقارنة أقصر";
 "cost_comparison_periods_subtitle" = "أضف إجماليات 7 و30 و90 يومًا عندما تقع ضمن نافذة التاريخ المحددة. تعيد هذه الإجماليات استخدام الفحص المحلي نفسه.";
@@ -739,11 +736,6 @@
 "not_found" = "لم يعثر عليه";
 
 /* Cost estimation */
-"cost_header_estimated" = "التكلفة (تقديرية)";
-"cost_estimate_hint" = "تقديرات من سجلات محلية · قد تختلف عن فاتورتك";
-"codex_api_estimate_header" = "تقدير مكافئ لواجهة API";
-"codex_api_estimate_hint" = "الاستخدام المحلي × أسعار API العامة · ليس فاتورة اشتراك أو قيمة خطة";
-"codex_api_estimate_not_billed" = "ليس فاتورة اشتراك أو قيمة خطة";
 "No JetBrains IDE with AI Assistant detected. Install a JetBrains IDE and enable AI Assistant." = "لم يتم اكتشاف أي JetBrains IDE مع مساعدة الذكاء الاصطناعي. قم بتثبيت JetBrains IDE وفعل AI Assistant.";
 "OpenRouter API token not configured. Set OPENROUTER_API_KEY environment variable or configure in Settings." = "OpenRouter API الرمز غير مكون. حدد OPENROUTER_API_KEY متغير البيئة أو قم بالتكوين في الإعدادات.";
 "z.ai API token not found. Set apiKey in ~/.codexbar/config.json or Z_AI_API_KEY." = "z.ai API الرمز لم يعثر عليه. اضبط apiKey في ~/.codexbar/config.json أو Z_AI_API_KEY.";
@@ -850,8 +842,6 @@
 "Today: %@ tokens" = "اليوم: %@ الرموز";
 "Last 30 days: %@ · %@ tokens" = "آخر 30 يوما: %@ · رموز %@";
 "Last 30 days: %@" = "آخر 30 يوما: %@";
-"Est. total (30d): %@" = "التقدير الكلي (30d): %@";
-"Est. total (%@): %@" = "التقدير الكلي (%@): %@";
 "Hover a bar for details" = "مرر المؤشر على الشريط لمزيد من التفاصيل";
 "%@: %@ · %@ tokens" = "%@: %@ · رموز %@";
 "%@: %@" = "%@: %@";
@@ -995,7 +985,6 @@
 "Unavailable" = "غير متوفر";
 "Weekly" = "الأسبوعي";
 "not detected" = "لم يتم اكتشافه";
-"Estimated from local Codex logs for the selected account." = "تم التقدير من سجلات Codex المحلية للحساب المختار.";
 "minimax_usage_amount_format" = "الاستخدام: %@ / %@";
 "minimax_used_percent_format" = "المستخدم %@";
 "minimax_service_text_generation" = "توليد النصوص";
@@ -1240,25 +1229,19 @@
 /* Spend dashboard */
 "tab_usage_spend" = "الاستخدام والإنفاق";
 "Usage & Spend" = "الاستخدام والإنفاق";
-"Local estimated cost history across supported providers." = "سجل التكاليف التقديري المحلي عبر المزوّدين المدعومين.";
 "Time range" = "النطاق الزمني";
 "Track costs" = "تتبّع التكاليف";
 "Cost tracking is off" = "تتبّع التكاليف متوقف";
-"Turn on Track costs to build local estimates." = "فعّل «تتبّع التكاليف» لإنشاء تقديرات محلية.";
-"No local cost history yet" = "لا يوجد سجل تكاليف محلي بعد";
 "Turn on cost tracking or refresh after using a supported provider." = "فعّل تتبّع التكاليف أو حدّث بعد استخدام مزوّد مدعوم.";
 "Refresh failures" = "حالات فشل التحديث";
 "Native currencies stay separate; Codex account rows exclude Pi session history." = "تبقى العملات الأصلية منفصلة؛ تستبعد صفوف حساب Codex سجل جلسات Pi.";
 "Spend unavailable" = "الإنفاق غير متاح";
 "Model breakdown unavailable" = "تفصيل الإنفاق حسب النموذج غير متاح";
-"Local estimated history" = "السجل التقديري المحلي";
 "Coverage" = "التغطية";
-"Estimated spend" = "الإنفاق التقديري";
 "Tracked tokens" = "الرموز المتتبعة";
 "Subscriptions" = "الاشتراكات";
 "By subscription" = "حسب الاشتراك";
 "No model-level history" = "لا يوجد سجل على مستوى النموذج";
-"Daily estimated spend" = "الإنفاق اليومي التقديري";
 "≈%d full 5h windows of weekly left · %d windows until reset" = "≈%d نافذة كاملة مدتها 5 ساعات متبقية من الأسبوعي · %d نافذة حتى إعادة التعيين";
 "Weekly cannot run out before reset at this pace" = "لا يمكن أن ينفد الحد الأسبوعي قبل إعادة التعيين بهذه الوتيرة";
 "Weekly can run out ≈%d windows early" = "قد ينفد الحد الأسبوعي مبكرًا بنحو %d نافذة";

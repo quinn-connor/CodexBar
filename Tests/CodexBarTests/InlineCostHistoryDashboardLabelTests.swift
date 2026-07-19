@@ -218,11 +218,9 @@ struct InlineCostHistoryDashboardLabelTests {
 
         let dashboard = try #require(model.inlineUsageDashboard)
         #expect(dashboard.currencyCode == "USD")
-        #expect(dashboard.kpis[0].title == "Today · API-equivalent estimate")
-        #expect(dashboard.kpis[1].title == "30d · API-equivalent estimate")
-        #expect(dashboard.detailLines.contains("not a subscription bill or plan value"))
-        #expect(dashboard.detailLines.contains(
-            "Local usage × public API prices · not a subscription bill or plan value"))
+        #expect(dashboard.kpis[0].title == "Today")
+        #expect(dashboard.kpis[1].title == "30d cost")
+        #expect(dashboard.detailLines.isEmpty)
     }
 
     @Test

@@ -81,7 +81,7 @@ struct ShareStatsCardView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
 
             VStack(alignment: .leading, spacing: 9) {
-                Text("EST. \(self.payload.days)-DAY SPEND")
+                Text("\(self.payload.days)-DAY SPEND")
                     .font(.system(size: 18, weight: .semibold, design: .rounded))
                     .tracking(1.2)
                     .foregroundStyle(self.secondary)
@@ -143,7 +143,7 @@ struct ShareStatsCardView: View {
                 VStack(alignment: .leading, spacing: 6) {
                     self.sectionHeader("TOP MODELS", detail: "BY USAGE")
                     if self.payload.topModels.isEmpty {
-                        Text("No model-level history in this local snapshot")
+                        Text("No model-level history")
                             .font(.system(size: 18, weight: .medium, design: .rounded))
                             .foregroundStyle(self.secondary)
                             .padding(.top, 4)
@@ -159,7 +159,7 @@ struct ShareStatsCardView: View {
                         }
                     }
                 }
-                Text("Only aggregate usage, plan tier, and estimated spend are included.")
+                Text("Only aggregate usage, plan tier, and spend are included.")
                     .font(.system(size: 16, weight: .medium, design: .rounded))
                     .foregroundStyle(self.secondary)
                     .padding(.top, 18)
@@ -247,7 +247,7 @@ private struct ShareStatsModelRow: View {
 
     private var detail: String {
         if let cost = self.model.estimatedCost, cost.isFinite {
-            return "~\(ShareStatsFormatting.currency(cost, code: self.model.currencyCode))"
+            return ShareStatsFormatting.currency(cost, code: self.model.currencyCode)
         }
         return self.model.totalTokens.map(ShareStatsFormatting.compactCount) ?? "used"
     }
@@ -304,7 +304,7 @@ private struct ShareStatsProviderRow: View {
             metrics.append(ShareStatsFormatting.compactCount(tokens))
         }
         if let cost = self.provider.estimatedCost, cost.isFinite {
-            metrics.append("~\(ShareStatsFormatting.currency(cost, code: self.provider.currencyCode))")
+            metrics.append(ShareStatsFormatting.currency(cost, code: self.provider.currencyCode))
             if self.provider.coveredDayCount < self.days {
                 metrics.append("\(self.provider.coveredDayCount)/\(self.days)d")
             }

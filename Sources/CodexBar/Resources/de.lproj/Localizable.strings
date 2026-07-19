@@ -269,7 +269,6 @@
 "Providers" = "Anbieter";
 "Quit CodexBar" = "CodexBar beenden";
 "Random (default)" = "Zufällig (Standard)";
-"Reads local usage logs. Shows today + last 30 days cost in the menu." = "Liest lokale Nutzungsprotokolle. Zeigt heute + das ausgewählte Verlaufsfenster im Menü an.";
 "Refresh" = "Aktualisieren";
 "Refresh cadence" = "Trittfrequenz aktualisieren";
 "Remote" = "Remote";
@@ -446,7 +445,6 @@
 "language_polish" = "Polnisch";
 "start_at_login_title" = "Beim Login starten";
 "start_at_login_subtitle" = "Startet CodexBar automatisch, wenn dein Mac hochfährt.";
-"show_cost_summary_subtitle" = "Liest lokale Nutzungsprotokolle. Zeigt heute + das gewählte Verlaufsfenster im Menü.";
 "cost_summary_style_title" = "Anzeigestil";
 "cost_summary_style_inline" = "Nur Inline";
 "cost_summary_style_submenu" = "Nur Untermenü";
@@ -455,7 +453,6 @@
 "cost_summary_style_submenu_help" = "Zeigt stattdessen das detaillierte Kosten-Untermenü.";
 "cost_summary_style_both_help" = "Zeigt die Hauptmenü-Übersicht und das detaillierte Kosten-Untermenü.";
 "cost_history_window_title" = "Verlaufsfenster";
-"cost_history_window_help" = "Legt fest, wie viele Tage lokaler Nutzungsprotokolle im Menü erscheinen.";
 "cost_history_days_title" = "Verlaufsfenster: %d Tage";
 "cost_auto_refresh_info" = "Auto-Aktualisierung: globales Intervall (mindestens 5 Min.) · Timeout: 10 Min.";
 "cost_comparison_periods_title" = "Kürzere Vergleichszeiträume anzeigen";
@@ -731,11 +728,6 @@
 "not_found" = "Nicht gefunden";
 
 /* Cost estimation */
-"cost_header_estimated" = "Kosten (geschätzt)";
-"cost_estimate_hint" = "Schätzung aus lokalen Protokollen · kann von Ihrer Rechnung abweichen";
-"codex_api_estimate_header" = "API-äquivalente Schätzung";
-"codex_api_estimate_hint" = "Lokale Nutzung × öffentliche API-Preise · keine Abonnementrechnung oder Planwert";
-"codex_api_estimate_not_billed" = "keine Abonnementrechnung oder Planwert";
 "No JetBrains IDE with AI Assistant detected. Install a JetBrains IDE and enable AI Assistant." = "Keine JetBrains-IDE mit AI Assistant erkannt. Installieren Sie eine JetBrains-IDE und aktivieren Sie AI Assistant.";
 "OpenRouter API token not configured. Set OPENROUTER_API_KEY environment variable or configure in Settings." = "OpenRouter-API-Token nicht konfiguriert. Legen Sie die Umgebungsvariable OPENROUTER_API_KEY fest oder konfigurieren Sie sie in den Einstellungen.";
 "z.ai API token not found. Set apiKey in ~/.codexbar/config.json or Z_AI_API_KEY." = "z.ai-API-Token nicht gefunden. Legen Sie apiKey in ~/.codexbar/config.json oder Z_AI_API_KEY fest.";
@@ -842,8 +834,6 @@
 "Today: %@ tokens" = "Heute: %@ Token";
 "Last 30 days: %@ · %@ tokens" = "Letzte 30 Tage: %@ · %@ Token";
 "Last 30 days: %@" = "Letzte 30 Tage: %@";
-"Est. total (30d): %@" = "Schätzung: Gesamt (30 Tage): %@";
-"Est. total (%@): %@" = "Schätzung: Gesamt (%@): %@";
 "Hover a bar for details" = "Bewegen Sie den Mauszeiger über eine Leiste, um Einzelheiten anzuzeigen";
 "%@: %@ · %@ tokens" = "%@: %@ · %@ Token";
 "No providers selected for Overview." = "Für die Übersicht wurden keine Anbieter ausgewählt.";
@@ -976,7 +966,6 @@
 "Unavailable" = "Nicht verfügbar";
 "Weekly" = "Wöchentlich";
 "not detected" = "nicht erkannt";
-"Estimated from local Codex logs for the selected account." = "Geschätzt aus lokalen Codex-Protokollen für das ausgewählte Konto.";
 "minimax_usage_amount_format" = "Verwendung: %@ / %@";
 "minimax_used_percent_format" = "Verbraucht %@";
 "minimax_service_text_generation" = "Textgenerierung";
@@ -1237,25 +1226,19 @@
 /* Spend dashboard */
 "tab_usage_spend" = "Nutzung & Ausgaben";
 "Usage & Spend" = "Nutzung & Ausgaben";
-"Local estimated cost history across supported providers." = "Lokaler Verlauf der geschätzten Kosten bei unterstützten Anbietern.";
 "Time range" = "Zeitraum";
 "Track costs" = "Kosten verfolgen";
 "Cost tracking is off" = "Kostenverfolgung ist deaktiviert";
-"Turn on Track costs to build local estimates." = "Aktivieren Sie „Kosten verfolgen“, um lokale Schätzungen zu erstellen.";
-"No local cost history yet" = "Noch kein lokaler Kostenverlauf";
 "Turn on cost tracking or refresh after using a supported provider." = "Aktivieren Sie die Kostenverfolgung oder aktualisieren Sie nach der Nutzung eines unterstützten Anbieters.";
 "Refresh failures" = "Fehlgeschlagene Aktualisierungen";
 "Native currencies stay separate; Codex account rows exclude Pi session history." = "Originalwährungen bleiben getrennt; Codex-Kontozeilen schließen den Pi-Sitzungsverlauf aus.";
 "Spend unavailable" = "Ausgaben nicht verfügbar";
 "Model breakdown unavailable" = "Modellaufschlüsselung nicht verfügbar";
-"Local estimated history" = "Lokaler Schätzverlauf";
 "Coverage" = "Abdeckung";
-"Estimated spend" = "Geschätzte Ausgaben";
 "Tracked tokens" = "Erfasste Token";
 "Subscriptions" = "Abonnements";
 "By subscription" = "Nach Abonnement";
 "No model-level history" = "Kein Verlauf auf Modellebene";
-"Daily estimated spend" = "Geschätzte tägliche Ausgaben";
 "≈%d full 5h windows of weekly left · %d windows until reset" = "≈%d volle 5-Std.-Fenster des Wochenlimits übrig · %d Fenster bis zum Reset";
 "Weekly cannot run out before reset at this pace" = "Das Wochenlimit kann bei diesem Tempo nicht vor dem Reset aufgebraucht sein";
 "Weekly can run out ≈%d windows early" = "Das Wochenlimit kann ≈%d Fenster früher aufgebraucht sein";

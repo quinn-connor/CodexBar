@@ -256,7 +256,6 @@
 "Providers" = "Proveïdors";
 "Quit CodexBar" = "Sortiu del CodexBar";
 "Random (default)" = "Aleatori (per defecte)";
-"Reads local usage logs. Shows today + last 30 days cost in the menu." = "Llegeix els registres d'ús locals. Mostra el cost d'avui + la finestra d'historial seleccionada al menú.";
 "Refresh" = "Actualitza";
 "Refresh cadence" = "Freqüència d'actualització";
 "Remote" = "Remot";
@@ -431,7 +430,6 @@
 "language_polish" = "Polski";
 "start_at_login_title" = "Obrir en iniciar la sessió";
 "start_at_login_subtitle" = "Obre el CodexBar automàticament en iniciar el Mac.";
-"show_cost_summary_subtitle" = "Llegeix els registres d'ús locals. Mostra el cost d'avui + la finestra d'historial seleccionada al menú.";
 "cost_summary_style_title" = "Estil de visualització";
 "cost_summary_style_inline" = "Només integrat";
 "cost_summary_style_submenu" = "Només submenú";
@@ -440,7 +438,6 @@
 "cost_summary_style_submenu_help" = "Mostra el submenú Cost detallat en lloc d'això.";
 "cost_summary_style_both_help" = "Mostra el resum del menú principal i el submenú Cost detallat.";
 "cost_history_window_title" = "Finestra d'historial";
-"cost_history_window_help" = "Defineix quants dies de registres d'ús locals apareixen al menú.";
 "cost_history_days_title" = "Finestra d'historial: %d dies";
 "cost_auto_refresh_info" = "Actualització automàtica: interval global (mínim 5 min) · Temps d'espera: 10 min";
 "cost_comparison_periods_title" = "Mostra períodes de comparació més curts";
@@ -717,11 +714,6 @@
 "not_found" = "No trobat";
 
 /* Cost estimation */
-"cost_header_estimated" = "Cost (estimat)";
-"cost_estimate_hint" = "Estimat a partir de registres locals · pot diferir de la vostra factura";
-"codex_api_estimate_header" = "Estimació equivalent a l'API";
-"codex_api_estimate_hint" = "Ús local × preus públics de l'API · no és una factura de subscripció ni el valor d'un pla";
-"codex_api_estimate_not_billed" = "no és una factura de subscripció ni el valor d'un pla";
 
 /* Popup panels */
 "No usage configured." = "No hi ha cap ús configurat.";
@@ -1087,9 +1079,6 @@
 "Credits unavailable; keep Codex running to refresh." = "Crèdits no disponibles; mantingueu el Codex en execució per actualitzar.";
 "Daily" = "Diari";
 "Disabled — no recent data" = "Desactivat — sense dades recents";
-"Est. total (%@): %@" = "Total estimat (%@): %@";
-"Est. total (30d): %@" = "Total estimat (30 d): %@";
-"Estimated from local Codex logs for the selected account." = "Estimat a partir dels registres locals de Codex per al compte seleccionat.";
 "Google accounts" = "Comptes de Google";
 "Google OAuth" = "Google OAuth";
 "Hourly Tokens" = "Tokens per hora";
@@ -1239,25 +1228,19 @@
 /* Spend dashboard */
 "tab_usage_spend" = "Ús i despesa";
 "Usage & Spend" = "Ús i despesa";
-"Local estimated cost history across supported providers." = "Historial local de costos estimats dels proveïdors compatibles.";
 "Time range" = "Interval de temps";
 "Track costs" = "Fes seguiment dels costos";
 "Cost tracking is off" = "El seguiment de costos està desactivat";
-"Turn on Track costs to build local estimates." = "Activa «Fes seguiment dels costos» per crear estimacions locals.";
-"No local cost history yet" = "Encara no hi ha historial local de costos";
 "Turn on cost tracking or refresh after using a supported provider." = "Activa el seguiment de costos o actualitza després d’utilitzar un proveïdor compatible.";
 "Refresh failures" = "Actualitzacions fallides";
 "Native currencies stay separate; Codex account rows exclude Pi session history." = "Les monedes originals es mantenen separades; les files de comptes de Codex exclouen l’historial de sessions de Pi.";
 "Spend unavailable" = "Despesa no disponible";
 "Model breakdown unavailable" = "Desglossament per model no disponible";
-"Local estimated history" = "Historial local estimat";
 "Coverage" = "Cobertura";
-"Estimated spend" = "Despesa estimada";
 "Tracked tokens" = "Tokens registrats";
 "Subscriptions" = "Subscripcions";
 "By subscription" = "Per subscripció";
 "No model-level history" = "Sense historial per model";
-"Daily estimated spend" = "Despesa diària estimada";
 "≈%d full 5h windows of weekly left · %d windows until reset" = "≈%d finestres completes de 5 h de quota setmanal · %d finestres fins al reinici";
 "Weekly cannot run out before reset at this pace" = "La quota setmanal no es pot esgotar abans del reinici a aquest ritme";
 "Weekly can run out ≈%d windows early" = "La quota setmanal es pot esgotar ≈%d finestres abans";

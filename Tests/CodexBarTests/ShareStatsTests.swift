@@ -27,8 +27,8 @@ struct ShareStatsTests {
         #expect(payload.topModels.map(\.modelName).prefix(2) == ["Claude", "GPT"])
 
         let text = ShareStatsFormatting.text(payload)
-        #expect(text.contains("GBP: £12.00 estimated · coverage 10/30 days"))
-        #expect(text.contains("Claude · Max: 300 tokens · ~£12.00 est · 10/30 days"))
+        #expect(text.contains("GBP: £12.00 · coverage 10/30 days"))
+        #expect(text.contains("Claude · Max: 300 tokens · £12.00 · 10/30 days"))
         #expect(text.contains("USD: Spend unavailable · coverage 0/30 days"))
         #expect(text.contains("Cursor · Cursor Pro: Spend unavailable"))
         #expect(!text.contains("£12.00 +"))

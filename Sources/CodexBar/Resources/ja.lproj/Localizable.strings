@@ -271,7 +271,6 @@
 "Providers" = "プロバイダ";
 "Quit CodexBar" = "CodexBar を終了";
 "Random (default)" = "ランダム（デフォルト）";
-"Reads local usage logs. Shows today + last 30 days cost in the menu." = "ローカルの使用ログを読み取り、今日のコストと選択した履歴期間のコストをメニューに表示します。";
 "Refresh" = "更新";
 "Refresh cadence" = "更新間隔";
 "Remote" = "リモート";
@@ -445,7 +444,6 @@
 "language_polish" = "ポーランド語";
 "start_at_login_title" = "ログイン時に起動";
 "start_at_login_subtitle" = "Mac の起動時に CodexBar を自動的に開きます。";
-"show_cost_summary_subtitle" = "ローカルの使用ログを読み取り、今日分と選択した履歴期間をメニューに表示します。";
 "cost_summary_style_title" = "表示スタイル";
 "cost_summary_style_inline" = "インラインのみ";
 "cost_summary_style_submenu" = "サブメニューのみ";
@@ -454,7 +452,6 @@
 "cost_summary_style_submenu_help" = "代わりに詳細なコストサブメニューを表示します。";
 "cost_summary_style_both_help" = "メインメニューの概要と詳細なコストサブメニューの両方を表示します。";
 "cost_history_window_title" = "履歴期間";
-"cost_history_window_help" = "メニューに表示するローカル使用ログの日数を設定します。";
 "cost_history_days_title" = "履歴期間: %d 日";
 "cost_auto_refresh_info" = "自動更新: グローバル間隔（最短 5 分）· タイムアウト: 10 分";
 "cost_comparison_periods_title" = "短い比較期間を表示";
@@ -730,11 +727,6 @@
 "not_found" = "見つかりません";
 
 /* Cost estimation */
-"cost_header_estimated" = "コスト（推定）";
-"cost_estimate_hint" = "ローカルログからの推定値 · 請求額と異なる場合があります";
-"codex_api_estimate_header" = "API相当の見積もり";
-"codex_api_estimate_hint" = "ローカル使用量 × 公開API価格 · サブスクリプションの請求額やプラン価値ではありません";
-"codex_api_estimate_not_billed" = "サブスクリプションの請求額やプラン価値ではありません";
 "No JetBrains IDE with AI Assistant detected. Install a JetBrains IDE and enable AI Assistant." = "AI Assistant 対応の JetBrains IDE が検出されませんでした。JetBrains IDE をインストールし、AI Assistant を有効にしてください。";
 "OpenRouter API token not configured. Set OPENROUTER_API_KEY environment variable or configure in Settings." = "OpenRouter API トークンが設定されていません。環境変数 OPENROUTER_API_KEY を設定するか、設定で構成してください。";
 "z.ai API token not found. Set apiKey in ~/.codexbar/config.json or Z_AI_API_KEY." = "z.ai API トークンが見つかりません。~/.codexbar/config.json の apiKey または Z_AI_API_KEY を設定してください。";
@@ -841,8 +833,6 @@
 "Today: %@ tokens" = "今日: %@ トークン";
 "Last 30 days: %@ · %@ tokens" = "過去30日間: %@ · %@ トークン";
 "Last 30 days: %@" = "過去30日間: %@";
-"Est. total (30d): %@" = "推定合計（30日間）: %@";
-"Est. total (%@): %@" = "推定合計（%@）: %@";
 "Hover a bar for details" = "バーにポインタを合わせると詳細が表示されます";
 "%@: %@ · %@ tokens" = "%@: %@ · %@ トークン";
 "No providers selected for Overview." = "概要に表示するプロバイダが選択されていません。";
@@ -975,7 +965,6 @@
 "Unavailable" = "利用不可";
 "Weekly" = "週間";
 "not detected" = "未検出";
-"Estimated from local Codex logs for the selected account." = "選択したアカウントのローカル Codex ログから推定しています。";
 "minimax_usage_amount_format" = "使用量: %@ / %@";
 "minimax_used_percent_format" = "使用済み %@";
 "minimax_service_text_generation" = "テキスト生成";
@@ -1237,25 +1226,19 @@
 /* Spend dashboard */
 "tab_usage_spend" = "使用量と支出";
 "Usage & Spend" = "使用量と支出";
-"Local estimated cost history across supported providers." = "対応プロバイダ全体のローカル推定コスト履歴。";
 "Time range" = "期間";
 "Track costs" = "コストを追跡";
 "Cost tracking is off" = "コスト追跡はオフです";
-"Turn on Track costs to build local estimates." = "「コストを追跡」をオンにしてローカル推定を作成してください。";
-"No local cost history yet" = "ローカルのコスト履歴はまだありません";
 "Turn on cost tracking or refresh after using a supported provider." = "コスト追跡をオンにするか、対応プロバイダの使用後に更新してください。";
 "Refresh failures" = "更新失敗";
 "Native currencies stay separate; Codex account rows exclude Pi session history." = "各通貨は別々に扱われ、Codex アカウント行には Pi セッション履歴を含めません。";
 "Spend unavailable" = "支出を取得できません";
 "Model breakdown unavailable" = "モデル別の内訳を取得できません";
-"Local estimated history" = "ローカル推定履歴";
 "Coverage" = "対象範囲";
-"Estimated spend" = "推定支出";
 "Tracked tokens" = "追跡対象トークン";
 "Subscriptions" = "サブスクリプション";
 "By subscription" = "サブスクリプション別";
 "No model-level history" = "モデル別の履歴はありません";
-"Daily estimated spend" = "日別推定支出";
 "≈%d full 5h windows of weekly left · %d windows until reset" = "週間枠は約%d回分の完全な5時間ウィンドウ · リセットまで%d回";
 "Weekly cannot run out before reset at this pace" = "このペースではリセット前に週間枠を使い切れません";
 "Weekly can run out ≈%d windows early" = "週間枠は約%dウィンドウ早く使い切る可能性があります";

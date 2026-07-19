@@ -33,19 +33,14 @@ extension StatusItemController {
         L("Cost")
     }
 
-    static func costMenuTitleForProvider(_ provider: UsageProvider) -> String {
-        provider == .codex ? L("codex_api_estimate_header") : self.costMenuTitle
-    }
-
     func makeCostMenuCardItem(
         model: UsageMenuCardView.Model,
         submenu: NSMenu?,
         width: CGFloat) -> NSMenuItem
     {
-        let title = Self.costMenuTitleForProvider(model.provider)
+        let title = Self.costMenuTitle
         let tooltipLines = Self.costMenuTooltipLines(tokenUsage: model.tokenUsage)
         let visibleDetailLines = Self.costMenuVisibleDetailLines(
-            provider: model.provider,
             tokenUsage: model.tokenUsage,
             hasSubmenu: submenu != nil)
         guard visibleDetailLines.isEmpty == false, self.menuCardRenderingEnabledForController else {
@@ -111,20 +106,10 @@ extension StatusItemController {
     }
 
     static func costMenuVisibleDetailLines(
-        provider: UsageProvider,
         tokenUsage: UsageMenuCardView.Model.TokenUsageSection?,
         hasSubmenu: Bool) -> [String]
     {
-        // A submenu hides the regular detail rows, so retain the provenance hint on the parent
-        // item. Otherwise Codex's API-equivalent estimate can be opened as a chart labelled as
-        // cost with no visible non-billing disclaimer.
-        guard !hasSubmenu else {
-            guard provider == .codex else { return [] }
-            return tokenUsage?.hintLine?
-                .split(separator: "\n")
-                .map(String.init)
-                .filter { !$0.isEmpty } ?? []
-        }
+        guard !hasSubmenu else { return [] }
         let primaryLines = ([
             tokenUsage?.sessionLine,
             tokenUsage?.monthLine,

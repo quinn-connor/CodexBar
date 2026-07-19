@@ -440,7 +440,7 @@ enum ShareStatsFormatting {
             lines.append("\(self.compactCount(tokens)) tracked tokens")
         }
         lines.append(contentsOf: payload.currencies.map { currency in
-            let spend = currency.estimatedCost.map { "\(self.currency($0, code: currency.currencyCode)) estimated" }
+            let spend = currency.estimatedCost.map { self.currency($0, code: currency.currencyCode) }
                 ?? "Spend unavailable"
             return "\(currency.currencyCode): \(spend) · "
                 + "coverage \(currency.coveredDayCount)/\(payload.days) days"
@@ -451,7 +451,7 @@ enum ShareStatsFormatting {
                 metrics.append("\(self.compactCount(tokens)) tokens")
             }
             if let cost = provider.estimatedCost {
-                metrics.append("~\(self.currency(cost, code: provider.currencyCode)) est")
+                metrics.append(self.currency(cost, code: provider.currencyCode))
             } else {
                 metrics.append("Spend unavailable")
             }
@@ -469,7 +469,7 @@ enum ShareStatsFormatting {
                     metrics.append("\(self.compactCount(tokens)) tokens")
                 }
                 if let cost = model.estimatedCost {
-                    metrics.append("~\(self.currency(cost, code: model.currencyCode)) est")
+                    metrics.append(self.currency(cost, code: model.currencyCode))
                 }
                 return "\(model.modelName) (\(model.providerName)): \(metrics.joined(separator: " · "))"
             })
