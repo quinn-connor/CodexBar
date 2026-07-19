@@ -78,6 +78,18 @@ extension SettingsStore {
             return true
         }
 
+        let kimiHome: URL = {
+            let raw = env[KimiSettingsReader.codeHomeEnvironmentKey]?
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+            if let raw, !raw.isEmpty {
+                return URL(fileURLWithPath: raw, isDirectory: true)
+            }
+            return home.appendingPathComponent(".kimi-code", isDirectory: true)
+        }()
+        if hasAnyJsonl(in: kimiHome.appendingPathComponent("sessions", isDirectory: true)) {
+            return true
+        }
+
         let claudeRoots: [URL] = {
             if let env = env["CLAUDE_CONFIG_DIR"]?.trimmingCharacters(in: .whitespacesAndNewlines),
                !env.isEmpty

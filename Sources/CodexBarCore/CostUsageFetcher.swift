@@ -157,7 +157,8 @@ public struct CostUsageFetcher: Sendable {
     private static func resolvedScannerOptions(
         _ override: CostUsageScanner.Options?,
         provider: UsageProvider,
-        codexHomePath: String?) -> CostUsageScanner.Options
+        codexHomePath: String?,
+        environment: [String: String]) -> CostUsageScanner.Options
     {
         var options = override ?? CostUsageScanner.Options()
         if provider == .codex,
@@ -165,6 +166,10 @@ public struct CostUsageFetcher: Sendable {
            !codexHomePath.isEmpty
         {
             options.codexSessionsRoot = URL(fileURLWithPath: codexHomePath, isDirectory: true)
+                .appendingPathComponent("sessions", isDirectory: true)
+        }
+        if provider == .kimi, options.kimiSessionsRoot == nil {
+            options.kimiSessionsRoot = KimiSettingsReader.kimiCodeHomeURL(environment: environment)
                 .appendingPathComponent("sessions", isDirectory: true)
         }
         return options
@@ -211,7 +216,8 @@ public struct CostUsageFetcher: Sendable {
         var options = Self.resolvedScannerOptions(
             overrideScannerOptions,
             provider: provider,
-            codexHomePath: codexHomePath)
+            codexHomePath: codexHomePath,
+            environment: environment)
         let scopedCodexHomePath = codexHomePath?.trimmingCharacters(in: .whitespacesAndNewlines)
         let shouldMergePiUsage = provider != .codex || scopedCodexHomePath?.isEmpty != false
         await Self.refreshPricingIfAllowed(
@@ -558,7 +564,7 @@ public struct CostUsageFetcher: Sendable {
     /// macOS-only because it reuses the macOS Cursor session resolution.
     static func supportsTokenSnapshot(_ provider: UsageProvider) -> Bool {
         switch provider {
-        case .codex, .claude, .vertexai, .bedrock:
+        case .codex, .claude, .kimi, .vertexai, .bedrock:
             return true
         case .cursor:
             #if os(macOS)

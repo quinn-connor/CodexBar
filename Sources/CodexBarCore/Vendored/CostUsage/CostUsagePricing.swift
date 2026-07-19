@@ -3,6 +3,11 @@ import Foundation
 enum CostUsagePricing {
     private static let codexPriorityInputTokenLimit = 272_000
     static let codexUnattributedModel = "unknown"
+    // Kimi K3 API pricing, USD per token, published at
+    // https://platform.kimi.ai/docs/pricing/chat-k3 (verified 2026-07-19).
+    private static let kimiK3InputCostPerToken = 3.0e-6
+    private static let kimiK3CacheReadCostPerToken = 0.3e-6
+    private static let kimiK3OutputCostPerToken = 15.0e-6
 
     struct CodexPricing {
         let inputCostPerToken: Double
@@ -516,6 +521,19 @@ enum CostUsagePricing {
         }
 
         return trimmed
+    }
+
+    static func kimiK3CostUSD(
+        inputTokens: Int,
+        cacheReadInputTokens: Int,
+        cacheCreationInputTokens: Int = 0,
+        outputTokens: Int) -> Double
+    {
+        // Kimi Code records uncached input and cache reads as disjoint counters. Cache creation is
+        // currently zero for K3, but if the client begins reporting it, bill it at the miss rate.
+        Double(max(0, inputTokens) + max(0, cacheCreationInputTokens)) * self.kimiK3InputCostPerToken
+            + Double(max(0, cacheReadInputTokens)) * self.kimiK3CacheReadCostPerToken
+            + Double(max(0, outputTokens)) * self.kimiK3OutputCostPerToken
     }
 
     static func codexCostUSD(

@@ -33,8 +33,8 @@ public enum KimiProviderDescriptor {
                     ProviderColor(hex: 0xFFFFFF),
                 ]),
             tokenCost: ProviderTokenCostConfig(
-                supportsTokenCost: false,
-                noDataMessage: { "Kimi cost summary is not supported." }),
+                supportsTokenCost: true,
+                noDataMessage: self.noDataMessage),
             fetchPlan: ProviderFetchPlan(
                 sourceModes: [.auto, .cli, .web],
                 pipeline: ProviderFetchPipeline(resolveStrategies: self.resolveStrategies)),
@@ -42,6 +42,13 @@ public enum KimiProviderDescriptor {
                 name: "kimi",
                 aliases: ["kimi-ai"],
                 versionDetector: nil))
+    }
+
+    private static func noDataMessage() -> String {
+        let sessions = KimiSettingsReader.kimiCodeHomeURL(environment: ProcessInfo.processInfo.environment)
+            .appendingPathComponent("sessions", isDirectory: true)
+            .path
+        return "No K3 usage records found in \(sessions)."
     }
 
     private static func resolveStrategies(context: ProviderFetchContext) async -> [any ProviderFetchStrategy] {

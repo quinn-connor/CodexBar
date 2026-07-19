@@ -27,6 +27,7 @@ enum CostUsageScanner {
     struct Options {
         var codexSessionsRoot: URL?
         var claudeProjectsRoots: [URL]?
+        var kimiSessionsRoot: URL?
         var cacheRoot: URL?
         var codexTraceDatabaseURL: URL?
         var refreshMinIntervalSeconds: TimeInterval = 60
@@ -37,6 +38,7 @@ enum CostUsageScanner {
         init(
             codexSessionsRoot: URL? = nil,
             claudeProjectsRoots: [URL]? = nil,
+            kimiSessionsRoot: URL? = nil,
             cacheRoot: URL? = nil,
             codexTraceDatabaseURL: URL? = nil,
             claudeLogProviderFilter: ClaudeLogProviderFilter = .all,
@@ -44,6 +46,7 @@ enum CostUsageScanner {
         {
             self.codexSessionsRoot = codexSessionsRoot
             self.claudeProjectsRoots = claudeProjectsRoots
+            self.kimiSessionsRoot = kimiSessionsRoot
             self.cacheRoot = cacheRoot
             self.codexTraceDatabaseURL = codexTraceDatabaseURL
             self.claudeLogProviderFilter = claudeLogProviderFilter
@@ -824,9 +827,15 @@ enum CostUsageScanner {
                 now: now,
                 options: filtered,
                 checkCancellation: checkCancellation)
+        case .kimi:
+            return try self.loadKimiDaily(
+                range: range,
+                now: now,
+                options: options,
+                checkCancellation: checkCancellation)
         case .openai, .azureopenai, .clinepass, .zai, .gemini, .antigravity, .cursor, .opencode, .opencodego, .alibaba,
              .alibabatokenplan, .factory,
-             .copilot, .devin, .minimax, .manus, .kilo, .kiro, .kimi, .moonshot, .augment, .jetbrains, .amp,
+             .copilot, .devin, .minimax, .manus, .kilo, .kiro, .moonshot, .augment, .jetbrains, .amp,
              .ollama, .t3chat, .synthetic, .openrouter, .elevenlabs, .warp, .perplexity, .mimo, .doubao, .sakana,
              .abacus, .mistral, .deepseek, .deepinfra, .codebuff, .crof, .windsurf, .zed, .venice, .commandcode,
              .qoder, .stepfun, .bedrock, .grok, .groq, .llmproxy, .litellm, .deepgram, .poe, .chutes, .neuralwatt,

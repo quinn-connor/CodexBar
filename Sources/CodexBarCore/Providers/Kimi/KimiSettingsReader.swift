@@ -120,12 +120,14 @@ public enum KimiSettingsReader {
         return deviceID
     }
 
-    private static func kimiCodeHomeURL(environment: [String: String]) -> URL {
+    static func kimiCodeHomeURL(
+        environment: [String: String],
+        homeDirectory: URL = FileManager.default.homeDirectoryForCurrentUser) -> URL
+    {
         if let override = self.cleaned(environment[self.codeHomeEnvironmentKey]) {
             return URL(fileURLWithPath: override, isDirectory: true)
         }
-        return FileManager.default.homeDirectoryForCurrentUser
-            .appendingPathComponent(".kimi-code", isDirectory: true)
+        return homeDirectory.appendingPathComponent(".kimi-code", isDirectory: true)
     }
 
     private static func asciiHeaderValue(_ raw: String, fallback: String = "unknown") -> String {
