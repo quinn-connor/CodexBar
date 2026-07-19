@@ -68,7 +68,7 @@ check_app_locales() {
 
 check_site_locales() {
   node "${ROOT_DIR}/Scripts/check-site-locales.mjs"
-  node --check "${ROOT_DIR}/docs/site.js"
+  node --input-type=module --check < "${ROOT_DIR}/docs/site.js"
 }
 
 check_documentation_links() {
